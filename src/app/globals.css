@@ -1,0 +1,251 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Identidad Portal GS (González Solís): carbón + rojo GS sobre gris claro.
+     --brand = rojo del logo oficial (#B92D32). El resto es aproximado. */
+  --background: oklch(0.955 0.002 264);
+  --foreground: oklch(0.2 0.005 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.005 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.005 264);
+  --primary: oklch(0.2 0.005 264);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.002 264);
+  --secondary-foreground: oklch(0.25 0.005 264);
+  --muted: oklch(0.962 0.002 264);
+  --muted-foreground: oklch(0.52 0.008 264);
+  --accent: oklch(0.95 0.003 264);
+  --accent-foreground: oklch(0.2 0.005 264);
+  --destructive: oklch(0.55 0.21 25);
+  --brand: oklch(0.52 0.176 24);
+  --brand-foreground: oklch(0.99 0 0);
+  --brand-soft: oklch(0.955 0.028 12);
+  --success: oklch(0.58 0.13 160);
+  --warning: oklch(0.72 0.15 65);
+  --info: oklch(0.56 0.13 255);
+  --border: oklch(0.915 0.003 264);
+  --input: oklch(0.9 0.004 264);
+  --ring: oklch(0.6 0.14 24);
+  --chart-1: oklch(0.52 0.176 24);
+  --chart-2: oklch(0.32 0.008 264);
+  --chart-3: oklch(0.58 0.13 160);
+  --chart-4: oklch(0.75 0.14 70);
+  --chart-5: oklch(0.72 0.01 264);
+  --radius: 0.875rem;
+  --sidebar: oklch(0.225 0.004 264);
+  --sidebar-foreground: oklch(0.82 0.004 264);
+  --sidebar-primary: oklch(0.6 0.19 24);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.295 0.005 264);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.31 0.005 264);
+  --sidebar-ring: oklch(0.6 0.19 24);
+}
+
+.dark {
+  --background: oklch(0.17 0.004 264);
+  --foreground: oklch(0.96 0 0);
+  --card: oklch(0.21 0.004 264);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.21 0.004 264);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.96 0 0);
+  --primary-foreground: oklch(0.2 0.005 264);
+  --secondary: oklch(0.27 0.005 264);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.25 0.005 264);
+  --muted-foreground: oklch(0.72 0.006 264);
+  --accent: oklch(0.27 0.005 264);
+  --accent-foreground: oklch(0.96 0 0);
+  --destructive: oklch(0.7 0.19 22);
+  --brand: oklch(0.65 0.19 20);
+  --brand-foreground: oklch(0.99 0 0);
+  --brand-soft: oklch(0.3 0.06 15);
+  --success: oklch(0.72 0.13 160);
+  --warning: oklch(0.8 0.14 70);
+  --info: oklch(0.72 0.12 255);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.65 0.15 20);
+  --chart-1: oklch(0.65 0.19 20);
+  --chart-2: oklch(0.8 0.005 264);
+  --chart-3: oklch(0.72 0.13 160);
+  --chart-4: oklch(0.8 0.13 70);
+  --chart-5: oklch(0.55 0.01 264);
+  --sidebar: oklch(0.15 0.004 264);
+  --sidebar-foreground: oklch(0.82 0.004 264);
+  --sidebar-primary: oklch(0.65 0.19 20);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.24 0.005 264);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.65 0.19 20);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-accent) transparent;
+  }
+}
+
+/* ─── Organigrama (árbol con conectores) ─────────────────────────── */
+@layer components {
+  .org-tree {
+    --org-line: oklch(0.8 0.004 264);
+    --org-gap: 1.25rem;
+  }
+  .org-tree ul {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding-top: var(--org-gap);
+  }
+  .org-tree > ul {
+    padding-top: 0;
+  }
+  .org-tree li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--org-gap) 0.4rem 0;
+  }
+  .org-tree li::before,
+  .org-tree li::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 50%;
+    width: 50%;
+    height: var(--org-gap);
+    border-top: 1.5px solid var(--org-line);
+  }
+  .org-tree li::after {
+    right: auto;
+    left: 50%;
+    border-left: 1.5px solid var(--org-line);
+  }
+  .org-tree li:only-child {
+    padding-top: 0;
+  }
+  .org-tree li:only-child::before,
+  .org-tree li:only-child::after,
+  .org-tree > ul > li::before,
+  .org-tree > ul > li::after {
+    display: none;
+  }
+  .org-tree > ul > li {
+    padding-top: 0;
+  }
+  .org-tree li:first-child::before,
+  .org-tree li:last-child::after {
+    border: 0 none;
+  }
+  .org-tree li:last-child::before {
+    border-right: 1.5px solid var(--org-line);
+    border-radius: 0 8px 0 0;
+  }
+  .org-tree li:first-child::after {
+    border-radius: 8px 0 0 0;
+  }
+  .org-tree ul ul::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: var(--org-gap);
+    border-left: 1.5px solid var(--org-line);
+  }
+  /* Equipos sin subordinados: se apilan en columna para ahorrar ancho. */
+  .org-tree ul.org-stack {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .org-tree ul.org-stack > li {
+    padding: 0;
+  }
+  .org-tree ul.org-stack > li::before,
+  .org-tree ul.org-stack > li::after {
+    display: none;
+  }
+  .org-tree ul.org-stack::after {
+    content: "";
+    position: absolute;
+    top: var(--org-gap);
+    bottom: 1rem;
+    left: 50%;
+    border-left: 1.5px solid var(--org-line);
+  }
+}
