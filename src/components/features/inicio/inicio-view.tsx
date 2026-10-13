@@ -2,90 +2,54 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import {
-  ArrowRight,
-  BadgeCheck,
-  Briefcase,
-  CalendarDays,
-  CheckCircle2,
-  FileCheck2,
-  FileClock,
-  FileUp,
-  Flag,
-  Landmark,
-  MessageSquare,
-  PackageCheck,
-  ScanSearch,
-  ShieldCheck,
-  TrendingUp,
-  Wallet,
-} from "lucide-react"
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { ArrowRight, BadgeCheck, Briefcase, CalendarDays, CheckCircle2, FileUp, Home, Lightbulb, ListChecks, MessageSquare, PackageCheck, ShieldCheck, TrendingUp, Wallet } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { EmptyState } from "@/components/shared/empty-state"
 import { MetricCard } from "@/components/shared/metric-card"
-import { PersonChip } from "@/components/shared/person-chip"
-import { PhaseBadge } from "@/components/shared/phase-badge"
-import { ScopeNote } from "@/components/shared/scope-note"
+import { PageHeader } from "@/components/shared/page-header"
 import { SectionCard } from "@/components/shared/section-card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { activity, insights } from "@/data/activity"
-import { getPerson, gsTeam, metrics, services } from "@/data/organization"
+import { getPerson, metrics, services } from "@/data/organization"
 import { useScopedData } from "@/hooks/use-scoped-data"
-import { daysFromToday, formatCompactCurrency, formatCurrency, formatDate, formatLongDate, formatPercent, DEMO_TODAY } from "@/lib/format"
-import { companyShort } from "@/lib/labels"
+import { DEMO_TODAY, daysFromToday, dueLabel, formatCompactCurrency, formatCurrency, formatDate, formatLongDate, formatPercent } from "@/lib/format"
+import { companiesLabel, companyShort } from "@/lib/labels"
 import { canAccessModule, matchesScope } from "@/lib/permissions"
 import { eventTypeMeta, healthMeta } from "@/lib/status"
 import type { Activity, ServiceHealth } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { effectiveStatus, usePortal } from "@/store/portal-store"
 import { UploadDialog } from "../documentos/upload-dialog"
-import { ActionCard } from "../pendientes/action-card"
 import { ActionDetailSheet } from "../pendientes/action-detail-sheet"
+import { ActionTable } from "../pendientes/action-table"
+import { AlertsCard, type AlertItem } from "./alerts-card"
 import { InsightCard } from "./insight-card"
 
 const healthRank: ServiceHealth[] = ["atrasado", "requiere_atencion", "en_curso", "al_corriente"]
-const activityIcon: Record<Activity["kind"], typeof Flag> = { hito: Flag, entregable: PackageCheck, obligacion: Landmark, revision: ScanSearch }
 const activityLabel: Record<Activity["kind"], string> = { hito: "Hito", entregable: "Entregable", obligacion: "Obligación", revision: "Revisión" }
-
-const revenueConfig = { ingresos: { label: "Ingresos ene–ago", color: "var(--chart-2)" } } satisfies ChartConfig
+const revenueConfig = { ingresos: { label: "Ingresos ene–ago", color: "var(--chart-1)" } } satisfies ChartConfig
 
 function greeting() {
   const h = new Date().getHours()
   return h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches"
 }
 
-/** Sección con la pregunta del Product Spec §1 como antetítulo. */
-function Question({ q, title, action, children, id }: { q: string; title: string; action?: React.ReactNode; children: React.ReactNode; id?: string }) {
-  return (
-    <section aria-labelledby={id} className="space-y-3">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold tracking-wider text-brand uppercase">{q}</p>
-          <h2 id={id} className="text-lg font-bold tracking-tight">
-            {title}
-          </h2>
-        </div>
-        {action}
-      </div>
-      {children}
-    </section>
-  )
-}
-
-/** Inicio ejecutivo (Product Spec §9): responde las cinco preguntas en el contexto activo. */
+/** Inicio ejecutivo (Product Spec §9): qué requiere atención, panorama, lo que hizo GS, qué viene y qué decidir. */
 export function InicioView() {
-  const { persona, state, can } = usePortal()
-  const { actions, documents, events, scope, scopeLabel, scopeCompanies } = useScopedData()
+  const { persona, can } = usePortal()
+  const { actions, documents, events, scope, scopeLabel, scopeBadge, scopeCompanies } = useScopedData()
   const [selected, setSelected] = useState<string | null>(null)
   const [uploadOpen, setUploadOpen] = useState(false)
   const me = getPerson(persona.personId)
   const isExec = persona.role === "admin" || persona.role === "ejecutivo"
   const seesBilling = canAccessModule(persona, "facturacion")
+  const seesActions = canAccessModule(persona, "pendientes")
 
-  // 1. Requiere tu atención: máximo cinco, lo más urgente primero.
+  // Requiere tu atención: máximo cinco, lo más urgente primero.
   const rank = (s: string) => (s === "overdue" ? 0 : s === "changes_required" ? 1 : 2)
   const prio = { alta: 0, media: 1, baja: 2 }
   const attentionAll = actions
@@ -93,13 +57,15 @@ export function InicioView() {
     .filter((a) => isExec || a.assigneeId === persona.personId || persona.role === "operativo")
     .sort((a, b) => rank(effectiveStatus(a)) - rank(effectiveStatus(b)) || prio[a.priority] - prio[b.priority] || a.dueDate.localeCompare(b.dueDate))
   const attention = attentionAll.slice(0, 5)
+  const overdue = attentionAll.filter((a) => effectiveStatus(a) === "overdue").length
+  const corrections = attentionAll.filter((a) => effectiveStatus(a) === "changes_required").length
 
-  // 2. Panorama
+  // Panorama
   const m = scopeCompanies.map((c) => metrics[c])
   const sum = (fn: (x: (typeof m)[number]) => number) => m.reduce((s, x) => s + fn(x), 0)
   const onTime = sum((x) => x.compliance.onTime)
   const totalObl = sum((x) => x.compliance.total)
-  const lateNotes = scopeCompanies.flatMap((c) => metrics[c].compliance.late.map((l) => `${companyShort(c)}: ${l}`))
+  const late = totalObl - onTime
   const published = sum((x) => x.deliverables.published)
   const expected = sum((x) => x.deliverables.expected)
   const revenueYtd = sum((x) => x.revenueYtd)
@@ -115,368 +81,310 @@ export function InicioView() {
     .filter((s) => matchesScope(s.companies, scope, persona.companies))
     .map((s) => {
       const relevant = (scope === "grupo" ? s.companies.filter((c) => persona.companies.includes(c)) : [scope]).map((c) => s.health[c]).filter(Boolean) as ServiceHealth[]
-      const health = healthRank.find((h) => relevant.includes(h)) ?? "al_corriente"
-      return { ...s, scopedHealth: health }
+      return { ...s, scopedHealth: healthRank.find((h) => relevant.includes(h)) ?? ("al_corriente" as ServiceHealth) }
     })
-  const attentionServices = scopedServices.filter((s) => s.scopedHealth === "requiere_atencion" || s.scopedHealth === "atrasado").length
 
-  // 3. Lo que hizo GS
-  const done = activity.filter((a) => matchesScope(a.companies, scope, persona.companies))
-  const nextGs = actions.filter((a) => a.owner === "gs" && !["completed", "submitted", "under_review"].includes(a.status)).sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, 3)
-
-  // 4. Insights: los financieros solo para dirección.
+  const done = activity.filter((a) => matchesScope(a.companies, scope, persona.companies)).slice(0, 5)
   const visibleInsights = insights.filter((i) => matchesScope(i.companies, scope, persona.companies) && (isExec || (persona.role === "operativo" && i.service === "impuestos")))
+  const upcoming = events.filter((e) => daysFromToday(e.endDate ?? e.date) >= 0).slice(0, 5)
 
-  // 5. Próximas fechas
-  const upcoming = events.filter((e) => daysFromToday(e.endDate ?? e.date) >= 0).slice(0, 6)
+  // Alertas: lo vencido, lo que pide corrección y los vencimientos críticos.
+  const alerts: AlertItem[] = [
+    ...attentionAll
+      .filter((a) => effectiveStatus(a) === "overdue" || effectiveStatus(a) === "changes_required")
+      .map((a) => ({
+        id: a.id,
+        tone: "danger" as const,
+        text: effectiveStatus(a) === "overdue" ? `${a.title} (${companyShort(a.companies[0])}): ${dueLabel(a.dueDate).toLowerCase()}.` : `${a.title}: GS pidió una corrección.`,
+        href: `/pendientes/${a.id}`,
+      })),
+    ...(seesBilling && balanceOverdue > 0 ? [{ id: "saldo", tone: "warning" as const, text: `Hay ${formatCurrency(balanceOverdue)} vencidos en facturas de GS.` }] : []),
+    ...events
+      .filter((e) => e.type === "renovacion" && daysFromToday(e.date) >= 0 && daysFromToday(e.date) <= 30)
+      .map((e) => ({ id: e.id, tone: "warning" as const, text: `${e.title}: ${formatDate(e.date, { day: "numeric", month: "long" })}.` })),
+  ].slice(0, 4)
 
-  const primary = gsTeam.find((g) => g.primary)!
   const revenueByCompany = scopeCompanies.map((c) => ({ empresa: companyShort(c), ingresos: metrics[c].revenueYtd }))
 
   return (
-    <div className="space-y-8">
-      {/* Encabezado */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground first-letter:uppercase">{formatLongDate(DEMO_TODAY)}</p>
-          <h1 className="text-[28px] leading-tight font-bold tracking-tight">
-            {greeting()}, {me.firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Estás viendo <span className="font-semibold text-foreground">{scopeLabel}</span>
-            {scope === "grupo" && ` · ${scopeCompanies.length} razones sociales`}.{" "}
-            {attentionAll.length > 0 ? `Tienes ${attentionAll.length} ${attentionAll.length === 1 ? "acción" : "acciones"} por atender.` : "No tienes acciones por atender."}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {can.upload && (
-            <Button variant="outline" onClick={() => setUploadOpen(true)}>
-              <FileUp />
-              Enviar documento
-            </Button>
-          )}
-          {can.respond && (
-            <Button asChild>
-              <Link href="/mensajes/nuevo">
-                <MessageSquare />
-                Escribir a GS
-              </Link>
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-w-0 space-y-8">
-          {/* 1 */}
-          {canAccessModule(persona, "pendientes") ? (
-            <Question
-              q="¿Qué requiere mi atención?"
-              title="Requiere tu atención"
-              id="q1"
-              action={
-                attentionAll.length > 0 && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/pendientes">
-                      Ver {attentionAll.length > 5 ? `los ${attentionAll.length}` : "todos"}
-                      <ArrowRight />
-                    </Link>
-                  </Button>
-                )
-              }
-            >
-              {attention.length === 0 ? (
-                <EmptyState icon={CheckCircle2} title="Todo al día" description={`No hay acciones pendientes para ti en ${scopeLabel}.`} />
-              ) : (
-                <div className="space-y-2.5">
-                  {attention.map((a) => (
-                    <ActionCard key={a.id} item={a} onOpen={setSelected} />
-                  ))}
-                </div>
-              )}
-            </Question>
-          ) : (
-            <div className="flex items-start gap-3 rounded-xl border bg-card px-4 py-3 text-sm">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-              <p>
-                Tu acceso es <span className="font-semibold">de consulta</span> para {scopeLabel}. Puedes ver entregables, calendario y equipo; las acciones las atiende tu administrador.
-              </p>
-            </div>
-          )}
-
-          {/* 2 */}
-          <Question q="¿Cómo está mi empresa?" title="Panorama" id="q2">
-            <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-              <MetricCard
-                  label="Cumplimiento fiscal 2026"
-                  value={formatPercent(onTime / totalObl, 1)}
-                  icon={ShieldCheck}
-                  accent="green"
-                  progress={(onTime / totalObl) * 100}
-                  helper={`${onTime} de ${totalObl} obligaciones a tiempo${lateNotes.length ? ` · ${lateNotes.length} extemporánea${lateNotes.length > 1 ? "s" : ""}` : ""}`}
-                  footer={<ScopeNote scope={scopeLabel} period="Ene–sep 2026" source="bfiskur" />}
-                />
-              <MetricCard label="Servicios activos" value={scopedServices.length} icon={Briefcase} accent="blue" helper={attentionServices ? `${attentionServices} requieren tu atención` : "Todos en orden"}
-                  footer={<ScopeNote scope={scopeLabel} period="Octubre 2026" source="portal" />}
-                />
-              <MetricCard label="Entregables de septiembre" value={`${published}/${expected}`} icon={PackageCheck} accent="amber" progress={(published / expected) * 100} helper="Publicados por GS en el portal"
-                  footer={<ScopeNote scope={scopeLabel} period="Septiembre 2026" source="portal" />}
-                />
-              <MetricCard
-                  label="Documentos por enviar"
-                  value={docsPending}
-                  icon={FileClock}
-                  accent="pink"
-                  href="/documentos"
-                  helper={`${docsInReview} en revisión de GS`}
-                  footer={<ScopeNote scope={scopeLabel} period="Al 12 oct" source="portal" />}
-                />
-            </div>
-
-            {(isExec || seesBilling) && (
-              <div className={cn("grid gap-3", isExec && seesBilling && "lg:grid-cols-[minmax(0,1fr)_260px]")}>
-                {isExec && (
-                  <SectionCard
-                    title="Indicadores financieros"
-                    description="Autorizados para Dirección"
-                    icon={TrendingUp}
-                    action={
-                      <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                        Detalle en Contabilidad <PhaseBadge phase={2} />
-                      </span>
-                    }
-                  >
-                    <div className="grid gap-5">
-                      <dl className="grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Ingresos ene–ago · cerrado</dt>
-                          <dd className="text-2xl font-bold tabular-nums">{formatCompactCurrency(revenueYtd)}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Septiembre · preliminar</dt>
-                          <dd className="flex items-baseline gap-2">
-                            <span className="text-lg font-semibold tabular-nums">{formatCompactCurrency(revenueSep)}</span>
-                            <span className="text-xs font-medium text-success">+{formatPercent(revenueSep / revenuePrev - 1, 1)} vs. agosto</span>
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Margen bruto ene–ago</dt>
-                          <dd className="text-lg font-semibold tabular-nums">{formatPercent(margin, 1)}</dd>
-                        </div>
-                      </dl>
-                      {scope === "grupo" ? (
-                        <div className="min-w-0">
-                          <p className="mb-1 text-xs text-muted-foreground">Ingresos ene–ago por razón social</p>
-                          <ChartContainer config={revenueConfig} className="aspect-auto h-44 w-full">
-                            <BarChart data={revenueByCompany} layout="vertical" margin={{ left: 0, right: 12 }}>
-                              <XAxis type="number" hide />
-                              <YAxis type="category" dataKey="empresa" tickLine={false} axisLine={false} width={84} />
-                              <ChartTooltip cursor={false} content={<ChartTooltipContent formatter={(v) => formatCurrency(Number(v), 0)} />} />
-                              <Bar dataKey="ingresos" fill="var(--color-ingresos)" radius={5} barSize={16} />
-                            </BarChart>
-                          </ChartContainer>
-                        </div>
-                      ) : (
-                        <p className="self-center rounded-lg bg-muted/60 p-3 text-sm text-muted-foreground">
-                          Estado de resultados, balance y comparativo por periodo se mostrarán en la página de Contabilidad de esta empresa.
-                        </p>
-                      )}
-                    </div>
-                    <ScopeNote
-                      scope={scope === "grupo" ? `${scopeLabel} (suma de razones sociales, sin eliminaciones)` : scopeLabel}
-                      period="Ene–ago cerrado · sep preliminar"
-                      source="contalink"
-                      className="mt-3"
-                    />
-                  </SectionCard>
-                )}
-                {seesBilling && (
-                  <SectionCard title="Saldo con GS" description="Facturas emitidas por GS" icon={Wallet}>
-                    <p className="text-2xl font-bold tabular-nums">{formatCurrency(balanceDue + balanceOverdue)}</p>
-                    <div className="mt-2 space-y-1 text-sm">
-                      <p className="flex justify-between">
-                        <span className="text-muted-foreground">Por vencer</span>
-                        <span className="tabular-nums">{formatCurrency(balanceDue)}</span>
-                      </p>
-                      <p className="flex justify-between">
-                        <span className="text-muted-foreground">Vencido</span>
-                        <span className={cn("tabular-nums", balanceOverdue > 0 && "font-semibold text-destructive")}>{formatCurrency(balanceOverdue)}</span>
-                      </p>
-                    </div>
-                    <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                      Facturas, aclaraciones y pagos <PhaseBadge phase={3} />
-                    </p>
-                    <ScopeNote scope={scopeLabel} period="Al 12 oct" source="odoo" className="mt-2" />
-                  </SectionCard>
-                )}
-              </div>
+    <div className="space-y-6">
+      <PageHeader
+        icon={Home}
+        title={`${greeting()}, ${me.firstName}`}
+        badge={scopeBadge}
+        description={`${formatLongDate(DEMO_TODAY).replace(/^./, (c) => c.toUpperCase())}. ${
+          seesActions ? (attentionAll.length ? `Tienes ${attentionAll.length} ${attentionAll.length === 1 ? "acción" : "acciones"} por atender.` : "No tienes acciones por atender.") : "Tu acceso es de consulta."
+        }`}
+        actions={
+          <>
+            {can.upload && (
+              <Button variant="outline" onClick={() => setUploadOpen(true)}>
+                <FileUp />
+                Enviar documento
+              </Button>
             )}
-
-            {canAccessModule(persona, "servicios") && (
-              <SectionCard title="Estado de servicios" icon={Briefcase} action={<PhaseBadge phase={2} className="text-muted-foreground" />} contentClassName="-mx-4 px-0">
-                <ul className="divide-y">
-                  {scopedServices.map((s) => (
-                    <li key={s.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium">{s.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {s.kind === "recurrente" ? `Periodo: ${s.period}` : s.summary}
-                        </p>
-                      </div>
-                      <div className="flex min-w-0 flex-col text-xs sm:w-64">
-                        <span className="text-muted-foreground">Próximo hito · {formatDate(s.nextMilestone.date)}</span>
-                        <span className="truncate font-medium">{s.nextMilestone.title}</span>
-                      </div>
-                      <StatusBadge {...healthMeta[s.scopedHealth]} className="self-start sm:self-center" />
-                    </li>
-                  ))}
-                </ul>
-              </SectionCard>
-            )}
-          </Question>
-
-          {/* 5 */}
-          {visibleInsights.length > 0 && (
-            <Question q="¿Qué conviene revisar o decidir?" title="Análisis de GS" id="q5">
-              <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
-                {visibleInsights.map((i) => (
-                  <InsightCard key={i.id} insight={i} />
-                ))}
-              </div>
-            </Question>
-          )}
-        </div>
-
-        {/* Columna derecha */}
-        <div className="min-w-0 space-y-8">
-          <Question
-            q="¿Qué viene después?"
-            title="Próximas fechas"
-            id="q4"
-            action={
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/calendario">
-                  Calendario
-                  <ArrowRight />
+            {can.respond && (
+              <Button asChild>
+                <Link href="/mensajes/nuevo">
+                  <MessageSquare />
+                  Escribir a GS
                 </Link>
               </Button>
-            }
-          >
-            <ul className="divide-y rounded-xl border bg-card">
-              {upcoming.map((e) => {
-                const [, mon, day] = e.date.split("-")
-                const clickable = e.actionItemId && canAccessModule(persona, "pendientes")
-                const inner = (
-                  <>
-                    <span className="flex w-11 shrink-0 flex-col items-center rounded-lg bg-muted py-1 leading-none">
-                      <span className="text-[10px] text-muted-foreground uppercase">{formatDate(e.date, { month: "short" })}</span>
-                      <span className="text-lg font-bold tabular-nums">{Number(day)}</span>
-                    </span>
-                    <span className="min-w-0 flex-1 space-y-0.5">
-                      <span className="block text-sm leading-snug font-medium">{e.title}</span>
-                      <span className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                          <span className={cn("size-1.5 rounded-full", eventTypeMeta[e.type].dot)} aria-hidden />
-                          {eventTypeMeta[e.type].label}
-                        </span>
-                        {e.time && <span>{e.time} h</span>}
-                        <span>{e.companies.length > 1 ? `${e.companies.length} empresas` : companyShort(e.companies[0])}</span>
-                      </span>
-                    </span>
-                  </>
-                )
-                return (
-                  <li key={`${e.id}-${mon}`}>
-                    {clickable ? (
-                      <button type="button" onClick={() => setSelected(e.actionItemId!)} className="flex w-full items-start gap-3 px-3 py-2.5 text-left hover:bg-muted/50">
-                        {inner}
-                      </button>
-                    ) : (
-                      <div className="flex items-start gap-3 px-3 py-2.5">{inner}</div>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </Question>
+            )}
+          </>
+        }
+      />
 
-          <Question q="¿Qué hizo GS?" title="Lo que hizo GS" id="q3">
-            <SectionCard title="Últimos 30 días" icon={BadgeCheck}>
-              <div className="mb-4 grid grid-cols-4 gap-2 text-center">
-                {(["entregable", "obligacion", "hito", "revision"] as Activity["kind"][]).map((k) => (
-                  <div key={k} className="rounded-lg bg-muted/60 px-1 py-2">
-                    <p className="text-lg font-bold tabular-nums">{done.filter((a) => a.kind === k).length}</p>
-                    <p className="text-[10px] leading-tight text-muted-foreground">{activityLabel[k]}s</p>
-                  </div>
-                ))}
-              </div>
-              <ol className="space-y-3">
-                {done.slice(0, 5).map((a) => {
-                  const Icon = activityIcon[a.kind]
-                  const by = getPerson(a.byId)
-                  return (
-                    <li key={a.id} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-success/12 text-success">
-                        <Icon className="size-3.5" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        {a.href ? (
-                          <Link href={a.href} className="text-sm font-medium hover:underline">
-                            {a.title}
-                          </Link>
-                        ) : (
-                          <p className="text-sm font-medium">{a.title}</p>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          {a.detail} · {by.firstName} {by.lastName} · {formatDate(a.date)}
-                        </p>
-                      </div>
-                    </li>
-                  )
-                })}
-              </ol>
-              {nextGs.length > 0 && (
-                <div className="mt-4 space-y-2 border-t pt-3">
-                  <p className="text-xs font-semibold text-muted-foreground">Próximos pasos de GS</p>
-                  {nextGs.map((a) => (
-                    <p key={a.id} className="flex items-start gap-2 text-sm">
-                      <FileCheck2 className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                      <span className="flex-1">
-                        {a.title}
-                        <span className="block text-xs text-muted-foreground">
-                          {effectiveStatus(a) === "blocked" ? "Espera un paso previo" : `Antes del ${formatDate(a.dueDate)}`} · {getPerson(a.gsOwnerId).firstName}
-                        </span>
-                      </span>
-                    </p>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-          </Question>
-
-          <SectionCard title="Tu contacto en GS" icon={CalendarDays}>
-            <PersonChip id={primary.personId} showTitle size="md" />
-            <p className="mt-2 text-sm text-muted-foreground">{primary.materia}.</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {can.respond && (
-                <Button size="sm" asChild>
-                  <Link href="/mensajes/nuevo">
-                    <MessageSquare />
-                    Escribir
-                  </Link>
-                </Button>
-              )}
-              <Button size="sm" variant="outline" asChild>
-                <Link href="/equipo">Ver equipo</Link>
-              </Button>
-            </div>
-          </SectionCard>
-        </div>
+      {/* Panorama */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        {seesActions ? (
+          <MetricCard
+            label="Por atender"
+            value={attentionAll.length}
+            icon={ListChecks}
+            accent="pink"
+            href="/pendientes"
+            helper={overdue || corrections ? [overdue && `${overdue} vencido${overdue > 1 ? "s" : ""}`, corrections && `${corrections} con corrección`].filter(Boolean).join(" · ") : "Nada vencido"}
+          />
+        ) : (
+          <MetricCard label="Servicios activos" value={scopedServices.length} icon={Briefcase} accent="pink" helper="Octubre 2026" />
+        )}
+        <MetricCard label="Cumplimiento fiscal" value={formatPercent(onTime / totalObl, 1)} icon={ShieldCheck} accent="green" helper={`${onTime} de ${totalObl} obligaciones a tiempo en 2026${late ? ` · ${late} extemporánea${late > 1 ? "s" : ""}` : ""}`} />
+        <MetricCard label="Entregables del mes" value={`${published} de ${expected}`} icon={PackageCheck} accent="amber" helper="Septiembre · publicados por GS" />
+        {seesBilling ? (
+          <MetricCard label="Saldo con GS" value={formatCompactCurrency(balanceDue + balanceOverdue)} icon={Wallet} accent="blue" helper={balanceOverdue ? `${formatCompactCurrency(balanceOverdue)} vencido · Odoo` : "Al corriente · Odoo"} />
+        ) : (
+          <MetricCard label="Documentos por enviar" value={docsPending} icon={FileUp} accent="blue" href="/documentos" helper={`${docsInReview} en revisión de GS`} />
+        )}
       </div>
+
+      {/* Requiere tu atención */}
+      {seesActions && (
+        <SectionCard
+          title="Requiere tu atención"
+          description={attentionAll.length > 5 ? `Las 5 más urgentes de ${attentionAll.length}` : "Lo más urgente primero"}
+          icon={ListChecks}
+          flush
+          action={
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/pendientes">
+                Ver todos
+                <ArrowRight />
+              </Link>
+            </Button>
+          }
+        >
+          {attention.length === 0 ? (
+            <div className="px-6 pb-6">
+              <EmptyState icon={CheckCircle2} title="Todo al día" description={`No hay acciones pendientes para ti en ${scopeLabel}.`} />
+            </div>
+          ) : (
+            <ActionTable items={attention} onOpen={setSelected} showActionButton />
+          )}
+        </SectionCard>
+      )}
+
+      {/* Indicadores + alertas */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {isExec ? (
+          <SectionCard
+            title="Indicadores financieros"
+            description={`${scopeLabel}${scope === "grupo" ? " (suma de razones sociales)" : ""} · ene–ago cerrado, septiembre preliminar · ContaLink`}
+            icon={TrendingUp}
+            className="lg:col-span-2"
+          >
+            <div className="grid grid-cols-3 gap-4 border-b pb-5">
+              <div>
+                <p className="text-[13px] text-muted-foreground">Ingresos ene–ago</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatCompactCurrency(revenueYtd)}</p>
+              </div>
+              <div>
+                <p className="text-[13px] text-muted-foreground">Septiembre</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatCompactCurrency(revenueSep)}</p>
+                <p className="text-xs text-success">+{formatPercent(revenueSep / revenuePrev - 1, 1)} vs. agosto</p>
+              </div>
+              <div>
+                <p className="text-[13px] text-muted-foreground">Margen bruto</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatPercent(margin, 1)}</p>
+              </div>
+            </div>
+            {scope === "grupo" ? (
+              <ChartContainer config={revenueConfig} className="mt-4 aspect-auto h-52 w-full">
+                <BarChart data={revenueByCompany} margin={{ left: 0, right: 0, top: 8 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="empresa" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} width={56} tickFormatter={(v) => `$${Math.round(Number(v) / 1_000_000)} M`} />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent formatter={(v) => formatCurrency(Number(v), 0)} />} />
+                  <Bar dataKey="ingresos" fill="var(--color-ingresos)" radius={[6, 6, 0, 0]} maxBarSize={44} />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground">El estado de resultados y el balance de esta empresa estarán en Servicios › Contabilidad (Fase 2).</p>
+            )}
+          </SectionCard>
+        ) : (
+          <ServicesCard services={scopedServices} className="lg:col-span-2" />
+        )}
+        <AlertsCard items={alerts} />
+      </div>
+
+      {isExec && <ServicesCard services={scopedServices} />}
+
+      {/* Qué viene y qué hizo GS */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SectionCard
+          title="Próximas fechas"
+          description="Vencimientos, reuniones y entregas"
+          icon={CalendarDays}
+          flush
+          action={
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/calendario">Calendario</Link>
+            </Button>
+          }
+        >
+          <ul className="divide-y border-t">
+            {upcoming.map((e) => {
+              const clickable = e.actionItemId && seesActions
+              const body = (
+                <>
+                  <span className="w-14 shrink-0 text-[13px] text-muted-foreground tabular-nums">{e.date === DEMO_TODAY ? "Hoy" : formatDate(e.date)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{e.title}</span>
+                    <span className="block truncate text-[13px] text-muted-foreground">
+                      {companiesLabel(e.companies)}
+                      {e.time && ` · ${e.time} h`}
+                    </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted-foreground">
+                    <span className={cn("size-1.5 rounded-full", eventTypeMeta[e.type].dot)} aria-hidden />
+                    {eventTypeMeta[e.type].label}
+                  </span>
+                </>
+              )
+              return (
+                <li key={e.id}>
+                  {clickable ? (
+                    <button type="button" onClick={() => setSelected(e.actionItemId!)} className="flex w-full items-center gap-4 px-6 py-3.5 text-left text-sm hover:bg-muted/50">
+                      {body}
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-4 px-6 py-3.5 text-sm">{body}</div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </SectionCard>
+
+        <SectionCard
+          title="Lo que hizo GS"
+          description="Hitos, entregables y revisiones de los últimos 30 días"
+          icon={BadgeCheck}
+          flush
+          action={
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/documentos">Documentos</Link>
+            </Button>
+          }
+        >
+          <ul className="divide-y border-t">
+            {done.map((a) => {
+              const by = getPerson(a.byId)
+              const body = (
+                <>
+                  <span className="w-14 shrink-0 text-[13px] text-muted-foreground tabular-nums">{formatDate(a.date)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{a.title}</span>
+                    <span className="block truncate text-[13px] text-muted-foreground">
+                      {a.detail} · {by.firstName} {by.lastName}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-[13px] text-muted-foreground">{activityLabel[a.kind]}</span>
+                </>
+              )
+              return (
+                <li key={a.id}>
+                  {a.href ? (
+                    <Link href={a.href} className="flex items-center gap-4 px-6 py-3.5 text-sm hover:bg-muted/50">
+                      {body}
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-4 px-6 py-3.5 text-sm">{body}</div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </SectionCard>
+      </div>
+
+      {/* Qué conviene decidir */}
+      {visibleInsights.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="flex items-center gap-2.5 text-[17px] font-medium">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-muted">
+              <Lightbulb className="size-4" />
+            </span>
+            Análisis de GS
+          </h2>
+          <div className={cn("grid gap-4", visibleInsights.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
+            {visibleInsights.map((i) => (
+              <InsightCard key={i.id} insight={i} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <ActionDetailSheet itemId={selected} onClose={() => setSelected(null)} />
       <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
-      {state.demo.contalinkDown && <span className="sr-only">Algunas cifras usan la última sincronización válida.</span>}
     </div>
+  )
+}
+
+function ServicesCard({ services: list, className }: { services: ((typeof services)[number] & { scopedHealth: ServiceHealth })[]; className?: string }) {
+  return (
+    <SectionCard title="Estado de servicios" description="Detalle por servicio en la Fase 2" icon={Briefcase} flush className={className}>
+      <ul className="divide-y border-t md:hidden">
+        {list.map((s) => (
+          <li key={s.id} className="space-y-1.5 px-5 py-4">
+            <p className="font-medium leading-snug">{s.name}</p>
+            <p className="text-[13px] text-muted-foreground">
+              {s.nextMilestone.title} · {formatDate(s.nextMilestone.date)}
+            </p>
+            <StatusBadge {...healthMeta[s.scopedHealth]} />
+          </li>
+        ))}
+      </ul>
+      <Table className="hidden md:table">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead>Servicio</TableHead>
+            <TableHead>Próximo hito</TableHead>
+            <TableHead>Fecha</TableHead>
+            <TableHead>Responsable GS</TableHead>
+            <TableHead>Estado</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {list.map((s) => (
+            <TableRow key={s.id}>
+              <TableCell className="w-[30%] max-w-0">
+                <p className="truncate font-medium">{s.name}</p>
+                <p className="truncate text-[13px] text-muted-foreground">{s.period}</p>
+              </TableCell>
+              <TableCell className="w-[34%] max-w-0 truncate text-muted-foreground">{s.nextMilestone.title}</TableCell>
+              <TableCell className="text-muted-foreground tabular-nums">{formatDate(s.nextMilestone.date)}</TableCell>
+              <TableCell className="text-muted-foreground">
+                {getPerson(s.leadId).firstName} {getPerson(s.leadId).lastName}
+              </TableCell>
+              <TableCell>
+                <StatusBadge {...healthMeta[s.scopedHealth]} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </SectionCard>
   )
 }

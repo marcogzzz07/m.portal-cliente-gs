@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronRight, FileUp, FolderOpen, Search } from "lucide-react"
+import { ChevronRight, Clock, FileSignature, FileUp, FolderOpen, PackageCheck, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,18 +11,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs } from "@/components/ui/tabs"
 import { AccessDenied } from "@/components/shared/access-denied"
-import { CompanyTag } from "@/components/shared/company-tag"
 import { EmptyState } from "@/components/shared/empty-state"
+import { MetricCard } from "@/components/shared/metric-card"
 import { PageHeader } from "@/components/shared/page-header"
 import { PageTabsList, PageTabsTrigger } from "@/components/shared/page-tabs"
 import { serviceNames } from "@/data/organization"
 import { useScopedData } from "@/hooks/use-scoped-data"
 import { dueLabel, formatDate, daysFromToday } from "@/lib/format"
+import { companiesLabel } from "@/lib/labels"
 import { canAccessModule } from "@/lib/permissions"
 import type { DocumentItem, ServiceKey } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { usePortal } from "@/store/portal-store"
-import { DocIcon, DocStatusBadge, docView, type DocView } from "./doc-meta"
+import { DocStatusBadge, docView, formatMeta, type DocView } from "./doc-meta"
 import { UploadDialog } from "./upload-dialog"
 
 const views: { key: DocView; label: string; empty: string }[] = [
@@ -41,7 +42,7 @@ function lastDate(doc: DocumentItem) {
 export function DocumentsView() {
   const router = useRouter()
   const { persona, can } = usePortal()
-  const { documents, scopeLabel } = useScopedData()
+  const { documents, scopeBadge } = useScopedData()
   const counts = useMemo(() => {
     const c: Record<DocView, number> = { pendientes: 0, enviados: 0, recibidos: 0, firmados: 0, archivo: 0 }
     for (const d of documents) c[docView(d)]++
@@ -70,7 +71,8 @@ export function DocumentsView() {
       <PageHeader
         icon={FolderOpen}
         title="Documentos"
-        description={`Lo que GS te solicita, lo que envías, los entregables de GS y lo firmado de ${scopeLabel}. Cada archivo conserva su historial de versiones.`}
+        badge={scopeBadge}
+        description="Lo que GS te solicita, lo que envías, los entregables de GS y lo firmado. Cada archivo conserva su historial de versiones."
         actions={
           can.upload && (
             <Button onClick={() => setUploadFor(null)}>
@@ -81,12 +83,19 @@ export function DocumentsView() {
         }
       />
 
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <MetricCard label="Por enviar" value={documents.filter((d) => d.direction === "cliente" && (d.status === "requested" || d.status === "changes_required")).length} icon={FileUp} accent="pink" helper="Solicitados por GS o con corrección" />
+        <MetricCard label="En revisión de GS" value={documents.filter((d) => d.direction === "cliente" && (d.status === "uploaded" || d.status === "under_review")).length} icon={Clock} accent="amber" helper="Cargado no significa aprobado" />
+        <MetricCard label="Entregables de GS" value={counts.recibidos} icon={PackageCheck} accent="blue" helper="Vigentes, sin contar el archivo" />
+        <MetricCard label="Firmados" value={counts.firmados} icon={FileSignature} accent="green" helper="Con certificado de firma" />
+      </div>
+
       <Tabs value={view} onValueChange={(v) => setView(v as DocView)} className="gap-4">
         <PageTabsList>
           {views.map((v) => (
-            <PageTabsTrigger key={v.key} value={v.key} className="px-3 sm:px-4">
+            <PageTabsTrigger key={v.key} value={v.key}>
               {v.label}
-              <span className={cn("ml-1.5 rounded-full px-1.5 text-[11px] tabular-nums", v.key === "pendientes" && counts.pendientes ? "bg-brand text-white" : "bg-muted text-muted-foreground")}>{counts[v.key]}</span>
+              <span className="ml-2 text-muted-foreground tabular-nums">{counts[v.key]}</span>
             </PageTabsTrigger>
           ))}
         </PageTabsList>
@@ -94,10 +103,10 @@ export function DocumentsView() {
         <div className="flex flex-col gap-2 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, periodo, tipo o archivo…" className="h-9 bg-card pl-9" aria-label="Buscar documentos" />
+            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, periodo, tipo o archivo…" className="h-10 rounded-xl bg-card pl-9" aria-label="Buscar documentos" />
           </div>
           <Select value={service} onValueChange={(v) => setService(v as ServiceKey | "todos")}>
-            <SelectTrigger className="h-9 w-full bg-card sm:w-52" aria-label="Servicio">
+            <SelectTrigger className="w-full rounded-xl bg-card data-[size=default]:h-10 sm:w-52" aria-label="Servicio">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -116,46 +125,39 @@ export function DocumentsView() {
         ) : (
           <>
             {/* Escritorio */}
-            <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
+            <div className="hidden overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06] md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="pl-4">Documento</TableHead>
+                    <TableHead>Documento</TableHead>
                     <TableHead>Empresa</TableHead>
                     <TableHead>Servicio</TableHead>
+                    <TableHead>{view === "pendientes" ? "Fecha límite" : "Actualizado"}</TableHead>
                     <TableHead>Estado</TableHead>
-                    <TableHead>{view === "pendientes" ? "Fecha límite" : "Última actualización"}</TableHead>
-                    <TableHead className="pr-4 text-right">Acción</TableHead>
+                    <TableHead className="w-0" aria-label="Acción" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {list.map((d) => (
                     <TableRow key={d.id} className="cursor-pointer" onClick={() => router.push(`/documentos/${d.id}`)}>
-                      <TableCell className="pl-4">
-                        <span className="flex items-center gap-3">
-                          <DocIcon doc={d} />
-                          <span className="flex min-w-0 flex-col">
-                            <Link href={`/documentos/${d.id}`} className="truncate font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
-                              {d.name}
-                            </Link>
-                            <span className="text-xs text-muted-foreground">
-                              {d.period} · {d.docType}
-                              {d.versions.length > 1 && ` · v${d.versions.length}`}
-                            </span>
-                          </span>
+                      <TableCell className="w-[36%] max-w-0">
+                        <Link href={`/documentos/${d.id}`} className="block truncate font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+                          {d.name}
+                        </Link>
+                        <span className="block truncate text-[13px] text-muted-foreground">
+                          {d.period} · {d.formats.map((f) => formatMeta[f].label).join(", ")}
+                          {d.versions.length > 1 && ` · versión ${d.versions.length}`}
                         </span>
                       </TableCell>
-                      <TableCell className="max-w-44">
-                        <CompanyTag companies={d.companies} />
-                      </TableCell>
+                      <TableCell className="text-muted-foreground">{companiesLabel(d.companies)}</TableCell>
                       <TableCell className="text-muted-foreground">{serviceNames[d.service]}</TableCell>
+                      <TableCell className={cn("text-muted-foreground tabular-nums", view === "pendientes" && d.dueDate && daysFromToday(d.dueDate) <= 1 && d.status !== "expired" && "font-medium text-destructive")}>
+                        {view === "pendientes" && d.dueDate ? (d.status === "expired" ? `Cerró el ${formatDate(d.dueDate)}` : formatDate(d.dueDate)) : formatDate(lastDate(d).slice(0, 10))}
+                      </TableCell>
                       <TableCell>
                         <DocStatusBadge doc={d} />
                       </TableCell>
-                      <TableCell className={cn("text-muted-foreground", view === "pendientes" && d.dueDate && daysFromToday(d.dueDate) <= 1 && d.status !== "expired" && "font-semibold text-destructive")}>
-                        {view === "pendientes" && d.dueDate ? (d.status === "expired" ? `Cerró el ${formatDate(d.dueDate)}` : `${dueLabel(d.dueDate)}`) : formatDate(lastDate(d).slice(0, 10))}
-                      </TableCell>
-                      <TableCell className="pr-4 text-right">
+                      <TableCell className="text-right">
                         <RowAction doc={d} onUpload={setUploadFor} />
                       </TableCell>
                     </TableRow>
@@ -165,12 +167,11 @@ export function DocumentsView() {
             </div>
 
             {/* Móvil */}
-            <ul className="space-y-2 md:hidden">
+            <ul className="divide-y overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06] md:hidden">
               {list.map((d) => (
-                <li key={d.id} className="rounded-xl border bg-card p-3">
+                <li key={d.id} className="px-5 py-4">
                   <Link href={`/documentos/${d.id}`} className="flex items-start gap-3">
-                    <DocIcon doc={d} />
-                    <span className="min-w-0 flex-1 space-y-1">
+                    <span className="min-w-0 flex-1 space-y-1.5">
                       <span className="block font-medium leading-snug">{d.name}</span>
                       <span className="block text-xs text-muted-foreground">
                         {d.period} · {serviceNames[d.service]}
@@ -179,7 +180,7 @@ export function DocumentsView() {
                         <DocStatusBadge doc={d} />
                         {view === "pendientes" && d.dueDate && d.status !== "expired" && <span className="text-xs font-medium text-destructive">{dueLabel(d.dueDate)}</span>}
                       </span>
-                      <CompanyTag companies={d.companies} />
+                      <span className="block text-[13px] text-muted-foreground">{companiesLabel(d.companies)}</span>
                     </span>
                     <ChevronRight className="mt-1 size-4 text-muted-foreground" />
                   </Link>

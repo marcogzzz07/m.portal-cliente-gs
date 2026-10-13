@@ -46,7 +46,7 @@ export function ActionDetailSheet({ itemId, onClose }: { itemId: string | null; 
 
             <div className="space-y-5 p-4">
               {item.status === "changes_required" && item.reviewNote && (
-                <div className="flex items-start gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm">
+                <div className="flex items-start gap-3 rounded-xl bg-destructive/[0.07] px-4 py-3 text-sm">
                   <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
                   <div>
                     <p className="font-semibold text-destructive">Motivo de la corrección</p>

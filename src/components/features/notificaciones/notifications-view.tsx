@@ -61,7 +61,7 @@ export function NotificationsView() {
           {list.length === 0 ? (
             <EmptyState icon={CheckCheck} title="Estás al día" description="No tienes notificaciones sin leer." />
           ) : (
-            <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+            <ul className="divide-y overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
               {list.map((n) => {
                 const Icon = notificationIcon[n.kind]
                 return (

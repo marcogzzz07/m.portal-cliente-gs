@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:3003>. El botón **Demo · Fase 1** del encabezado permite cambiar de usuario
+Abre <http://localhost:3003>. El enlace **Controles de la demo** de la franja superior permite cambiar de usuario
 simulado (seis roles), activar respuestas automáticas de GS, simular una caída de ContaLink,
 restablecer los datos y ver los 14 recorridos obligatorios con su fase.
 

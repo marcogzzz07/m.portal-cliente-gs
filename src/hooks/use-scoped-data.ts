@@ -66,10 +66,13 @@ export function useScopedData() {
 
     const scopeLabel = scope === "grupo" ? group.name : companies.find((c) => c.id === scope)!.name
     const scopeCompanies = scope === "grupo" ? allowed : [scope]
+    /** Etiqueta corta para el encabezado de página: "Grupo completo" o "Comercial". */
+    const scopeBadge = scope === "grupo" ? "Grupo completo" : scopeLabel.replace("EcoPack ", "")
 
     return {
       scope,
       scopeLabel,
+      scopeBadge,
       scopeCompanies,
       actions,
       documents,

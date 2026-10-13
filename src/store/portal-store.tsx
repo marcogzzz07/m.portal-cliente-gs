@@ -35,6 +35,7 @@ interface PortalState {
   notifications: AppNotification[]
   prefs: ReminderPrefs
   demo: { contalinkDown: boolean; autoReplies: boolean }
+  ui: { sidebarCollapsed: boolean }
 }
 
 const initialPrefs: ReminderPrefs = {
@@ -56,6 +57,7 @@ function initialState(): PortalState {
     notifications: seedNotifications,
     prefs: initialPrefs,
     demo: { contalinkDown: false, autoReplies: true },
+    ui: { sidebarCollapsed: false },
   }
 }
 
@@ -81,6 +83,7 @@ type Action =
   | { type: "readAllNotifications" }
   | { type: "setPref"; key: keyof ReminderPrefs; channel: "portal" | "email"; value: boolean }
   | { type: "setDemo"; key: keyof PortalState["demo"]; value: boolean }
+  | { type: "setSidebarCollapsed"; value: boolean }
 
 let seq = 0
 const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}${(seq++).toString(36)}`
@@ -295,6 +298,8 @@ function reducer(state: PortalState, action: Action): PortalState {
       return { ...state, prefs: { ...state.prefs, [action.key]: { ...state.prefs[action.key], [action.channel]: action.value } } }
     case "setDemo":
       return { ...state, demo: { ...state.demo, [action.key]: action.value } }
+    case "setSidebarCollapsed":
+      return { ...state, ui: { ...state.ui, sidebarCollapsed: action.value } }
   }
 }
 
@@ -333,6 +338,7 @@ interface PortalContextValue {
   readAllNotifications: () => void
   setPref: (key: keyof ReminderPrefs, channel: "portal" | "email", value: boolean) => void
   setDemo: (key: keyof PortalState["demo"], value: boolean) => void
+  setSidebarCollapsed: (value: boolean) => void
   reset: () => void
 }
 
@@ -434,6 +440,7 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
       readAllNotifications: () => dispatch({ type: "readAllNotifications" }),
       setPref: (key, channel, value) => dispatch({ type: "setPref", key, channel, value }),
       setDemo: (key, value) => dispatch({ type: "setDemo", key, value }),
+      setSidebarCollapsed: (value) => dispatch({ type: "setSidebarCollapsed", value }),
       reset: () => {
         dispatch({ type: "reset" })
         toast.success("Datos de la demo restablecidos")

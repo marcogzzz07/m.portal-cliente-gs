@@ -89,7 +89,7 @@ export function TeamView() {
                     const p = getPerson(m.personId)
                     const sub = m.away ? getPerson(m.away.substituteId) : null
                     return (
-                      <article key={m.personId} className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                      <article key={m.personId} className="flex flex-col gap-4 rounded-2xl bg-card ring-1 ring-foreground/[0.06] p-6">
                         <div className="flex items-start gap-3">
                           <UserAvatar firstName={p.firstName} lastName={p.lastName} size="lg" />
                           <div className="min-w-0 flex-1">
@@ -108,14 +108,14 @@ export function TeamView() {
                             <span className="font-semibold">Ausente del {formatDate(m.away.from)} al {formatDate(m.away.to)}.</span> Te atiende {sub.firstName} {sub.lastName}.
                           </p>
                         )}
-                        <div className="mt-auto flex flex-wrap items-center gap-2">
+                        <div className="mt-auto flex items-center justify-between gap-3 border-t pt-4">
+                          <span className="truncate text-[13px] text-muted-foreground">{p.email}</span>
                           {can.respond && (
-                            <Button size="sm" variant="outline" onClick={() => talk(m)}>
+                            <Button size="sm" variant="outline" onClick={() => talk(m)} className="shrink-0">
                               <MessageSquare />
-                              Iniciar conversación
+                              Escribir
                             </Button>
                           )}
-                          <span className="text-xs text-muted-foreground">{p.email}</span>
                         </div>
                       </article>
                     )
@@ -126,7 +126,7 @@ export function TeamView() {
           })}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 xl:sticky xl:top-20 xl:self-start">
           <SectionCard title="Ruta de escalamiento" description="Si algo no avanza como esperas" icon={ArrowDown}>
             <ol className="space-y-3">
               {[

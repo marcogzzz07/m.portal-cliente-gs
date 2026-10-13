@@ -1,12 +1,13 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { BadgeCheck, Lightbulb, MessageSquare } from "lucide-react"
+import { BadgeCheck, MessageSquare } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { CompanyTag } from "@/components/shared/company-tag"
-import { getPerson, integrations } from "@/data/organization"
+import { Card } from "@/components/ui/card"
+import { getPerson, integrations, serviceNames } from "@/data/organization"
 import { formatDate } from "@/lib/format"
+import { companiesLabel } from "@/lib/labels"
 import type { InsightPreview } from "@/lib/types"
 import { usePortal } from "@/store/portal-store"
 
@@ -16,6 +17,7 @@ export function InsightCard({ insight }: { insight: InsightPreview }) {
   const { state, createConversation, can } = usePortal()
   const approver = getPerson(insight.approvedBy)
   const stale = insight.source === "ContaLink" && state.demo.contalinkDown
+  const sync = integrations.find((i) => i.name === insight.source)
 
   function talk() {
     const existing = insight.conversationId && state.conversations.find((c) => c.id === insight.conversationId)
@@ -28,51 +30,50 @@ export function InsightCard({ insight }: { insight: InsightPreview }) {
   }
 
   return (
-    <article className="flex h-full flex-col gap-3 rounded-xl border bg-card p-4">
-      <div className="flex items-start gap-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100">
-          <Lightbulb className="size-4" />
-        </span>
-        <div className="min-w-0 space-y-1">
-          <h3 className="font-semibold leading-snug">{insight.title}</h3>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums">{insight.signal}</span>
-            {insight.preliminary && <span className="rounded-md bg-warning/15 px-1.5 py-0.5 text-xs font-medium text-[color-mix(in_oklch,var(--warning),black_35%)]">Cifra preliminar</span>}
-            <CompanyTag companies={insight.companies} />
-          </div>
-        </div>
+    <Card className="h-full gap-5 rounded-2xl px-6 py-6">
+      <div className="space-y-2">
+        <p className="text-[13px] text-muted-foreground">
+          {companiesLabel(insight.companies)} · {serviceNames[insight.service]}
+        </p>
+        <h3 className="text-[17px] leading-snug font-semibold">{insight.title}</h3>
+        <p className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold tracking-tight tabular-nums">{insight.signal}</span>
+          {insight.preliminary && <span className="text-xs text-muted-foreground">cifra preliminar</span>}
+        </p>
       </div>
 
-      <dl className="space-y-2 text-sm">
+      <dl className="space-y-3 text-sm leading-relaxed">
         <div>
-          <dt className="text-xs font-semibold text-muted-foreground">Qué pasa</dt>
+          <dt className="text-muted-foreground">Qué pasa</dt>
           <dd>{insight.explanation}</dd>
         </div>
         <div>
-          <dt className="text-xs font-semibold text-muted-foreground">Impacto estimado</dt>
+          <dt className="text-muted-foreground">Impacto estimado</dt>
           <dd>{insight.impact}</dd>
         </div>
-        <div>
-          <dt className="text-xs font-semibold text-muted-foreground">Recomendación de GS</dt>
+        <div className="rounded-xl bg-muted/70 px-4 py-3">
+          <dt className="text-muted-foreground">Recomendación de GS</dt>
           <dd className="font-medium">{insight.recommendation}</dd>
         </div>
       </dl>
 
-      <div className="mt-auto space-y-3 border-t pt-3">
-        <p className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
           <BadgeCheck className="mt-px size-3.5 shrink-0 text-success" />
           <span>
-            Aprobado por {approver.firstName} {approver.lastName} ({approver.title}) el {formatDate(insight.approvedAt)} · Fuente: {insight.source}
-            {stale && `, última sincronización válida ${integrations.find((i) => i.name === insight.source)?.fallbackSync.replace("T", " ")}`} · {insight.period}
+            Aprobado por {approver.firstName} {approver.lastName}, {formatDate(insight.approvedAt)}
+            <br />
+            {insight.source}
+            {stale && sync ? `, última sincronización válida ${formatDate(sync.fallbackSync.slice(0, 10))}` : ""} · {insight.period}
           </span>
         </p>
         {can.respond && (
-          <Button variant="outline" size="sm" onClick={talk} className="w-full sm:w-auto">
+          <Button variant="outline" size="sm" onClick={talk}>
             <MessageSquare />
-            Conversar sobre esto
+            Conversar
           </Button>
         )}
       </div>
-    </article>
+    </Card>
   )
 }

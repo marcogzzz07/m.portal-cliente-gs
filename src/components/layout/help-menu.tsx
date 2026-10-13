@@ -18,7 +18,7 @@ export function HelpMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-lg" className="hidden rounded-full sm:inline-flex" aria-label="Ayuda">
+        <Button variant="ghost" size="icon-lg" className="rounded-full" aria-label="Ayuda">
           <CircleHelp className="size-[18px]" />
         </Button>
       </DropdownMenuTrigger>

@@ -22,7 +22,7 @@ import { canAccessModule, canSeeConversation } from "@/lib/permissions"
 import type { Conversation, ServiceKey } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { usePortal } from "@/store/portal-store"
-import { ContextChip } from "./context-chip"
+import { ContextChip, contextMeta } from "./context-chip"
 import { NewConversationDialog } from "./new-conversation-dialog"
 
 type StatusFilter = "abierta" | "resuelta" | "todas"
@@ -53,14 +53,14 @@ export function MessagesView({ threadId, compose = false }: { threadId?: string;
   const threadAllowed = thread && canSeeConversation(persona, thread)
 
   return (
-    <div className="-mx-4 -mt-4 -mb-28 sm:mx-0 sm:mt-0 sm:-mb-24 lg:mb-0">
-      <div className="grid h-[calc(100dvh-7.75rem)] overflow-hidden border-y bg-card sm:h-[calc(100dvh-12rem)] sm:rounded-xl sm:border lg:h-[calc(100dvh-10rem)] xl:grid-cols-[360px_minmax(0,1fr)]">
+    <div>
+      <div className="grid h-[calc(100dvh-9rem)] min-h-[520px] overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06] lg:h-[calc(100dvh-7rem)] xl:grid-cols-[380px_minmax(0,1fr)]">
         {/* Bandeja */}
         <aside className={cn("flex min-h-0 flex-col border-r", threadId && "hidden xl:flex")}>
-          <div className="space-y-3 border-b p-3">
+          <div className="space-y-3 border-b p-5">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <h1 className="text-lg font-bold tracking-tight">Mensajes</h1>
+                <h1 className="text-xl font-bold tracking-tight">Mensajes</h1>
                 <p className="text-xs text-muted-foreground">{scopeLabel}</p>
               </div>
               {persona.role !== "consulta" && (
@@ -139,14 +139,16 @@ function ThreadItem({ conv, active }: { conv: Conversation; active: boolean }) {
   const unread = conv.messages.length - conv.readUpTo
   return (
     <li>
-      <Link href={`/mensajes/${conv.id}`} aria-current={active ? "page" : undefined} className={cn("flex gap-3 px-3 py-3 transition-colors hover:bg-muted/50", active && "bg-brand-soft/50")}>
+      <Link href={`/mensajes/${conv.id}`} aria-current={active ? "page" : undefined} className={cn("flex gap-3 px-5 py-4 transition-colors hover:bg-muted/50", active && "bg-muted")}>
         <UserAvatar firstName={getPerson(conv.gsOwnerId).firstName} lastName={getPerson(conv.gsOwnerId).lastName} highlight size="md" />
         <span className="min-w-0 flex-1 space-y-1">
           <span className="flex items-baseline gap-2">
             <span className={cn("flex-1 truncate text-sm", unread > 0 ? "font-bold" : "font-medium")}>{conv.subject}</span>
             <span className="shrink-0 text-[11px] text-muted-foreground">{formatRelative(last.at)}</span>
           </span>
-          <ContextChip context={conv.context} />
+          <span className="block truncate text-[13px] text-muted-foreground">
+            {contextMeta[conv.context.type].label} · {conv.context.label}
+          </span>
           <span className="flex items-center gap-2">
             <span className={cn("line-clamp-1 flex-1 text-xs", unread > 0 ? "text-foreground" : "text-muted-foreground")}>
               {author.firstName}: {last.text}
@@ -184,7 +186,7 @@ function Thread({ conv }: { conv: Conversation }) {
 
   return (
     <>
-      <header className="space-y-2 border-b p-3 sm:p-4">
+      <header className="space-y-2 border-b p-4 sm:px-6 sm:py-5">
         <div className="flex items-start gap-2">
           <Button variant="ghost" size="icon-sm" asChild className="xl:hidden">
             <Link href="/mensajes" aria-label="Volver a la bandeja">

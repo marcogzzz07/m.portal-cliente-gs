@@ -67,7 +67,7 @@ export function DocumentDetail({ id }: { id: string }) {
       </Button>
 
       {outOfScope && (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card px-4 py-3 text-sm">
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-card ring-1 ring-foreground/[0.06] px-5 py-4 text-sm">
           <Info className="size-4 text-info" />
           <span className="flex-1">Este documento pertenece a {companiesLabel(doc.companies)}, fuera del contexto que estás viendo.</span>
           {doc.companies.length === 1 && (
@@ -145,7 +145,7 @@ export function DocumentDetail({ id }: { id: string }) {
             ) : (
               <ol className="space-y-4">
                 {[...doc.versions].reverse().map((v) => (
-                  <li key={v.version} className={cn("rounded-xl border p-3", v.version === doc.versions.length && "border-foreground/15 bg-muted/30")}>
+                  <li key={v.version} className={cn("rounded-xl bg-muted/50 p-4", v.version === doc.versions.length && "bg-muted")}>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-md bg-foreground px-1.5 py-0.5 text-[11px] font-bold text-background">v{v.version}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium">{v.fileName}</span>
@@ -312,11 +312,11 @@ function ReviewCallout({
 }) {
   if (signed) return null
   const who = reviewer ? `${getPerson(reviewer).firstName} ${getPerson(reviewer).lastName}` : "GS"
-  const box = "flex items-start gap-3 rounded-xl border px-4 py-3 text-sm"
+  const box = "flex items-start gap-3 rounded-2xl px-5 py-4 text-sm"
   switch (docStatus) {
     case "changes_required":
       return (
-        <div className={cn(box, "border-destructive/25 bg-destructive/5")}>
+        <div className={cn(box, "bg-destructive/[0.07]")}>
           <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
           <div>
             <p className="font-semibold text-destructive">Requiere corrección</p>
@@ -327,7 +327,7 @@ function ReviewCallout({
       )
     case "requested":
       return (
-        <div className={cn(box, "border-warning/40 bg-warning/10")}>
+        <div className={cn(box, "bg-[oklch(0.965_0.03_65)]")}>
           <FileUp className="mt-0.5 size-4 shrink-0" />
           <div>
             <p className="font-semibold">
@@ -340,7 +340,7 @@ function ReviewCallout({
     case "uploaded":
     case "under_review":
       return (
-        <div className={cn(box, "border-info/30 bg-info/8")}>
+        <div className={cn(box, "bg-info/[0.08]")}>
           <Clock className="mt-0.5 size-4 shrink-0 text-info" />
           <div>
             <p className="font-semibold">{docStatus === "uploaded" ? "Recibido: pendiente de revisión" : `En revisión por ${who}`}</p>
@@ -350,7 +350,7 @@ function ReviewCallout({
       )
     case "approved":
       return (
-        <div className={cn(box, "border-success/30 bg-success/8")}>
+        <div className={cn(box, "bg-success/[0.08]")}>
           <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" />
           <p className="font-semibold">Aprobado por GS. No necesitas hacer nada más.</p>
         </div>

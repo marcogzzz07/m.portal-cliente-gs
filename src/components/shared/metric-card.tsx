@@ -32,23 +32,23 @@ export function MetricCard({ label, value, unit, helper, icon: Icon, accent = "b
   const content = (
     <Card
       className={cn(
-        "h-full gap-3 px-5 py-5 shadow-none transition-shadow",
+        "h-full gap-3 rounded-2xl px-4 py-4 shadow-none transition-shadow sm:gap-4 sm:px-6 sm:py-6",
         href && "hover:shadow-md",
         selected && "ring-2 ring-brand"
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg ring-1", accents[accent])}>
+        <p className="text-sm text-muted-foreground sm:text-[15px]">{label}</p>
+        <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full ring-1 sm:size-9", accents[accent])}>
           <Icon className="size-4" />
         </span>
       </div>
       <p className="flex items-baseline gap-1.5">
-        <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
+        <span className="text-2xl leading-none font-bold tracking-tight tabular-nums sm:text-[32px]">{value}</span>
         {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
       </p>
       {progress !== undefined && <Progress value={progress} className="h-1.5" />}
-      {helper && <p className="text-xs text-muted-foreground">{helper}</p>}
+      {helper && <p className="text-xs text-muted-foreground sm:text-[13px]">{helper}</p>}
       {footer && <div className="mt-auto border-t pt-2.5">{footer}</div>}
     </Card>
   )

@@ -38,35 +38,35 @@ export interface NavSection {
   items: NavItem[]
 }
 
+const upcomingServicios = [
+  "Página por servicio con estado, indicadores, hitos, entregables y equipo responsable",
+  "Contabilidad: panorama financiero, estado de resultados, balance y cierre mensual",
+  "Impuestos: cumplimiento, obligaciones, estimación conceptual y alertas",
+  "Auditoría y proyecto legal: línea de tiempo de hitos y solicitudes de evidencia",
+  "Insights con fuente, aprobación de GS y simulador conceptual",
+]
+
+/**
+ * Menú del portal. Las secciones disponibles van arriba sin etiqueta;
+ * las que se construyen en fases posteriores se agrupan en "Próximas fases".
+ */
 export const navigation: NavSection[] = [
   {
-    label: "Mi día",
+    label: "Portal",
     items: [
       { title: "Inicio", href: "/", icon: Home, module: "inicio", description: "Qué requiere tu atención, panorama y lo que hizo GS." },
       { title: "Pendientes", href: "/pendientes", icon: ListChecks, module: "pendientes", description: "Acciones por atender, enviadas y completadas.", badge: "pendientes" },
       { title: "Calendario", href: "/calendario", icon: CalendarDays, module: "calendario", description: "Obligaciones, reuniones, entregas y vencimientos." },
+      { title: "Documentos", href: "/documentos", icon: FolderOpen, module: "documentos", description: "Solicitudes, entregables, versiones y firmados." },
+      { title: "Mensajes", href: "/mensajes", icon: MessagesSquare, module: "mensajes", description: "Conversaciones ligadas a documentos, pendientes y proyectos.", badge: "mensajes" },
+      { title: "Equipo GS", href: "/equipo", icon: Users, module: "equipo", description: "Tu contacto principal, especialistas y ruta de escalamiento." },
+      { title: "Notificaciones", href: "/notificaciones", icon: Bell, module: "notificaciones", description: "Centro de notificaciones y preferencias de recordatorios.", hidden: true },
     ],
   },
   {
-    label: "Mi relación con GS",
+    label: "Próximas fases",
     items: [
-      {
-        title: "Servicios",
-        href: "/servicios",
-        icon: Briefcase,
-        module: "servicios",
-        description: "Contabilidad, Impuestos, Auditoría y proyectos.",
-        phase: 2,
-        upcoming: [
-          "Página por servicio con estado, indicadores, hitos, entregables y equipo responsable",
-          "Contabilidad: panorama financiero, estado de resultados, balance y cierre mensual",
-          "Impuestos: cumplimiento, obligaciones, estimación conceptual y alertas",
-          "Auditoría y proyecto legal: línea de tiempo de hitos y solicitudes de evidencia",
-          "Insights con fuente, aprobación de GS y simulador conceptual",
-        ],
-      },
-      { title: "Documentos", href: "/documentos", icon: FolderOpen, module: "documentos", description: "Solicitudes, entregables, versiones y firmados." },
-      { title: "Mensajes", href: "/mensajes", icon: MessagesSquare, module: "mensajes", description: "Conversaciones ligadas a documentos, pendientes y proyectos.", badge: "mensajes" },
+      { title: "Servicios", href: "/servicios", icon: Briefcase, module: "servicios", description: "Contabilidad, Impuestos, Auditoría y proyectos.", phase: 2, upcoming: upcomingServicios },
       {
         title: "Novedades",
         href: "/novedades",
@@ -76,12 +76,6 @@ export const navigation: NavSection[] = [
         phase: 2,
         upcoming: ["Contenido aprobado por GS y segmentado por empresa y servicio", "Resumen y “Por qué te importa”", "Acción recomendada ligada a calendario o conversación"],
       },
-      { title: "Equipo GS", href: "/equipo", icon: Users, module: "equipo", description: "Tu contacto principal, especialistas y ruta de escalamiento." },
-    ],
-  },
-  {
-    label: "Administración",
-    items: [
       {
         title: "Propuestas y contratos",
         href: "/contratos",
@@ -109,7 +103,6 @@ export const navigation: NavSection[] = [
         phase: 3,
         upcoming: ["Invitar y reenviar invitaciones", "Asignar empresas, servicios y capacidades", "Copiar permisos, suspender o revocar", "Último acceso, estado de MFA y actividad sensible"],
       },
-      { title: "Notificaciones", href: "/notificaciones", icon: Bell, module: "notificaciones", description: "Centro de notificaciones y preferencias de recordatorios.", hidden: true },
     ],
   },
 ]

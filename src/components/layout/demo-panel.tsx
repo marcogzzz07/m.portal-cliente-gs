@@ -43,11 +43,10 @@ export function DemoPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-brand/50 bg-brand-soft/60 px-2.5 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:px-3"
-        aria-label="Abrir controles de la demo"
+        className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-none"
       >
-        <FlaskConical className="size-4" />
-        <span className="hidden sm:inline">Demo · Fase 1</span>
+        <FlaskConical className="size-3.5" />
+        Controles de la demo
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>

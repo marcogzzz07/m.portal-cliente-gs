@@ -167,7 +167,7 @@ export function CalendarView() {
 
         {view === "mes" && (
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="overflow-hidden rounded-xl border bg-card">
+            <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
               <div className="grid grid-cols-7 border-b bg-muted/40">
                 {weekdays.map((d) => (
                   <div key={d} className="px-2 py-2 text-center text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
@@ -217,14 +217,14 @@ export function CalendarView() {
                 })}
               </div>
             </div>
-            <DayPanel day={selectedDay} events={on(selectedDay)} onOpen={setOpenEvent} />
+            <DayPanel day={selectedDay} events={on(selectedDay)} next={visible.filter((e) => (e.endDate ?? e.date) > selectedDay).slice(0, 6)} onOpen={setOpenEvent} />
           </div>
         )}
 
         {view === "semana" && (
           <div className="grid gap-2 md:grid-cols-7">
             {weekDays.map((day) => (
-              <div key={day} className={cn("min-h-40 rounded-xl border bg-card p-2", day === DEMO_TODAY && "ring-2 ring-brand")}>
+              <div key={day} className={cn("min-h-44 rounded-2xl bg-card ring-1 ring-foreground/[0.06] p-3", day === DEMO_TODAY && "ring-2 ring-brand")}>
                 <p className="mb-2 flex items-baseline gap-1.5 px-1">
                   <span className="text-xs text-muted-foreground uppercase">{formatDate(day, { weekday: "short" })}</span>
                   <span className="text-lg font-bold">{Number(day.slice(8))}</span>
@@ -279,17 +279,35 @@ export function CalendarView() {
   )
 }
 
-function DayPanel({ day, events, onOpen, large }: { day: string; events: CalendarEvent[]; onOpen: (e: CalendarEvent) => void; large?: boolean }) {
+function DayPanel({ day, events, next = [], onOpen, large }: { day: string; events: CalendarEvent[]; next?: CalendarEvent[]; onOpen: (e: CalendarEvent) => void; large?: boolean }) {
   return (
-    <div className={cn("space-y-2 rounded-xl border bg-card p-4", large && "max-w-3xl")}>
-      <p className="text-sm font-semibold first-letter:uppercase">{day === DEMO_TODAY ? `Hoy · ${formatLongDate(day)}` : formatLongDate(day)}</p>
-      {events.length === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">Sin eventos este día.</p>
-      ) : (
-        <div className="space-y-1.5">
-          {events.map((e) => (
-            <EventChip key={e.id} event={e} onOpen={onOpen} detailed />
-          ))}
+    <div className={cn("space-y-5 rounded-2xl bg-card p-6 ring-1 ring-foreground/[0.06]", large && "max-w-3xl")}>
+      <div className="space-y-3">
+        <p className="text-[17px] font-medium first-letter:uppercase">{day === DEMO_TODAY ? `Hoy · ${formatDate(day, { weekday: "long", day: "numeric", month: "long" })}` : formatLongDate(day)}</p>
+        {events.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin eventos este día.</p>
+        ) : (
+          <div className="space-y-2">
+            {events.map((e) => (
+              <EventChip key={e.id} event={e} onOpen={onOpen} detailed />
+            ))}
+          </div>
+        )}
+      </div>
+      {next.length > 0 && (
+        <div className="space-y-3 border-t pt-5">
+          <p className="text-sm text-muted-foreground">Después</p>
+          <ul className="space-y-1">
+            {next.map((e) => (
+              <li key={e.id}>
+                <button type="button" onClick={() => onOpen(e)} className="flex w-full items-start gap-3 rounded-lg py-1.5 text-left text-sm hover:bg-muted/50">
+                  <span className="w-12 shrink-0 text-muted-foreground tabular-nums">{formatDate(e.date)}</span>
+                  <span className="min-w-0 flex-1 truncate">{e.title}</span>
+                  <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", eventTypeMeta[e.type].dot)} aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
@@ -299,7 +317,7 @@ function DayPanel({ day, events, onOpen, large }: { day: string; events: Calenda
 function EventChip({ event, onOpen, detailed }: { event: CalendarEvent; onOpen: (e: CalendarEvent) => void; detailed?: boolean }) {
   const meta = eventTypeMeta[event.type]
   return (
-    <button type="button" onClick={() => onOpen(event)} className="flex w-full items-start gap-2 rounded-lg border bg-background px-2.5 py-2 text-left transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+    <button type="button" onClick={() => onOpen(event)} className="flex w-full items-start gap-2.5 rounded-xl bg-muted/60 px-3 py-2.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
       <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", meta.dot)} aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block text-sm leading-snug font-medium">{event.title}</span>
