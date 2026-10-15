@@ -211,3 +211,8 @@ export function downloadDocument(doc: DocumentItem, format: FileFormat) {
   const { blob, name } = documentFile(doc, format)
   save(blob, name)
 }
+
+/** Descarga en PDF de un contenido ya armado (propuestas, contratos). */
+export function downloadContent(content: DocContent, name: string) {
+  save(buildPdf(content), `${name}.pdf`)
+}

@@ -7,7 +7,7 @@ export function DemoBanner() {
   return (
     <div className="flex items-center justify-center gap-2 bg-[oklch(0.94_0.03_60)] px-4 py-1 text-center text-xs text-[oklch(0.42_0.06_50)]">
       <span>
-        Datos ficticios<span className="hidden sm:inline"> para demostración · Fase 1</span>
+        Datos ficticios<span className="hidden sm:inline"> para demostración</span>
       </span>
       <span aria-hidden>·</span>
       <DemoPanel />

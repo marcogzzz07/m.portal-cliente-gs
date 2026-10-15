@@ -335,3 +335,140 @@ export interface IntegrationSource {
   /** Última sincronización válida cuando la integración falla. */
   fallbackSync: string
 }
+
+/* ─── Fase 3 · Relación administrativa ──────────────────────────────────── */
+
+export type ContractStatus = "draft" | "sent" | "viewed" | "changes_requested" | "partially_signed" | "completed" | "declined" | "expired" | "voided"
+
+export interface Signer {
+  personId: string
+  /** Cargo con el que firma (p. ej. "Director General"). */
+  capacity: string
+  org: "cliente" | "gs"
+  status: "pendiente" | "firmado" | "rechazado"
+  signedAt?: string
+}
+
+export interface ProposalLine {
+  company: string
+  service: string
+  scope: string
+  periodicity: "Mensual" | "Anual" | "Proyecto"
+  /** Honorario por periodo, sin IVA. */
+  fee: number
+}
+
+export interface Contract {
+  id: string
+  kind: "Propuesta" | "Contrato" | "Carta compromiso" | "Acuerdo" | "Acta"
+  title: string
+  summary: string
+  companies: string[]
+  status: ContractStatus
+  version: number
+  sentAt?: string
+  validUntil?: string
+  ownerId: string
+  signers: Signer[]
+  approvals: { personId: string; at: string }[]
+  lines?: ProposalLine[]
+  exclusions?: string[]
+  deliverables?: string[]
+  conditions?: string[]
+  startDate?: string
+  endDate?: string
+  /** Anticipo que se factura al completar la firma (sin IVA). */
+  advance?: number
+  documentId?: string
+  conversationId?: string
+  changeRequest?: { by: string; at: string; text: string }
+  declineReason?: string
+  history: HistoryEntry[]
+}
+
+export type InvoiceStatus = "issued" | "due_soon" | "overdue" | "disputed" | "partially_paid" | "paid" | "voided"
+export type PaymentStatus = "initiated" | "processing" | "pending_validation" | "applied" | "failed" | "refunded"
+export type PaymentMethod = "tarjeta" | "liga" | "transferencia"
+
+export interface Payment {
+  id: string
+  amount: number
+  method: PaymentMethod
+  status: PaymentStatus
+  at: string
+  by: string
+  reference: string
+  receipt?: string
+  failureReason?: string
+}
+
+export interface Invoice {
+  id: string
+  folio: string
+  documentId: string
+  company: CompanyId
+  concept: string
+  period: string
+  issuedAt: string
+  dueDate: string
+  total: number
+  payments: Payment[]
+  voided?: { at: string; reason: string; replacedBy?: string }
+  dispute?: {
+    reason: string
+    comment: string
+    openedAt: string
+    openedBy: string
+    ownerId: string
+    expectedBy: string
+    conversationId: string
+    status: "abierta" | "resuelta"
+  }
+  creditNote?: { folio: string; amount: number }
+}
+
+export type UserStatus = "activo" | "invitado" | "suspendido" | "revocado" | "expirado"
+
+export interface ClientUser {
+  id: string
+  personId?: string
+  firstName: string
+  lastName: string
+  email: string
+  title: string
+  role: RoleKey
+  companies: CompanyId[]
+  extra: { upload?: boolean; approve?: boolean; sign?: boolean; pay?: boolean }
+  status: UserStatus
+  mfa: "app" | "sms" | "pendiente"
+  lastAccess?: string
+  invitedAt?: string
+  invitedBy?: string
+  expiresAt?: string
+}
+
+export interface AuditEvent {
+  id: string
+  at: string
+  actor: string
+  action: string
+  detail: string
+  ip?: string
+}
+
+export type OnboardingStatus = "locked" | "available" | "in_progress" | "submitted" | "under_review" | "changes_required" | "approved" | "completed"
+
+export interface OnboardingStep {
+  id: string
+  n: number
+  title: string
+  description: string
+  owner: "cliente" | "gs"
+  responsibleId: string
+  dueDate: string
+  status: OnboardingStatus
+  requirements: string[]
+  criteria: string
+  note?: string
+  completedAt?: string
+}

@@ -13,13 +13,14 @@ import { UserAvatar } from "@/components/shared/user-avatar"
 import { getPerson, personas } from "@/data/organization"
 import { roles } from "@/lib/permissions"
 import { cn } from "@/lib/utils"
+import { useAdmin } from "@/store/admin-store"
 import { usePortal } from "@/store/portal-store"
 
 /** Recorridos obligatorios del Product Spec §25 y la fase en que quedan navegables. */
 const journeys: { n: number; title: string; phase: 1 | 2 | 3; href?: string; hint?: string }[] = [
-  { n: 1, title: "Activar invitación y MFA", phase: 3 },
-  { n: 2, title: "Completar onboarding", phase: 3 },
-  { n: 3, title: "Firmar propuesta mediante DocuSign simulado", phase: 3 },
+  { n: 1, title: "Activar invitación y MFA", phase: 3, href: "/invitacion", hint: "Invitación de Carmen Villarreal." },
+  { n: 2, title: "Completar onboarding", phase: 3, href: "/onboarding", hint: "Incorporación de EcoPack Desarrollos." },
+  { n: 3, title: "Firmar propuesta mediante DocuSign simulado", phase: 3, href: "/contratos/PRO-2027", hint: "Firma como Roberto o Jorge." },
   { n: 4, title: "Cambiar entre grupo y empresas", phase: 1, href: "/", hint: "Usa el selector de contexto del encabezado." },
   { n: 5, title: "Consultar inicio ejecutivo", phase: 1, href: "/" },
   { n: 6, title: "Cargar y reemplazar un documento", phase: 1, href: "/documentos/DOC-202", hint: "Sube la versión 2 de las facturas de Manufactura." },
@@ -27,16 +28,17 @@ const journeys: { n: number; title: string; phase: 1 | 2 | 3; href?: string; hin
   { n: 8, title: "Revisar información financiera e insight", phase: 2, hint: "En Fase 1: tarjetas de insight en Inicio." },
   { n: 9, title: "Consultar Auditoría anual", phase: 2 },
   { n: 10, title: "Abrir conversación contextual", phase: 1, href: "/mensajes/CONV-01" },
-  { n: 11, title: "Aclarar factura y simular pago", phase: 3 },
-  { n: 12, title: "Invitar usuario con acceso a una empresa", phase: 3 },
-  { n: 13, title: "Leer novedad fiscal personalizada", phase: 1, href: "/novedades/NOV-02" },
-  { n: 14, title: "Recorrer las vistas críticas en móvil", phase: 1, hint: "Reduce la ventana a 360 px o abre en el teléfono." },
+  { n: 11, title: "Aclarar factura y simular pago", phase: 3, href: "/facturacion", hint: "Como Ana o Patricia." },
+  { n: 12, title: "Invitar usuario con acceso a una empresa", phase: 3, href: "/usuarios", hint: "Como Ana (administradora)." },
+  { n: 13, title: "Leer novedad fiscal personalizada", phase: 2, href: "/novedades/NOV-02" },
+  { n: 14, title: "Recorrer las vistas críticas en móvil", phase: 1, href: "/", hint: "Reduce la ventana a 360 px o abre en el teléfono." },
 ]
 
 /** Controles del prototipo: usuario simulado, simulaciones y recorridos. No forma parte del producto. */
 export function DemoPanel() {
   const [open, setOpen] = useState(false)
   const { persona, setPersona, state, setDemo, reset } = usePortal()
+  const admin = useAdmin()
 
   return (
     <>
@@ -111,7 +113,15 @@ export function DemoPanel() {
                 </Label>
                 <Switch id="down" checked={state.demo.contalinkDown} onCheckedChange={(v) => setDemo("contalinkDown", v)} />
               </div>
-              <Button variant="outline" size="sm" onClick={reset} className="w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  admin.reset()
+                  reset()
+                }}
+                className="w-full"
+              >
                 <RotateCcw />
                 Restablecer datos de la demo
               </Button>
@@ -123,7 +133,7 @@ export function DemoPanel() {
               <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Recorridos obligatorios (Product Spec §25)</h3>
               <ol className="space-y-1">
                 {journeys.map((j) => {
-                  const ready = j.phase === 1
+                  const ready = Boolean(j.href)
                   const body = (
                     <>
                       <span className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold", ready ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>

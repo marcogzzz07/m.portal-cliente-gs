@@ -9,6 +9,7 @@ import {
   MessagesSquare,
   Newspaper,
   Receipt,
+  Rocket,
   UserCog,
   Users,
 } from "lucide-react"
@@ -65,37 +66,17 @@ export const navigation: NavSection[] = [
     ],
   },
   {
-    label: "Próximas fases",
+    label: "Administración",
     items: [
-      { title: "Servicios", href: "/servicios", icon: Briefcase, module: "servicios", description: "Contabilidad, Impuestos, Auditoría y proyectos.", phase: 2, upcoming: upcomingServicios },
-      {
-        title: "Propuestas y contratos",
-        href: "/contratos",
-        icon: FileSignature,
-        module: "contratos",
-        description: "Propuestas, contratos y firma electrónica.",
-        phase: 3,
-        upcoming: ["Propuestas con empresas, alcance, exclusiones y honorarios", "Solicitar aclaración o cambio, aprobar o rechazar", "Firma embebida con DocuSign (simulada) y seguimiento de firmantes", "Onboarding y anticipo al completar la firma"],
-      },
-      {
-        title: "Facturación y pagos",
-        href: "/facturacion",
-        icon: Receipt,
-        module: "facturacion",
-        description: "Estado de cuenta, facturas, aclaraciones y pagos.",
-        phase: 3,
-        upcoming: ["Estado de cuenta consolidado y por empresa (fuente: Odoo)", "Facturas con XML/PDF, notas de crédito y servicio facturado", "Aclaraciones con hilo contextual y fecha esperada de respuesta", "Pago con tarjeta, liga o transferencia (simulado) y carga de comprobante"],
-      },
-      {
-        title: "Usuarios y permisos",
-        href: "/usuarios",
-        icon: UserCog,
-        module: "usuarios",
-        description: "Invitaciones, roles y accesos por empresa.",
-        phase: 3,
-        upcoming: ["Invitar y reenviar invitaciones", "Asignar empresas, servicios y capacidades", "Copiar permisos, suspender o revocar", "Último acceso, estado de MFA y actividad sensible"],
-      },
+      { title: "Propuestas y contratos", href: "/contratos", icon: FileSignature, module: "contratos", description: "Propuestas, contratos y firma electrónica." },
+      { title: "Facturación y pagos", href: "/facturacion", icon: Receipt, module: "facturacion", description: "Estado de cuenta, facturas, aclaraciones y pagos." },
+      { title: "Incorporación", href: "/onboarding", icon: Rocket, module: "onboarding", description: "Alta de EcoPack Desarrollos: checklist de incorporación." },
+      { title: "Usuarios y permisos", href: "/usuarios", icon: UserCog, module: "usuarios", description: "Invitaciones, roles y accesos por empresa." },
     ],
+  },
+  {
+    label: "Próximas fases",
+    items: [{ title: "Servicios", href: "/servicios", icon: Briefcase, module: "servicios", description: "Contabilidad, Impuestos, Auditoría y proyectos.", phase: 2, upcoming: upcomingServicios }],
   },
 ]
 

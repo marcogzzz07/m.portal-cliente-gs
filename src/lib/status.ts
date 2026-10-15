@@ -1,4 +1,4 @@
-import type { ActionKind, ActionStatus, DocStatus, EventType, Priority, ServiceHealth } from "./types"
+import type { ActionKind, ActionStatus, ContractStatus, DocStatus, EventType, InvoiceStatus, OnboardingStatus, PaymentStatus, Priority, ServiceHealth, UserStatus } from "./types"
 
 /** Tonos de las etiquetas de estado (StatusBadge). Siempre acompañados de una palabra, nunca solo color. */
 export type StatusTone = "success" | "warning" | "danger" | "info" | "neutral" | "brand"
@@ -60,4 +60,54 @@ export const eventTypeMeta: Record<EventType, { label: string; dot: string; chip
   reunion: { label: "Reunión", dot: "bg-success", chip: "bg-success/12 text-success" },
   pago: { label: "Pago", dot: "bg-[oklch(0.4_0.006_264)]", chip: "bg-muted text-foreground" },
   renovacion: { label: "Renovación", dot: "bg-orange-500", chip: "bg-orange-100 text-orange-800" },
+}
+
+export const contractStatus: Record<ContractStatus, StatusMeta> = {
+  draft: { label: "En preparación", tone: "neutral" },
+  sent: { label: "Por revisar", tone: "warning" },
+  viewed: { label: "En revisión", tone: "info" },
+  changes_requested: { label: "Cambios solicitados", tone: "warning" },
+  partially_signed: { label: "Firma parcial", tone: "info" },
+  completed: { label: "Firmado", tone: "success" },
+  declined: { label: "Rechazado", tone: "danger" },
+  expired: { label: "Vencido", tone: "neutral" },
+  voided: { label: "Anulado", tone: "neutral" },
+}
+
+export const invoiceStatus: Record<InvoiceStatus, StatusMeta> = {
+  issued: { label: "Por pagar", tone: "neutral" },
+  due_soon: { label: "Vence pronto", tone: "warning" },
+  overdue: { label: "Vencida", tone: "danger" },
+  disputed: { label: "En aclaración", tone: "info" },
+  partially_paid: { label: "Pago parcial", tone: "info" },
+  paid: { label: "Pagada", tone: "success" },
+  voided: { label: "Cancelada", tone: "neutral" },
+}
+
+export const paymentStatus: Record<PaymentStatus, StatusMeta> = {
+  initiated: { label: "Iniciado", tone: "neutral" },
+  processing: { label: "Procesando", tone: "info" },
+  pending_validation: { label: "Por validar", tone: "warning" },
+  applied: { label: "Aplicado", tone: "success" },
+  failed: { label: "Rechazado", tone: "danger" },
+  refunded: { label: "Reembolsado", tone: "neutral" },
+}
+
+export const userStatus: Record<UserStatus, StatusMeta> = {
+  activo: { label: "Activo", tone: "success" },
+  invitado: { label: "Invitación enviada", tone: "info" },
+  suspendido: { label: "Suspendido", tone: "warning" },
+  revocado: { label: "Revocado", tone: "neutral" },
+  expirado: { label: "Invitación vencida", tone: "neutral" },
+}
+
+export const onboardingStatus: Record<OnboardingStatus, StatusMeta> = {
+  locked: { label: "Bloqueado", tone: "neutral" },
+  available: { label: "Disponible", tone: "warning" },
+  in_progress: { label: "En curso", tone: "info" },
+  submitted: { label: "Enviado", tone: "info" },
+  under_review: { label: "En revisión GS", tone: "info" },
+  changes_required: { label: "Requiere corrección", tone: "danger" },
+  approved: { label: "Aprobado", tone: "success" },
+  completed: { label: "Completado", tone: "success" },
 }

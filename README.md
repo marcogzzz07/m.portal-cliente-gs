@@ -16,8 +16,7 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:3003>. El enlace **Controles de la demo** de la franja superior permite cambiar de usuario
-simulado (seis roles), activar respuestas automáticas de GS, simular una caída de ContaLink,
+Abre <http://localhost:3003>. El enlace **Controles de la demo** de la franja superior permite cambiar de usuario simulado (siete, incluida Carmen, que activa su invitación), activar respuestas automáticas de GS, simular una caída de ContaLink,
 restablecer los datos y ver los 14 recorridos obligatorios con su fase.
 
 Los cambios que hagas (cargas, aprobaciones, mensajes) se guardan solo en tu navegador.
@@ -29,7 +28,7 @@ Los cambios que hagas (cargas, aprobaciones, mensajes) se guardan solo en tu nav
 | 1 · Fundación | Estructura base, selector grupo/empresa, roles simulados, Inicio, Pendientes, Calendario, Documentos, Mensajes, Notificaciones y Equipo GS | Lista |
 | 1+ · Extras | Repositorio histórico de entregables 2026 con vista previa y descarga (PDF/CSV/XML), agendar reuniones con GS y Novedades con fotos | Lista para revisión |
 | 2 · Servicios y valor | Contabilidad, Impuestos y Auditoría alineados al mockup del equipo de BI; insights y simulador | En espera de los entregables de cada servicio |
-| 3 · Relación administrativa | Invitación y MFA, onboarding, propuestas, firma DocuSign simulada, facturación, aclaraciones, pagos y usuarios | Pendiente |
+| 3 · Relación administrativa | Invitación y MFA (`/invitacion`), incorporación de EcoPack Desarrollos, propuesta 2027 con firma simulada, facturación con aclaraciones y pagos, usuarios y permisos | Lista para revisión |
 
 Las secciones de fases posteriores aparecen en el menú con su etiqueta (F2, F3) y describen lo que incluirán.
 

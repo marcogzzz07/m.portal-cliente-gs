@@ -93,6 +93,7 @@ type Action =
   | { type: "requestMeeting"; meeting: Meeting }
   | { type: "setMeetingStatus"; id: string; status: Meeting["status"] }
   | { type: "readNews"; id: string }
+  | { type: "completeAction"; id: string; by: string; text: string }
 
 let seq = 0
 const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}${(seq++).toString(36)}`
@@ -333,6 +334,16 @@ function reducer(state: PortalState, action: Action): PortalState {
             : state.notifications,
       }
     }
+    case "completeAction":
+      return {
+        ...state,
+        actionItems: updateAction(state.actionItems, action.id, (a) => ({
+          ...a,
+          status: "completed",
+          completedAt: now,
+          history: [...a.history, { at: now, text: action.text, by: action.by }],
+        })),
+      }
     case "readNews":
       return state.newsRead.includes(action.id) ? state : { ...state, newsRead: [...state.newsRead, action.id] }
   }
@@ -377,6 +388,10 @@ interface PortalContextValue {
   requestMeeting: (input: Omit<Meeting, "id" | "status" | "requestedBy" | "requestedAt">) => Meeting
   cancelMeeting: (id: string) => void
   readNews: (id: string) => void
+  /** Avisos y registros que generan otros módulos (contratos, pagos, usuarios). */
+  notify: (kind: NotificationKind, title: string, description: string, href: string, companies?: CompanyId[]) => void
+  addDocument: (doc: DocumentItem) => void
+  completeAction: (id: string, text: string) => void
   reset: () => void
 }
 
@@ -488,6 +503,9 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
       },
       cancelMeeting: (id) => dispatch({ type: "setMeetingStatus", id, status: "cancelada" }),
       readNews: (id) => dispatch({ type: "readNews", id }),
+      notify: (kind, title, description, href, companies = persona.companies) => dispatch({ type: "notify", notification: notification(kind, title, description, href, companies) }),
+      addDocument: (doc) => dispatch({ type: "createDocument", doc }),
+      completeAction: (id, text) => dispatch({ type: "completeAction", id, by: me, text }),
       reset: () => {
         dispatch({ type: "reset" })
         toast.success("Datos de la demo restablecidos")

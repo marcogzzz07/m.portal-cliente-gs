@@ -382,3 +382,41 @@ export function documentContent(doc: DocumentItem): DocContent {
 export function textColumns(table: DocTable): boolean[] {
   return table.columns.map((_, i) => i === 0 || table.rows.some((r) => /[a-záéíóúñ]{3,}/i.test(r[i] ?? "")))
 }
+
+/** Contenido de una propuesta o contrato (para descarga en PDF). */
+export function contractContent(c: import("./types").Contract): DocContent {
+  const recurring = (c.lines ?? []).filter((l) => l.periodicity === "Mensual").reduce((s, l) => s + l.fee, 0)
+  const annual = (c.lines ?? []).filter((l) => l.periodicity === "Anual").reduce((s, l) => s + l.fee, 0)
+  const project = (c.lines ?? []).filter((l) => l.periodicity === "Proyecto").reduce((s, l) => s + l.fee, 0)
+  return {
+    issuer: "González Solís · Servicios profesionales",
+    title: c.title,
+    subtitle: `${c.kind} · versión ${c.version}`,
+    meta: [
+      ["Empresas incluidas", c.companies.join(", ")],
+      ...(c.startDate && c.endDate ? ([["Vigencia del servicio", `${formatDate(c.startDate, { day: "numeric", month: "long", year: "numeric" })} al ${formatDate(c.endDate, { day: "numeric", month: "long", year: "numeric" })}`]] as [string, string][]) : []),
+      ...(c.validUntil ? ([["Propuesta válida hasta", formatDate(c.validUntil, { day: "numeric", month: "long", year: "numeric" })]] as [string, string][]) : []),
+      ["Firmantes", c.signers.map((s) => `${getPerson(s.personId).firstName} ${getPerson(s.personId).lastName} (${s.capacity})`).join("; ")],
+    ],
+    tables: c.lines
+      ? [
+          { heading: "Servicios y honorarios (más IVA)", columns: ["Empresa", "Servicio", "Periodicidad", "Honorario"], rows: c.lines.map((l) => [l.company, l.service, l.periodicity, money(l.fee)]) },
+          {
+            heading: "Resumen",
+            columns: ["Concepto", "Importe"],
+            rows: [
+              ["Honorarios mensuales recurrentes", money(recurring)],
+              ["Honorarios anuales (auditorías)", money(annual)],
+              ["Proyectos (pago único)", money(project)],
+            ],
+            total: ["Total estimado del primer año", money(recurring * 12 + annual + project)],
+          },
+        ]
+      : [],
+    notes: [
+      ...(c.exclusions?.length ? [`No incluye: ${c.exclusions.join("; ")}.`] : []),
+      ...(c.conditions ?? []),
+      c.summary,
+    ],
+  }
+}

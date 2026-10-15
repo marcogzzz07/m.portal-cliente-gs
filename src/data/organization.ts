@@ -31,6 +31,7 @@ export const people: Person[] = [
   { id: "jorge", firstName: "Jorge", lastName: "Salinas", title: "Representante legal", org: "cliente", email: "jorge.salinas@ecopack.ejemplo.mx" },
   { id: "patricia", firstName: "Patricia", lastName: "Ruiz", title: "Tesorería y cuentas por pagar", org: "cliente", email: "patricia.ruiz@ecopack.ejemplo.mx" },
   { id: "daniel", firstName: "Daniel", lastName: "Ochoa", title: "Gerente de Logística", org: "cliente", email: "daniel.ochoa@ecopack.ejemplo.mx" },
+  { id: "carmen", firstName: "Carmen", lastName: "Villarreal", title: "Contadora general", org: "cliente", email: "carmen.villarreal@ecopack.ejemplo.mx" },
   // GS
   { id: "mariana", firstName: "Mariana", lastName: "Ortega", title: "Socia de relación", org: "gs", email: "mariana.ortega@gs.ejemplo.mx", phone: "81 5550 1200" },
   { id: "luis", firstName: "Luis", lastName: "Herrera", title: "Gerente de Contabilidad", org: "gs", email: "luis.herrera@gs.ejemplo.mx", phone: "81 5550 1231" },
@@ -55,6 +56,7 @@ export const personas: Persona[] = [
   { personId: "jorge", role: "firmante", companies: companyIds, scenario: "Solo ve lo que debe firmar y su contexto." },
   { personId: "patricia", role: "pagos", companies: companyIds, scenario: "Facturas, pagos y aclaraciones." },
   { personId: "daniel", role: "consulta", companies: ["logistica"], scenario: "Solo consulta y solo EcoPack Logística." },
+  { personId: "carmen", role: "operativo", companies: ["manufactura", "comercial"], scenario: "Usuaria nueva: activa su invitación con MFA." },
 ]
 
 export const gsTeam: GsMember[] = [

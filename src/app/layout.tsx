@@ -4,6 +4,7 @@ import { Figtree } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { site } from "@/config/site"
+import { AdminProvider } from "@/store/admin-store"
 import { PortalProvider } from "@/store/portal-store"
 import "./globals.css"
 
@@ -31,7 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="es-MX" className={`${figtree.variable} h-full antialiased`}>
       <body className="min-h-full">
         <PortalProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <AdminProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </AdminProvider>
         </PortalProvider>
         <Toaster theme="light" position="top-center" richColors closeButton />
       </body>

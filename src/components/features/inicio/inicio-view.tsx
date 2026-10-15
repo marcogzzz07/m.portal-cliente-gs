@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, BadgeCheck, Briefcase, CalendarDays, CheckCircle2, FileUp, Home, Lightbulb, ListChecks, MessageSquare, PackageCheck, ShieldCheck, TrendingUp, Wallet } from "lucide-react"
+import { ArrowRight, BadgeCheck, Briefcase, CalendarDays, CheckCircle2, FileUp, Home, Lightbulb, ListChecks, MessageSquare, PackageCheck, Rocket, ShieldCheck, TrendingUp, Wallet } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { EmptyState } from "@/components/shared/empty-state"
@@ -22,6 +23,7 @@ import { canAccessModule, matchesScope } from "@/lib/permissions"
 import { eventTypeMeta, healthMeta } from "@/lib/status"
 import type { Activity, ServiceHealth } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { useAdmin } from "@/store/admin-store"
 import { effectiveStatus, usePortal } from "@/store/portal-store"
 import { UploadDialog } from "../documentos/upload-dialog"
 import { ActionDetailSheet } from "../pendientes/action-detail-sheet"
@@ -41,6 +43,8 @@ function greeting() {
 /** Inicio ejecutivo (Product Spec §9): qué requiere atención, panorama, lo que hizo GS, qué viene y qué decidir. */
 export function InicioView() {
   const { persona, can } = usePortal()
+  const admin = useAdmin()
+  const onboardingOpen = admin.state.onboarding.filter((s) => s.status !== "completed" && s.status !== "approved").length
   const { actions, documents, events, scope, scopeLabel, scopeBadge, scopeCompanies } = useScopedData()
   const [selected, setSelected] = useState<string | null>(null)
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -152,11 +156,29 @@ export function InicioView() {
         <MetricCard label="Cumplimiento fiscal" value={formatPercent(onTime / totalObl, 1)} icon={ShieldCheck} accent="green" helper={`${onTime} de ${totalObl} obligaciones a tiempo en 2026${late ? ` · ${late} extemporánea${late > 1 ? "s" : ""}` : ""}`} />
         <MetricCard label="Entregables del mes" value={`${published} de ${expected}`} icon={PackageCheck} accent="amber" helper="Septiembre · publicados por GS" />
         {seesBilling ? (
-          <MetricCard label="Saldo con GS" value={formatCompactCurrency(balanceDue + balanceOverdue)} icon={Wallet} accent="blue" helper={balanceOverdue ? `${formatCompactCurrency(balanceOverdue)} vencido · Odoo` : "Al corriente · Odoo"} />
+          <MetricCard label="Saldo con GS" value={formatCompactCurrency(balanceDue + balanceOverdue)} icon={Wallet} accent="blue" href="/facturacion" helper={balanceOverdue ? `${formatCompactCurrency(balanceOverdue)} vencido · Odoo` : "Al corriente · Odoo"} />
         ) : (
           <MetricCard label="Documentos por enviar" value={docsPending} icon={FileUp} accent="blue" href="/documentos" helper={`${docsInReview} en revisión de GS`} />
         )}
       </div>
+
+      {canAccessModule(persona, "onboarding") && onboardingOpen > 0 && (
+        <Link href="/onboarding" className="flex flex-col gap-3 rounded-2xl bg-card px-5 py-4 ring-1 ring-foreground/[0.06] transition-shadow hover:shadow-md sm:flex-row sm:items-center">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
+            <Rocket className="size-4" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium">Incorporación de EcoPack Desarrollos</span>
+            <span className="block text-[13px] text-muted-foreground">
+              {10 - onboardingOpen} de 10 pasos completos · siguiente: {admin.state.onboarding.find((s) => s.status !== "completed" && s.status !== "approved" && s.status !== "locked")?.title ?? "esperando a GS"}
+            </span>
+          </span>
+          <Progress value={((10 - onboardingOpen) / 10) * 100} className="h-1.5 sm:w-40" />
+          <span className="flex items-center gap-1 text-sm font-medium">
+            Continuar <ArrowRight className="size-4" />
+          </span>
+        </Link>
+      )}
 
       {/* Requiere tu atención */}
       {seesActions && (

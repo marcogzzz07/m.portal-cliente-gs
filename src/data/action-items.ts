@@ -131,7 +131,7 @@ export const seedActionItems: ActionItem[] = [
     gsOwnerId: "fernanda",
     blockedReason: "Se habilita cuando el notario valide el proyecto de acta. GS espera su respuesta el 20 de octubre.",
     conversationId: "CONV-06",
-    relatedHref: "/contratos",
+    relatedHref: "/contratos/ACTA-ESC",
     history: [{ at: "2026-10-05T09:30", text: "GS envió el proyecto de acta al notario", by: "fernanda" }],
   },
   {
@@ -147,7 +147,7 @@ export const seedActionItems: ActionItem[] = [
     owner: "cliente",
     assigneeId: "patricia",
     gsOwnerId: "diana",
-    relatedHref: "/facturacion",
+    relatedHref: "/facturacion/A-4821",
     history: [{ at: "2026-10-05T08:00", text: "Factura emitida y sincronizada desde Odoo", by: "diana" }],
   },
   {
@@ -243,20 +243,22 @@ export const seedActionItems: ActionItem[] = [
   },
   {
     id: "PEN-114",
-    title: "Revisar la propuesta de servicios 2027",
-    description: "GS compartirá la propuesta de renovación con alcance, honorarios y nuevas razones sociales.",
+    title: "Revisar y firmar la propuesta de servicios 2027",
+    description: "Incluye la renovación de las cinco empresas y el alta de EcoPack Desarrollos. Firman Roberto Elizondo y Jorge Salinas.",
     kind: "aprobar",
     companies: [...ALL],
     service: "contabilidad",
-    dueDate: "2026-11-15",
-    opensOn: "2026-11-02",
+    dueDate: "2026-10-30",
     priority: "media",
-    status: "upcoming",
+    status: "open",
     owner: "cliente",
     assigneeId: "ana",
     gsOwnerId: "mariana",
-    relatedHref: "/contratos",
-    history: [{ at: "2026-10-02T10:00", text: "Programado por GS", by: "mariana" }],
+    relatedHref: "/contratos/PRO-2027",
+    history: [
+      { at: "2026-10-02T10:00", text: "GS envió la versión 1", by: "mariana" },
+      { at: "2026-10-09T12:00", text: "GS envió la versión 2", by: "mariana" },
+    ],
   },
   // GS: el siguiente paso es de GS (vista "Esperando a GS")
   {

@@ -13,6 +13,7 @@ export type ModuleKey =
   | "equipo"
   | "usuarios"
   | "notificaciones"
+  | "onboarding"
 
 export interface Capabilities {
   upload: boolean
@@ -35,19 +36,19 @@ export const roles: Record<RoleKey, RoleMeta> = {
   admin: {
     label: "Administrador del cliente",
     description: "Consulta todo, carga, aprueba, paga y administra usuarios.",
-    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "contratos", "facturacion", "mensajes", "novedades", "equipo", "usuarios", "notificaciones"],
+    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "contratos", "facturacion", "mensajes", "novedades", "equipo", "usuarios", "notificaciones", "onboarding"],
     can: { upload: true, approve: true, sign: false, pay: true, respond: true, adminUsers: true },
   },
   ejecutivo: {
     label: "Ejecutivo",
     description: "Visión consolidada; aprueba y firma. No carga documentos.",
-    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "contratos", "facturacion", "mensajes", "novedades", "equipo", "notificaciones"],
+    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "contratos", "facturacion", "mensajes", "novedades", "equipo", "notificaciones", "onboarding"],
     can: { upload: false, approve: true, sign: true, pay: false, respond: true, adminUsers: false },
   },
   operativo: {
     label: "Responsable operativo",
     description: "Carga documentos y responde a GS. Sin facturación ni contratos.",
-    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "mensajes", "novedades", "equipo", "notificaciones"],
+    modules: ["inicio", "pendientes", "calendario", "servicios", "documentos", "mensajes", "novedades", "equipo", "notificaciones", "onboarding"],
     can: { upload: true, approve: false, sign: false, pay: false, respond: true, adminUsers: false },
   },
   firmante: {

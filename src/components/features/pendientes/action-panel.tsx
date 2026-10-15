@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { PhaseBadge } from "@/components/shared/phase-badge"
 import { getPerson } from "@/data/organization"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/format"
 import { canActOn, roles } from "@/lib/permissions"
@@ -90,6 +89,15 @@ export function ActionPanel({ item }: { item: ActionItem }) {
         </>
       )
     case "aprobar":
+      if (item.relatedHref)
+        return (
+          <Button size="lg" className="w-full" asChild>
+            <Link href={item.relatedHref}>
+              <FileSignature />
+              Revisar la propuesta
+            </Link>
+          </Button>
+        )
       return (
         <div className="space-y-3">
           {item.approvalSummary && (
@@ -199,19 +207,21 @@ export function ActionPanel({ item }: { item: ActionItem }) {
       )
     case "pagar":
       return (
-        <Notice icon={Receipt} title="El pago se habilita en Facturación y pagos">
-          <span className="flex flex-wrap items-center gap-2">
-            Pago con tarjeta, liga o transferencia y aclaraciones (simulados). <PhaseBadge phase={3} />
-          </span>
-        </Notice>
+        <Button size="lg" className="w-full" asChild>
+          <Link href={item.relatedHref ?? "/facturacion"}>
+            <Receipt />
+            Ver factura y pagar
+          </Link>
+        </Button>
       )
     case "firmar":
       return (
-        <Notice icon={FileSignature} title="La firma se realiza en Propuestas y contratos">
-          <span className="flex flex-wrap items-center gap-2">
-            Firma embebida con DocuSign (simulada). <PhaseBadge phase={3} />
-          </span>
-        </Notice>
+        <Button size="lg" className="w-full" asChild>
+          <Link href={item.relatedHref ?? "/contratos"}>
+            <FileSignature />
+            Ir a firmar
+          </Link>
+        </Button>
       )
   }
 }

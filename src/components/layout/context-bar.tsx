@@ -1,26 +1,22 @@
 "use client"
 
-import { AlertTriangle } from "lucide-react"
+import { Building2, Layers } from "lucide-react"
 import { toast } from "sonner"
 
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { companies, group, integrations } from "@/data/organization"
-import { formatDateTime } from "@/lib/format"
+import { companies, group } from "@/data/organization"
 import type { Scope } from "@/lib/types"
 import { usePortal } from "@/store/portal-store"
 
 /**
  * Contexto activo (Product Spec §8 y Benchmark: patrón multi-entidad de Brex).
- * Va arriba de cada página, como la tarjeta de filtros de los demás módulos del Portal GS.
+ * Barra compacta arriba de cada página: empresa que se está viendo y su RFC.
  */
 export function ContextBar() {
   const { state, allowed, setScope } = usePortal()
   const options = companies.filter((c) => allowed.includes(c.id))
   const canGroup = options.length > 1
   const current = state.scope === "grupo" ? null : companies.find((c) => c.id === state.scope)
-  const stale = state.demo.contalinkDown
-  const sources = integrations.filter((i) => i.key !== "auditbrain")
 
   function choose(next: Scope) {
     setScope(next)
@@ -31,63 +27,32 @@ export function ContextBar() {
   }
 
   return (
-    <section aria-label="Contexto" className="mb-6 grid gap-x-8 gap-y-4 rounded-2xl bg-card p-4 sm:p-5 ring-1 ring-foreground/[0.06] sm:grid-cols-[minmax(0,320px)_minmax(0,1fr)] sm:items-end xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)_auto]">
-      <div className="grid gap-1.5">
-        <Label htmlFor="ctx-empresa" className="text-xs font-normal text-muted-foreground">
-          Empresa
-        </Label>
-        <Select value={state.scope} onValueChange={(v) => choose(v as Scope)} disabled={!canGroup}>
-          <SelectTrigger id="ctx-empresa" className="w-full bg-background text-[15px] data-[size=default]:h-10">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {canGroup && (
-              <>
-                <SelectItem value="grupo">Grupo completo · {group.shortName}</SelectItem>
-                <SelectSeparator />
-              </>
-            )}
-            <SelectGroup>
-              <SelectLabel>Razones sociales</SelectLabel>
-              {options.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="hidden min-w-0 gap-1.5 xl:grid">
-        <span className="text-xs text-muted-foreground">{current ? "Razón social" : "Grupo"}</span>
-        <p className="flex h-10 items-center truncate text-[15px]">
-          {current ? (
+    <section aria-label="Contexto" className="mb-5 flex items-center gap-3 rounded-2xl bg-card px-3 py-2 ring-1 ring-foreground/[0.06]">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        {current ? <Building2 className="size-4" /> : <Layers className="size-4" />}
+      </span>
+      <Select value={state.scope} onValueChange={(v) => choose(v as Scope)} disabled={!canGroup}>
+        <SelectTrigger aria-label="Empresa" className="h-9 min-w-0 border-0 bg-transparent px-1.5 text-[15px] font-medium shadow-none hover:bg-muted/60 data-[size=default]:h-9 sm:w-auto">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {canGroup && (
             <>
-              {current.legalName}
-              <span className="ml-2 hidden text-sm text-muted-foreground xl:inline">RFC {current.rfc}</span>
+              <SelectItem value="grupo">Grupo completo · {group.shortName}</SelectItem>
+              <SelectSeparator />
             </>
-          ) : (
-            `${group.name} · ${options.length} razones sociales`
           )}
-        </p>
-      </div>
-
-      <div className="hidden gap-1.5 sm:grid sm:text-right">
-        <span className="text-xs text-muted-foreground">Última actualización</span>
-        <p className="flex min-h-10 flex-wrap items-center gap-x-3 gap-y-1 text-sm sm:justify-end">
-          {sources.map((s) => {
-            const down = stale && s.key === "contalink"
-            return (
-              <span key={s.key} className={down ? "inline-flex items-center gap-1 font-medium text-[color-mix(in_oklch,var(--warning),black_35%)]" : "text-muted-foreground"}>
-                {down && <AlertTriangle className="size-3.5" />}
-                <span className="text-foreground">{s.name}</span> {formatDateTime(down ? s.fallbackSync : s.lastSync).split(", ")[1]}
-                {down && " (ayer)"}
-              </span>
-            )
-          })}
-        </p>
-      </div>
+          <SelectGroup>
+            <SelectLabel>Razones sociales</SelectLabel>
+            {options.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <span className="ml-auto hidden truncate pr-2 text-sm text-muted-foreground sm:block">{current ? `${current.legalName} · RFC ${current.rfc}` : `${options.length} razones sociales`}</span>
     </section>
   )
 }
