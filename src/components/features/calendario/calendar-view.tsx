@@ -13,6 +13,7 @@ import { CompanyTag } from "@/components/shared/company-tag"
 import { EmptyState } from "@/components/shared/empty-state"
 import { PageHeader } from "@/components/shared/page-header"
 import { PageTabsList, PageTabsTrigger } from "@/components/shared/page-tabs"
+import { StatusBadge } from "@/components/shared/status-badge"
 import { serviceNames } from "@/data/organization"
 import { useScopedData } from "@/hooks/use-scoped-data"
 import { DEMO_TODAY, formatDate, formatLongDate, parseDate } from "@/lib/format"
@@ -21,6 +22,7 @@ import { eventTypeMeta } from "@/lib/status"
 import type { CalendarEvent, EventType } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { usePortal } from "@/store/portal-store"
+import { ScheduleMeetingDialog } from "../equipo/schedule-meeting-dialog"
 import { ActionDetailSheet } from "../pendientes/action-detail-sheet"
 
 type View = "mes" | "semana" | "dia" | "agenda"
@@ -55,6 +57,7 @@ export function CalendarView() {
   const [openEvent, setOpenEvent] = useState<CalendarEvent | null>(null)
   const [actionId, setActionId] = useState<string | null>(null)
   const [subscribeOpen, setSubscribeOpen] = useState(false)
+  const [scheduleOpen, setScheduleOpen] = useState(false)
 
   const visible = useMemo(() => events.filter((e) => types.has(e.type)), [events, types])
   const on = (day: string) => visible.filter((e) => occursOn(e, day))
@@ -108,10 +111,18 @@ export function CalendarView() {
         title="Calendario"
         description={`Obligaciones, reuniones, entregas, pagos y renovaciones de ${scopeLabel}. Los vencimientos se atienden desde aquí.`}
         actions={
-          <Button variant="outline" onClick={() => setSubscribeOpen(true)}>
-            <Rss />
-            Suscribirme
-          </Button>
+          <>
+            <Button variant="outline" onClick={() => setSubscribeOpen(true)}>
+              <Rss />
+              Suscribirme
+            </Button>
+            {persona.role !== "consulta" && (
+              <Button onClick={() => setScheduleOpen(true)}>
+                <CalendarPlus />
+                Agendar reunión
+              </Button>
+            )}
+          </>
         }
       />
 
@@ -275,6 +286,7 @@ export function CalendarView() {
       />
       <ActionDetailSheet itemId={actionId} onClose={() => setActionId(null)} />
       <SubscribeDialog open={subscribeOpen} onOpenChange={setSubscribeOpen} />
+      {scheduleOpen && <ScheduleMeetingDialog open onOpenChange={setScheduleOpen} />}
     </div>
   )
 }
@@ -339,14 +351,17 @@ function EventChip({ event, onOpen, detailed }: { event: CalendarEvent; onOpen: 
 }
 
 function EventDialog({ event, onClose, onOpenAction }: { event: CalendarEvent | null; onClose: () => void; onOpenAction: (id: string) => void }) {
-  const { persona } = usePortal()
+  const { persona, cancelMeeting } = usePortal()
   if (!event) return null
   const meta = eventTypeMeta[event.type]
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <span className={cn("w-fit rounded-full px-2 py-0.5 text-xs font-semibold", meta.chip)}>{meta.label}</span>
+          <span className="flex flex-wrap items-center gap-2">
+            <span className={cn("w-fit rounded-full px-2 py-0.5 text-xs font-semibold", meta.chip)}>{meta.label}</span>
+            {event.meetingStatus && <StatusBadge label={event.meetingStatus === "confirmada" ? "Confirmada por GS" : "Por confirmar"} tone={event.meetingStatus === "confirmada" ? "success" : "warning"} />}
+          </span>
           <DialogTitle className="leading-snug">{event.title}</DialogTitle>
           <DialogDescription>{event.description}</DialogDescription>
         </DialogHeader>
@@ -371,6 +386,18 @@ function EventDialog({ event, onClose, onOpenAction }: { event: CalendarEvent | 
           </div>
         </dl>
         <DialogFooter>
+          {event.meetingId && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                cancelMeeting(event.meetingId!)
+                toast("Reunión cancelada", { description: "GS recibió el aviso." })
+                onClose()
+              }}
+            >
+              Cancelar reunión
+            </Button>
+          )}
           {!event.actionItemId && (
             <Button variant="outline" onClick={() => toast.success("Evento agregado a tu calendario (simulado)")}>
               <CalendarPlus />

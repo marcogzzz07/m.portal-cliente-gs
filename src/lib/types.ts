@@ -134,11 +134,29 @@ export interface CalendarEvent {
   actionItemId?: string
   /** Eventos derivados de pendientes se marcan para no duplicarlos. */
   derived?: boolean
+  /** Reunión agendada desde el portal. */
+  meetingId?: string
+  meetingStatus?: "solicitada" | "confirmada" | "cancelada"
 }
 
 export type DocStatus = "requested" | "uploaded" | "under_review" | "changes_required" | "approved" | "completed" | "expired"
 
 export type FileFormat = "pdf" | "xlsx" | "pptx" | "xml" | "zip" | "docx"
+
+/** Plantilla de vista previa del entregable (cómo se "imprime" el documento ficticio). */
+export type DocTemplate =
+  | "estados_financieros"
+  | "balanza"
+  | "contabilidad_electronica"
+  | "declaracion"
+  | "papel_trabajo"
+  | "diot"
+  | "opinion"
+  | "factura"
+  | "reporte_ejecutivo"
+  | "dictamen"
+  | "anual"
+  | "generico"
 
 export interface DocVersion {
   version: number
@@ -175,6 +193,52 @@ export interface DocumentItem {
   validUntil?: string
   downloads: { personId: string; version: number; at: string; format: FileFormat }[]
   visibility: "grupo" | "restringido"
+  /** "AAAA-MM" del periodo, para ordenar y agrupar el repositorio. */
+  periodKey?: string
+  template?: DocTemplate
+  /** Folio e importe (facturas de GS y declaraciones). */
+  folio?: string
+  amount?: number
+}
+
+export type MeetingModality = "video" | "oficinas_gs" | "oficinas_cliente"
+
+export interface Meeting {
+  id: string
+  topic: string
+  notes?: string
+  date: string
+  time: string
+  endTime: string
+  modality: MeetingModality
+  hostId: string
+  gsAttendees: string[]
+  clientAttendees: string[]
+  companies: CompanyId[]
+  service?: ServiceKey
+  status: "solicitada" | "confirmada" | "cancelada"
+  requestedBy: string
+  requestedAt: string
+}
+
+export interface NewsItem {
+  id: string
+  title: string
+  category: "Fiscal" | "Legal" | "Laboral" | "Contable" | "Comercio exterior"
+  date: string
+  readMinutes: number
+  image: string
+  imageAlt: string
+  summary: string
+  whyItMatters: string
+  body: string[]
+  action?: { label: string; kind: "conversar" | "agendar" | "pendiente" | "calendario" | "documentos"; ref?: string }
+  authorId: string
+  area: string
+  companies: CompanyId[]
+  services: ServiceKey[]
+  impact: "alto" | "medio" | "informativo"
+  validUntil?: string
 }
 
 export type ContextType = "documento" | "pendiente" | "factura" | "insight" | "contrato" | "proyecto" | "servicio" | "general"

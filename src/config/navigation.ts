@@ -59,6 +59,7 @@ export const navigation: NavSection[] = [
       { title: "Calendario", href: "/calendario", icon: CalendarDays, module: "calendario", description: "Obligaciones, reuniones, entregas y vencimientos." },
       { title: "Documentos", href: "/documentos", icon: FolderOpen, module: "documentos", description: "Solicitudes, entregables, versiones y firmados." },
       { title: "Mensajes", href: "/mensajes", icon: MessagesSquare, module: "mensajes", description: "Conversaciones ligadas a documentos, pendientes y proyectos.", badge: "mensajes" },
+      { title: "Novedades", href: "/novedades", icon: Newspaper, module: "novedades", description: "Novedades fiscales, legales y laborales curadas por GS." },
       { title: "Equipo GS", href: "/equipo", icon: Users, module: "equipo", description: "Tu contacto principal, especialistas y ruta de escalamiento." },
       { title: "Notificaciones", href: "/notificaciones", icon: Bell, module: "notificaciones", description: "Centro de notificaciones y preferencias de recordatorios.", hidden: true },
     ],
@@ -67,15 +68,6 @@ export const navigation: NavSection[] = [
     label: "Próximas fases",
     items: [
       { title: "Servicios", href: "/servicios", icon: Briefcase, module: "servicios", description: "Contabilidad, Impuestos, Auditoría y proyectos.", phase: 2, upcoming: upcomingServicios },
-      {
-        title: "Novedades",
-        href: "/novedades",
-        icon: Newspaper,
-        module: "novedades",
-        description: "Novedades fiscales y legales curadas por GS.",
-        phase: 2,
-        upcoming: ["Contenido aprobado por GS y segmentado por empresa y servicio", "Resumen y “Por qué te importa”", "Acción recomendada ligada a calendario o conversación"],
-      },
       {
         title: "Propuestas y contratos",
         href: "/contratos",

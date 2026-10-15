@@ -11,7 +11,7 @@ export const activity: Activity[] = [
   { id: "ACT-5", date: "2026-09-30", kind: "hito", title: "Planeación de auditoría concluida", detail: "Carta de planeación entregada", companies: ["manufactura", "comercial"], service: "auditoria", byId: "ricardo", href: "/documentos/DOC-307" },
   { id: "ACT-6", date: "2026-09-25", kind: "hito", title: "Estructura de escisión propuesta", detail: "Memorándum v2 con comentarios de Dirección", companies: ["inmuebles", "manufactura"], service: "legal", byId: "fernanda", href: "/documentos/DOC-308" },
   { id: "ACT-7", date: "2026-09-22", kind: "entregable", title: "Estados financieros de agosto", detail: "5 empresas y consolidado", companies: [...ALL], service: "contabilidad", byId: "luis", href: "/documentos/DOC-301" },
-  { id: "ACT-8", date: "2026-09-16", kind: "obligacion", title: "Declaraciones mensuales de agosto presentadas", detail: "5 empresas · un día antes del vencimiento", companies: [...ALL], service: "impuestos", byId: "hector", href: "/documentos/DOC-304" },
+  { id: "ACT-8", date: "2026-09-16", kind: "obligacion", title: "Declaraciones mensuales de agosto presentadas", detail: "5 empresas · un día antes del vencimiento", companies: [...ALL], service: "impuestos", byId: "hector", href: "/documentos/H-DEC-manufactura-2026-08" },
 ]
 
 /** Vista previa de insights publicados (el módulo completo llega en la Fase 2). */
@@ -64,6 +64,7 @@ export const insights: InsightPreview[] = [
 ]
 
 export const seedNotifications: AppNotification[] = [
+  { id: "N-12", kind: "insight", title: "Nueva novedad de GS", description: "Paquete Económico 2027: qué revisar antes de su aprobación.", at: "2026-10-08T12:00", read: false, href: "/novedades/NOV-01", companies: ["manufactura", "comercial", "logistica", "inmuebles", "servicios"] },
   { id: "N-01", kind: "documento_revisado", title: "Recibimos facturas de ventas de Comercial", description: "GS revisará el archivo hoy.", at: "2026-10-12T08:06", read: false, href: "/documentos/DOC-213", companies: ["comercial"] },
   { id: "N-02", kind: "vencimiento", title: "Pendiente vencido: nómina de septiembre", description: "EcoPack Servicios · venció el 9 de octubre.", at: "2026-10-10T09:00", read: false, href: "/pendientes/PEN-110", companies: ["servicios"] },
   { id: "N-03", kind: "mensaje", title: "Héctor Villarreal respondió", description: "Cálculo de pagos provisionales de septiembre", at: "2026-10-10T10:45", read: false, href: "/mensajes/CONV-02", companies: ["manufactura", "comercial", "logistica", "inmuebles", "servicios"] },

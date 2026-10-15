@@ -26,8 +26,9 @@ Los cambios que hagas (cargas, aprobaciones, mensajes) se guardan solo en tu nav
 
 | Fase | Alcance | Estado |
 |---|---|---|
-| 1 · Fundación | Estructura base, selector grupo/empresa, roles simulados, Inicio, Pendientes, Calendario, Documentos, Mensajes, Notificaciones y Equipo GS | Lista para revisión |
-| 2 · Servicios y valor | Contabilidad, Impuestos, Auditoría, proyecto legal, dashboards, insights, simulador y Novedades | Pendiente |
+| 1 · Fundación | Estructura base, selector grupo/empresa, roles simulados, Inicio, Pendientes, Calendario, Documentos, Mensajes, Notificaciones y Equipo GS | Lista |
+| 1+ · Extras | Repositorio histórico de entregables 2026 con vista previa y descarga (PDF/CSV/XML), agendar reuniones con GS y Novedades con fotos | Lista para revisión |
+| 2 · Servicios y valor | Contabilidad, Impuestos y Auditoría alineados al mockup del equipo de BI; insights y simulador | En espera de los entregables de cada servicio |
 | 3 · Relación administrativa | Invitación y MFA, onboarding, propuestas, firma DocuSign simulada, facturación, aclaraciones, pagos y usuarios | Pendiente |
 
 Las secciones de fases posteriores aparecen en el menú con su etiqueta (F2, F3) y describen lo que incluirán.

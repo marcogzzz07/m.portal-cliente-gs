@@ -29,7 +29,7 @@ const journeys: { n: number; title: string; phase: 1 | 2 | 3; href?: string; hin
   { n: 10, title: "Abrir conversación contextual", phase: 1, href: "/mensajes/CONV-01" },
   { n: 11, title: "Aclarar factura y simular pago", phase: 3 },
   { n: 12, title: "Invitar usuario con acceso a una empresa", phase: 3 },
-  { n: 13, title: "Leer novedad fiscal personalizada", phase: 2 },
+  { n: 13, title: "Leer novedad fiscal personalizada", phase: 1, href: "/novedades/NOV-02" },
   { n: 14, title: "Recorrer las vistas críticas en móvil", phase: 1, hint: "Reduce la ventana a 360 px o abre en el teléfono." },
 ]
 

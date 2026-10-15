@@ -51,7 +51,7 @@ export function useScopedData() {
       .filter((a) => a.status !== "completed" && !(a.owner === "gs" && (a.status === "submitted" || a.status === "under_review")))
       .map((a) => ({
         id: `due-${a.id}`,
-        title: a.owner === "gs" ? `GS: ${a.title}` : `Vence: ${a.title}`,
+        title: a.owner === "gs" && !a.assigneeId ? `GS: ${a.title}` : `Vence: ${a.title}`,
         type: eventTypeFor(a),
         date: a.dueDate,
         companies: a.companies,
@@ -60,7 +60,23 @@ export function useScopedData() {
         actionItemId: a.id,
         derived: true,
       }))
-    const events = [...seedEvents.filter((e) => inScope(e.companies)), ...derivedEvents].sort((a, b) =>
+    const meetingEvents: CalendarEvent[] = state.meetings
+      .filter((m) => m.status !== "cancelada" && inScope(m.companies))
+      .map((m) => ({
+        id: m.id,
+        title: m.topic,
+        type: "reunion" as const,
+        date: m.date,
+        time: m.time,
+        endTime: m.endTime,
+        companies: m.companies,
+        service: m.service,
+        description: m.notes || "Reunión solicitada desde el portal.",
+        location: m.modality === "video" ? "Videollamada (liga en la invitación)" : m.modality === "oficinas_gs" ? "Oficinas GS, Monterrey" : "Oficinas del cliente",
+        meetingId: m.id,
+        meetingStatus: m.status,
+      }))
+    const events = [...seedEvents.filter((e) => inScope(e.companies)), ...derivedEvents, ...meetingEvents].sort((a, b) =>
       `${a.date}${a.time ?? "00:00"}`.localeCompare(`${b.date}${b.time ?? "00:00"}`)
     )
 

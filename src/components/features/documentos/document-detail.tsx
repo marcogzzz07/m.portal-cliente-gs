@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { AlertCircle, ArrowLeft, BadgeCheck, CheckCircle2, Clock, Download, FileSignature, FileUp, FlaskConical, Info, ListChecks, MessageSquare, ShieldCheck } from "lucide-react"
+import { AlertCircle, ArrowLeft, BadgeCheck, CheckCircle2, Clock, Download, Eye, FileSignature, FileUp, FlaskConical, Info, ListChecks, MessageSquare, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -21,12 +21,15 @@ import type { FileFormat } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { usePortal } from "@/store/portal-store"
 import { DocIcon, DocStatusBadge, formatMeta } from "./doc-meta"
+import { useDocumentDownload } from "./doc-preview-dialog"
+import { DocumentPaper } from "./document-paper"
 import { UploadDialog } from "./upload-dialog"
 
 /** Detalle de documento: estado de revisión, versiones, metadatos, descargas y conversación contextual. */
 export function DocumentDetail({ id }: { id: string }) {
   const router = useRouter()
-  const { state, persona, can, logDownload, reviewDocument, createConversation, setScope } = usePortal()
+  const { state, persona, can, reviewDocument, createConversation, setScope } = usePortal()
+  const downloadFile = useDocumentDownload()
   const [uploadOpen, setUploadOpen] = useState(false)
   const [rejectNote, setRejectNote] = useState<string | null>(null)
   const doc = state.documents.find((d) => d.id === id)
@@ -42,8 +45,7 @@ export function DocumentDetail({ id }: { id: string }) {
   const seesAudit = persona.role === "admin" || persona.role === "ejecutivo"
 
   function download(format: FileFormat) {
-    logDownload(doc!.id, format)
-    toast.success(`Descarga simulada · ${formatMeta[format].label}`, { description: "Quedó registrada con usuario, versión y fecha." })
+    downloadFile(doc!, format)
   }
 
   function talk() {
@@ -112,13 +114,41 @@ export function DocumentDetail({ id }: { id: string }) {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-6">
-          {current && (
+          {current && doc.direction === "gs" && (
+            <SectionCard
+              title="Vista previa"
+              description={`Versión ${current.version} · ${current.size}`}
+              icon={Eye}
+              action={
+                <div className="flex flex-wrap justify-end gap-2">
+                  {doc.formats.map((f, i) => (
+                    <Button key={f} size="sm" variant={i === 0 ? "default" : "outline"} onClick={() => download(f)}>
+                      <Download />
+                      {formatMeta[f].label}
+                    </Button>
+                  ))}
+                </div>
+              }
+            >
+              <div className="max-h-[560px] overflow-y-auto rounded-xl bg-muted/60 p-3 sm:p-6">
+                <DocumentPaper doc={doc} />
+              </div>
+              {doc.signed && (
+                <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+                  <FileSignature className="mt-px size-3.5 shrink-0 text-success" />
+                  Firmado con {doc.signed.provider} el {formatDateTime(doc.signed.at)} por {doc.signed.by.map((p) => `${getPerson(p).firstName} ${getPerson(p).lastName}`).join(" y ")}. Incluye certificado de firma.
+                </p>
+              )}
+            </SectionCard>
+          )}
+
+          {current && doc.direction === "cliente" && (
             <SectionCard title="Archivo vigente" description={`Versión ${current.version} · ${current.size}`} icon={Download}>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex h-28 flex-1 items-center justify-center rounded-xl border border-dashed bg-muted/40 text-center text-xs text-muted-foreground sm:h-32">
+                <div className="flex h-24 flex-1 items-center justify-center rounded-xl bg-muted/60 text-center text-sm text-muted-foreground">
                   <span>
                     <span className="block font-medium text-foreground">{current.fileName}</span>
-                    Vista previa simulada
+                    Archivo enviado por tu empresa
                   </span>
                 </div>
                 <div className="flex flex-col gap-2 sm:w-48">
@@ -130,12 +160,6 @@ export function DocumentDetail({ id }: { id: string }) {
                   ))}
                 </div>
               </div>
-              {doc.signed && (
-                <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
-                  <FileSignature className="mt-px size-3.5 shrink-0 text-success" />
-                  Firmado con {doc.signed.provider} el {formatDateTime(doc.signed.at)} por {doc.signed.by.map((p) => `${getPerson(p).firstName} ${getPerson(p).lastName}`).join(" y ")}. Incluye certificado de firma.
-                </p>
-              )}
             </SectionCard>
           )}
 

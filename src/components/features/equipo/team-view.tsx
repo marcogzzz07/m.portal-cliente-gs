@@ -1,8 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowDown, CalendarClock, LifeBuoy, Mail, MessageSquare, Phone, Users } from "lucide-react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/shared/page-header"
@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/format"
 import { companyShort } from "@/lib/labels"
 import type { GsMember, ServiceKey } from "@/lib/types"
 import { usePortal } from "@/store/portal-store"
+import { ScheduleMeetingDialog } from "./schedule-meeting-dialog"
 
 const serviceOrder: ServiceKey[] = ["contabilidad", "impuestos", "auditoria", "legal", "facturacion"]
 
@@ -24,6 +25,7 @@ export function TeamView() {
   const { scope, scopeLabel, scopeCompanies } = useScopedData()
   const visible = gsTeam.filter((m) => m.companies === "all" || m.companies.some((c) => scopeCompanies.includes(c)))
   const primary = visible.find((m) => m.primary)!
+  const [scheduleWith, setScheduleWith] = useState<string | null>(null)
 
   function talk(member: GsMember) {
     const p = getPerson(member.personId)
@@ -69,7 +71,7 @@ export function TeamView() {
               Escribir
             </Button>
           )}
-          <Button variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={() => toast.success("Solicitud de reunión enviada (simulada)", { description: "Mariana te propondrá horarios." })}>
+          <Button variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={() => setScheduleWith(primary.personId)}>
             <CalendarClock />
             Agendar reunión
           </Button>
@@ -111,10 +113,16 @@ export function TeamView() {
                         <div className="mt-auto flex items-center justify-between gap-3 border-t pt-4">
                           <span className="truncate text-[13px] text-muted-foreground">{p.email}</span>
                           {can.respond && (
-                            <Button size="sm" variant="outline" onClick={() => talk(m)} className="shrink-0">
-                              <MessageSquare />
-                              Escribir
-                            </Button>
+                            <span className="flex shrink-0 gap-1.5">
+                              <Button size="sm" variant="ghost" onClick={() => setScheduleWith(m.personId)}>
+                                <CalendarClock />
+                                Agendar
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => talk(m)}>
+                                <MessageSquare />
+                                Escribir
+                              </Button>
+                            </span>
                           )}
                         </div>
                       </article>
@@ -151,6 +159,7 @@ export function TeamView() {
           </SectionCard>
         </div>
       </div>
+      {scheduleWith && <ScheduleMeetingDialog key={scheduleWith} open hostId={scheduleWith} onOpenChange={(v) => !v && setScheduleWith(null)} />}
     </div>
   )
 }

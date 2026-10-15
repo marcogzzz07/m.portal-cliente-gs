@@ -53,13 +53,13 @@ export const roles: Record<RoleKey, RoleMeta> = {
   firmante: {
     label: "Firmante autorizado",
     description: "Ve lo que debe firmar, su contexto y los documentos firmados.",
-    modules: ["inicio", "pendientes", "calendario", "documentos", "contratos", "mensajes", "equipo", "notificaciones"],
+    modules: ["inicio", "pendientes", "calendario", "documentos", "contratos", "mensajes", "novedades", "equipo", "notificaciones"],
     can: { upload: false, approve: false, sign: true, pay: false, respond: true, adminUsers: false },
   },
   pagos: {
     label: "Facturación y pagos",
     description: "Facturas, pagos, comprobantes y aclaraciones.",
-    modules: ["inicio", "pendientes", "calendario", "documentos", "facturacion", "mensajes", "equipo", "notificaciones"],
+    modules: ["inicio", "pendientes", "calendario", "documentos", "facturacion", "mensajes", "novedades", "equipo", "notificaciones"],
     can: { upload: false, approve: false, sign: false, pay: true, respond: true, adminUsers: false },
   },
   consulta: {
@@ -126,7 +126,7 @@ export function canSeeDocument(persona: Persona, doc: DocumentItem) {
     case "ejecutivo":
       return true
     case "operativo":
-      return doc.service !== "legal"
+      return doc.service !== "legal" && doc.service !== "facturacion"
     case "firmante":
       return Boolean(doc.signed) || doc.service === "legal"
     case "pagos":

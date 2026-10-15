@@ -31,12 +31,12 @@ export function DocStatusBadge({ doc }: { doc: DocumentItem }) {
   return <StatusBadge {...docStatus[doc.status]} />
 }
 
-export type DocView = "pendientes" | "enviados" | "recibidos" | "firmados" | "archivo"
+export type DocView = "pendientes" | "enviados" | "recibidos" | "facturas" | "firmados" | "archivo"
 
 export function docView(doc: DocumentItem): DocView {
   if (doc.signed) return "firmados"
   if (doc.archived) return "archivo"
-  if (doc.direction === "gs") return "recibidos"
+  if (doc.direction === "gs") return doc.service === "facturacion" ? "facturas" : "recibidos"
   if (doc.status === "requested" || doc.status === "changes_required" || doc.status === "expired") return "pendientes"
   return "enviados"
 }

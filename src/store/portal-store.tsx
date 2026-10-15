@@ -14,6 +14,7 @@ import type {
   ActionItem,
   ActionStatus,
   AppNotification,
+  Meeting,
   CompanyId,
   Conversation,
   DocumentItem,
@@ -22,7 +23,7 @@ import type {
   Scope,
 } from "@/lib/types"
 
-const STORAGE_KEY = "gs-portal-clientes-demo-v1"
+const STORAGE_KEY = "gs-portal-clientes-demo-v2"
 
 export type ReminderPrefs = Record<"vencimientos" | "documentos" | "mensajes" | "entregables" | "facturas" | "novedades", { portal: boolean; email: boolean }>
 
@@ -36,6 +37,9 @@ interface PortalState {
   prefs: ReminderPrefs
   demo: { contalinkDown: boolean; autoReplies: boolean }
   ui: { sidebarCollapsed: boolean }
+  meetings: Meeting[]
+  /** Novedades leídas por el usuario. */
+  newsRead: string[]
 }
 
 const initialPrefs: ReminderPrefs = {
@@ -58,6 +62,8 @@ function initialState(): PortalState {
     prefs: initialPrefs,
     demo: { contalinkDown: false, autoReplies: true },
     ui: { sidebarCollapsed: false },
+    meetings: [],
+    newsRead: [],
   }
 }
 
@@ -84,6 +90,9 @@ type Action =
   | { type: "setPref"; key: keyof ReminderPrefs; channel: "portal" | "email"; value: boolean }
   | { type: "setDemo"; key: keyof PortalState["demo"]; value: boolean }
   | { type: "setSidebarCollapsed"; value: boolean }
+  | { type: "requestMeeting"; meeting: Meeting }
+  | { type: "setMeetingStatus"; id: string; status: Meeting["status"] }
+  | { type: "readNews"; id: string }
 
 let seq = 0
 const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}${(seq++).toString(36)}`
@@ -300,6 +309,32 @@ function reducer(state: PortalState, action: Action): PortalState {
       return { ...state, demo: { ...state.demo, [action.key]: action.value } }
     case "setSidebarCollapsed":
       return { ...state, ui: { ...state.ui, sidebarCollapsed: action.value } }
+    case "requestMeeting":
+      return { ...state, meetings: [...state.meetings, action.meeting] }
+    case "setMeetingStatus": {
+      const meeting = state.meetings.find((m) => m.id === action.id)
+      if (!meeting) return state
+      const host = getPerson(meeting.hostId)
+      return {
+        ...state,
+        meetings: state.meetings.map((m) => (m.id === action.id ? { ...m, status: action.status } : m)),
+        notifications:
+          action.status === "confirmada"
+            ? [
+                notification(
+                  "mensaje",
+                  `${host.firstName} ${host.lastName} confirmó la reunión`,
+                  `${meeting.topic} · ${meeting.date.slice(8)}/${meeting.date.slice(5, 7)} a las ${meeting.time} h`,
+                  "/calendario",
+                  meeting.companies
+                ),
+                ...state.notifications,
+              ]
+            : state.notifications,
+      }
+    }
+    case "readNews":
+      return state.newsRead.includes(action.id) ? state : { ...state, newsRead: [...state.newsRead, action.id] }
   }
 }
 
@@ -339,6 +374,9 @@ interface PortalContextValue {
   setPref: (key: keyof ReminderPrefs, channel: "portal" | "email", value: boolean) => void
   setDemo: (key: keyof PortalState["demo"], value: boolean) => void
   setSidebarCollapsed: (value: boolean) => void
+  requestMeeting: (input: Omit<Meeting, "id" | "status" | "requestedBy" | "requestedAt">) => Meeting
+  cancelMeeting: (id: string) => void
+  readNews: (id: string) => void
   reset: () => void
 }
 
@@ -441,6 +479,15 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
       setPref: (key, channel, value) => dispatch({ type: "setPref", key, channel, value }),
       setDemo: (key, value) => dispatch({ type: "setDemo", key, value }),
       setSidebarCollapsed: (value) => dispatch({ type: "setSidebarCollapsed", value }),
+      requestMeeting: (input) => {
+        const meeting: Meeting = { ...input, id: uid("MTG"), status: "solicitada", requestedBy: me, requestedAt: demoNowIso() }
+        dispatch({ type: "requestMeeting", meeting })
+        // GS confirma la reunión unos segundos después (simulación).
+        later(3500, () => dispatch({ type: "setMeetingStatus", id: meeting.id, status: "confirmada" }))
+        return meeting
+      },
+      cancelMeeting: (id) => dispatch({ type: "setMeetingStatus", id, status: "cancelada" }),
+      readNews: (id) => dispatch({ type: "readNews", id }),
       reset: () => {
         dispatch({ type: "reset" })
         toast.success("Datos de la demo restablecidos")

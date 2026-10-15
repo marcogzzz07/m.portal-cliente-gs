@@ -1,8 +1,10 @@
 import type { DocumentItem } from "@/lib/types"
 
+import { historyDocuments } from "./history"
+
 const ALL = ["manufactura", "comercial", "logistica", "inmuebles", "servicios"] as const
 
-export const seedDocuments: DocumentItem[] = [
+const liveDocuments: DocumentItem[] = [
   // ─── Solicitados al cliente ───────────────────────────────────────────
   {
     id: "DOC-201",
@@ -148,6 +150,7 @@ export const seedDocuments: DocumentItem[] = [
   },
   {
     id: "DOC-214",
+    periodKey: "2026-08",
     name: "Estados de cuenta bancarios",
     companies: ["manufactura"],
     service: "contabilidad",
@@ -208,6 +211,8 @@ export const seedDocuments: DocumentItem[] = [
   // ─── Recibidos de GS ──────────────────────────────────────────────────
   {
     id: "DOC-301",
+    periodKey: "2026-08",
+    template: "estados_financieros",
     name: "Estados financieros consolidados",
     companies: [...ALL],
     service: "contabilidad",
@@ -226,52 +231,9 @@ export const seedDocuments: DocumentItem[] = [
     visibility: "grupo",
   },
   {
-    id: "DOC-302",
-    name: "Estados financieros",
-    companies: ["manufactura"],
-    service: "contabilidad",
-    period: "Agosto 2026",
-    docType: "Estados financieros",
-    direction: "gs",
-    status: "completed",
-    formats: ["pdf", "xlsx"],
-    versions: [{ version: 1, fileName: "EEFF_Manufactura_Ago2026.pdf", size: "640 KB", uploadedBy: "luis", uploadedAt: "2026-09-22T18:00" }],
-    publishedAt: "2026-09-22T18:00",
-    downloads: [{ personId: "laura", version: 1, at: "2026-09-23T09:00", format: "xlsx" }],
-    visibility: "grupo",
-  },
-  {
-    id: "DOC-303",
-    name: "Estados financieros",
-    companies: ["logistica"],
-    service: "contabilidad",
-    period: "Agosto 2026",
-    docType: "Estados financieros",
-    direction: "gs",
-    status: "completed",
-    formats: ["pdf", "xlsx"],
-    versions: [{ version: 1, fileName: "EEFF_Logistica_Ago2026.pdf", size: "512 KB", uploadedBy: "luis", uploadedAt: "2026-09-22T18:00" }],
-    publishedAt: "2026-09-22T18:00",
-    downloads: [{ personId: "daniel", version: 1, at: "2026-09-25T11:20", format: "pdf" }],
-    visibility: "grupo",
-  },
-  {
-    id: "DOC-304",
-    name: "Acuses de declaraciones mensuales",
-    companies: [...ALL],
-    service: "impuestos",
-    period: "Agosto 2026",
-    docType: "Acuse SAT",
-    direction: "gs",
-    status: "completed",
-    formats: ["pdf"],
-    versions: [{ version: 1, fileName: "Acuses_Agosto2026_5_empresas.pdf", size: "2.8 MB", uploadedBy: "hector", uploadedAt: "2026-09-16T13:00" }],
-    publishedAt: "2026-09-16T13:00",
-    downloads: [],
-    visibility: "grupo",
-  },
-  {
     id: "DOC-305",
+    periodKey: "2026-10",
+    template: "opinion",
     name: "Opinión de cumplimiento SAT (positiva)",
     companies: [...ALL],
     service: "impuestos",
@@ -289,6 +251,8 @@ export const seedDocuments: DocumentItem[] = [
   },
   {
     id: "DOC-306",
+    periodKey: "2026-09",
+    template: "papel_trabajo",
     name: "Papel de trabajo: pagos provisionales",
     companies: [...ALL],
     service: "impuestos",
@@ -306,6 +270,8 @@ export const seedDocuments: DocumentItem[] = [
   },
   {
     id: "DOC-307",
+    periodKey: "2026-09",
+    template: "generico",
     name: "Carta de planeación de auditoría 2026",
     companies: ["manufactura", "comercial"],
     service: "auditoria",
@@ -321,6 +287,8 @@ export const seedDocuments: DocumentItem[] = [
   },
   {
     id: "DOC-308",
+    periodKey: "2026-09",
+    template: "generico",
     name: "Memorándum: estructura propuesta de escisión",
     companies: ["inmuebles", "manufactura"],
     service: "legal",
@@ -387,53 +355,7 @@ export const seedDocuments: DocumentItem[] = [
     downloads: [],
     visibility: "restringido",
   },
-  // ─── Archivo ──────────────────────────────────────────────────────────
-  {
-    id: "DOC-501",
-    name: "Estados financieros dictaminados 2025",
-    companies: ["manufactura"],
-    service: "auditoria",
-    period: "Ejercicio 2025",
-    docType: "Dictamen",
-    direction: "gs",
-    status: "completed",
-    archived: true,
-    formats: ["pdf"],
-    versions: [{ version: 1, fileName: "EEFF_Dictaminados_2025_Manufactura.pdf", size: "3.6 MB", uploadedBy: "ricardo", uploadedAt: "2026-04-28T18:00" }],
-    publishedAt: "2026-04-28T18:00",
-    downloads: [],
-    visibility: "grupo",
-  },
-  {
-    id: "DOC-502",
-    name: "Acuses de declaración anual 2025",
-    companies: [...ALL],
-    service: "impuestos",
-    period: "Ejercicio 2025",
-    docType: "Acuse SAT",
-    direction: "gs",
-    status: "completed",
-    archived: true,
-    formats: ["pdf"],
-    versions: [{ version: 1, fileName: "Acuses_Anual_2025.pdf", size: "4.2 MB", uploadedBy: "hector", uploadedAt: "2026-03-31T16:00" }],
-    publishedAt: "2026-03-31T16:00",
-    downloads: [],
-    visibility: "grupo",
-  },
-  {
-    id: "DOC-503",
-    name: "Estados financieros consolidados",
-    companies: [...ALL],
-    service: "contabilidad",
-    period: "Julio 2026",
-    docType: "Estados financieros",
-    direction: "gs",
-    status: "completed",
-    archived: true,
-    formats: ["pdf", "xlsx"],
-    versions: [{ version: 1, fileName: "EEFF_Consolidado_Jul2026.pdf", size: "1.1 MB", uploadedBy: "luis", uploadedAt: "2026-08-21T18:00" }],
-    publishedAt: "2026-08-21T18:00",
-    downloads: [],
-    visibility: "grupo",
-  },
 ]
+
+/** Documentos de la demo: los vivos (solicitudes, revisiones) más el historial de entregables de 2026. */
+export const seedDocuments: DocumentItem[] = [...liveDocuments, ...historyDocuments]
