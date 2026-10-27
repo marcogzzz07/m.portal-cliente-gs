@@ -66,7 +66,7 @@ export function ActionTable({ items, onOpen, showActionButton = false, groups }:
                   <TableRow key={a.id} className="cursor-pointer" onClick={() => onOpen(a.id)}>
                     <TableCell className="w-[40%] max-w-0">
                       <p className="truncate font-medium">{a.title}</p>
-                      <p className="truncate text-[13px] text-muted-foreground">
+                      <p className="truncate text-xs text-muted-foreground">
                         {serviceNames[a.service]} · {actionKindMeta[a.kind].label}
                       </p>
                     </TableCell>
@@ -102,13 +102,13 @@ export function ActionTable({ items, onOpen, showActionButton = false, groups }:
 
       <ul className="divide-y md:hidden">
         {blocks.flatMap((b) => [
-          ...(b.key ? [<li key={`h-${b.key}`} className="bg-muted/50 px-5 py-2 text-xs font-medium text-muted-foreground">{b.key}</li>] : []),
+          ...(b.key ? [<li key={`h-${b.key}`} className="bg-muted px-4 py-1.5 text-xs font-semibold text-muted-foreground">{b.key}</li>] : []),
           ...b.items.map((a) => (
             <li key={a.id}>
-              <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-start gap-3 px-5 py-4 text-left active:bg-muted/50">
+              <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-start gap-3 px-4 py-3 text-left active:bg-muted">
                 <span className="min-w-0 flex-1 space-y-1.5">
                   <span className="block font-medium leading-snug">{a.title}</span>
-                  <span className="block text-[13px] text-muted-foreground">
+                  <span className="block text-xs text-muted-foreground">
                     {companiesLabel(a.companies)} · <span className={cn(isUrgent(a) && "font-medium text-destructive")}>{dueText(a)}</span>
                   </span>
                   <ActionStatusBadge item={a} />
@@ -127,8 +127,8 @@ function GroupRows({ label, count, children }: { label: string; count: number; c
   return (
     <>
       {label && (
-        <TableRow className="bg-muted/60 hover:bg-muted/60">
-          <TableCell colSpan={6} className="py-2.5 text-[13px] font-medium text-muted-foreground">
+        <TableRow className="bg-muted hover:bg-muted">
+          <TableCell colSpan={6} className="py-1.5 text-xs font-semibold text-muted-foreground">
             {label} <span className="ml-1 tabular-nums">· {count}</span>
           </TableCell>
         </TableRow>

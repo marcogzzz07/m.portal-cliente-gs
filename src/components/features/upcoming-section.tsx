@@ -17,7 +17,7 @@ export function UpcomingSection({ href }: { href: string }) {
   if (!canAccessModule(persona, item.module)) return <AccessDenied />
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader icon={item.icon} title={item.title} description={item.description} actions={item.phase ? <PhaseBadge phase={item.phase} className="text-sm" /> : undefined} />
       <SectionCard title={`Se construye en la Fase ${item.phase}`} description="Esta sección forma parte del alcance del prototipo y se revisará en su propia fase." icon={CircleDashed}>
         <ul className="space-y-2">

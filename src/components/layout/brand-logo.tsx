@@ -15,8 +15,8 @@ export function BrandLogo({ className, subtitle = site.module }: { className?: s
     <div className={cn("flex items-center gap-3", className)}>
       <BrandMark />
       <span className="flex flex-col leading-tight">
-        <span className="text-[15px] font-semibold tracking-tight text-white">{site.name}</span>
-        <span className="text-xs text-sidebar-foreground/70">{subtitle}</span>
+        <span className="text-sm font-semibold tracking-tight text-[var(--gs-color-text-inverse)]">{site.name}</span>
+        <span className="text-xs text-[var(--gs-color-text-inverse-muted)]">{subtitle}</span>
       </span>
     </div>
   )

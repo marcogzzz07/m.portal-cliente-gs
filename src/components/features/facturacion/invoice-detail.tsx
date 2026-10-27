@@ -42,7 +42,7 @@ export function InvoiceDetail({ id }: { id: string }) {
   const dispute = inv.dispute
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Button variant="ghost" size="sm" asChild className="-ml-2">
         <Link href="/facturacion">
           <ArrowLeft />
@@ -58,7 +58,7 @@ export function InvoiceDetail({ id }: { id: string }) {
               {company.name} · emitida el {formatDate(inv.issuedAt.slice(0, 10), { day: "numeric", month: "long" })}
             </span>
           </div>
-          <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-[28px]">Factura {inv.folio}</h1>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight">Factura {inv.folio}</h1>
           <p className="text-sm text-muted-foreground">{inv.concept}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -85,7 +85,7 @@ export function InvoiceDetail({ id }: { id: string }) {
       </div>
 
       {dispute && (
-        <div className={`flex flex-col gap-3 rounded-2xl px-5 py-4 text-sm sm:flex-row sm:items-center ${dispute.status === "abierta" ? "bg-info/[0.08]" : "bg-muted/70"}`}>
+        <div className={`flex flex-col gap-3 rounded-xl px-4 py-3 text-sm sm:flex-row sm:items-center ${dispute.status === "abierta" ? "bg-[var(--gs-color-info-subtle)]" : "bg-muted"}`}>
           <Clock className="size-4 shrink-0" />
           <p className="flex-1">
             {dispute.status === "abierta" ? (
@@ -115,15 +115,15 @@ export function InvoiceDetail({ id }: { id: string }) {
           { label: "Notas de crédito", value: formatCurrency(inv.creditNote?.amount ?? 0) },
           { label: "Saldo", value: formatCurrency(balance), strong: true },
         ].map((k) => (
-          <div key={k.label} className="rounded-2xl bg-card px-6 py-5 ring-1 ring-foreground/[0.06]">
+          <div key={k.label} className="rounded-xl bg-card px-4 py-3 border">
             <p className="text-[13px] text-muted-foreground">{k.label}</p>
             <p className={`mt-1 text-2xl tracking-tight tabular-nums ${k.strong ? "font-bold" : "font-semibold"}`}>{k.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0 space-y-4">
           <SectionCard title="Pagos" description="Cada pago se aplica cuando Odoo lo confirma" icon={Receipt} flush>
             {inv.payments.length === 0 ? (
               <p className="px-6 pb-6 text-sm text-muted-foreground">Aún no hay pagos registrados para esta factura.</p>
@@ -157,14 +157,14 @@ export function InvoiceDetail({ id }: { id: string }) {
 
           {doc && (
             <SectionCard title="Vista previa" icon={Eye}>
-              <div className="max-h-[520px] overflow-y-auto rounded-xl bg-muted/60 p-3 sm:p-6">
+              <div className="max-h-[520px] overflow-y-auto rounded-xl bg-muted p-3 sm:p-6">
                 <DocumentPaper doc={doc} />
               </div>
             </SectionCard>
           )}
         </div>
 
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-4">
           <SectionCard title="Datos de la factura" icon={Receipt}>
             <InfoGrid
               columns={1}

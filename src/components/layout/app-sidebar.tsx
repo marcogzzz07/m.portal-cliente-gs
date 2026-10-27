@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { usePortal } from "@/store/portal-store"
 import { BrandLogo, BrandMark } from "./brand-logo"
 import { SidebarUser } from "./sidebar-user"
+import { ThemeToggle } from "./theme-toggle"
 
 interface AppSidebarProps {
   /** Se llama al navegar (cierra el menú en tablet/móvil). */
@@ -20,10 +21,17 @@ interface AppSidebarProps {
   /** Modo compacto: solo íconos. */
   collapsed?: boolean
   onToggle?: () => void
+  /** Tarjeta flotante con contorno (escritorio). En móvil la barra va de orilla a orilla. */
+  floating?: boolean
   className?: string
 }
 
-export function AppSidebar({ onNavigate, collapsed = false, onToggle, className }: AppSidebarProps) {
+/**
+ * Barra lateral con el diseño del Portal GS: gris muy claro (vidrio en Claro) o
+ * grafito en Oscuro, página activa en rojo GS, grupos separados por una línea
+ * fina y al pie el selector de tema y la tarjeta de perfil.
+ */
+export function AppSidebar({ onNavigate, collapsed = false, onToggle, floating = false, className }: AppSidebarProps) {
   const pathname = usePathname()
   const active = findActiveNavItem(pathname)
   const { persona } = usePortal()
@@ -31,37 +39,33 @@ export function AppSidebar({ onNavigate, collapsed = false, onToggle, className 
   const badges = { pendientes: pendingCount, mensajes: unreadMessages }
 
   return (
-    <div className={cn("flex h-full flex-col bg-sidebar text-sidebar-foreground", className)}>
-      <div className={cn("flex items-center gap-2 pt-6 pb-7", collapsed ? "flex-col px-3" : "px-5")}>
-        <Link href={site.home} onClick={onNavigate} className="min-w-0 flex-1" aria-label={site.name}>
+    <div className={cn("sb-dark flex h-full flex-col overflow-hidden", floating && "gs-sidebar-floating", className)}>
+      <div className={cn("flex items-center gap-2 pt-5 pb-4", collapsed ? "flex-col px-3" : "px-4")}>
+        <Link href={site.home} onClick={onNavigate} className="gs-focusable min-w-0 flex-1 rounded-[var(--gs-radius-md)]" aria-label={site.name}>
           {collapsed ? <BrandMark className="mx-auto" /> : <BrandLogo />}
         </Link>
         {onToggle && (
           <button
             type="button"
             onClick={onToggle}
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-white focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none"
+            className="gs-focusable flex size-8 shrink-0 items-center justify-center rounded-[var(--gs-radius-md)] text-[var(--gs-color-text-inverse-muted)] transition-colors hover:bg-[var(--gs-color-surface-inverse-hover)] hover:text-[var(--gs-color-text-inverse)]"
             aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
           >
-            {collapsed ? <PanelLeftOpen className="size-[18px]" /> : <PanelLeftClose className="size-[18px]" />}
+            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
           </button>
         )}
       </div>
 
-      <nav className={cn("scrollbar-thin flex-1 space-y-7 overflow-y-auto pb-6", collapsed ? "px-3" : "px-4")} aria-label="Navegación principal">
+      <nav className={cn("gs-scrollbar gs-scrollbar-inverse flex-1 overflow-y-auto pb-4", collapsed ? "px-3" : "px-3")} aria-label="Navegación principal">
         {navigation.map((section, i) => {
           // Los módulos sin permiso se ocultan (Product Spec §8).
           const items = section.items.filter((item) => !item.hidden && canAccessModule(persona, item.module))
           if (items.length === 0) return null
           return (
             <div key={section.label}>
-              {i > 0 &&
-                (collapsed ? (
-                  <div className="mx-2 mb-3 border-t border-sidebar-border" />
-                ) : (
-                  <p className="px-3 pb-2.5 text-[11px] font-semibold tracking-wider text-sidebar-foreground/45 uppercase">{section.label}</p>
-                ))}
-              <ul className="space-y-1">
+              {i > 0 && <div className="gs-sidebar-divider" aria-hidden />}
+              {i > 0 && !collapsed && <p className="gs-sidebar-section-label">{section.label}</p>}
+              <ul className="space-y-0.5">
                 {items.map((item) => (
                   <NavLink key={item.href} item={item} active={active?.href === item.href} count={item.badge ? badges[item.badge] : 0} collapsed={collapsed} onNavigate={onNavigate} />
                 ))}
@@ -71,8 +75,11 @@ export function AppSidebar({ onNavigate, collapsed = false, onToggle, className 
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-3">
-        <SidebarUser collapsed={collapsed} />
+      <div className="border-t border-[var(--gs-color-border-inverse)] p-3">
+        <div className={cn("flex flex-col", collapsed ? "gap-1" : "gap-0.5")}>
+          <ThemeToggle collapsed={collapsed} />
+          <SidebarUser collapsed={collapsed} />
+        </div>
       </div>
     </div>
   )
@@ -80,30 +87,24 @@ export function AppSidebar({ onNavigate, collapsed = false, onToggle, className 
 
 function NavLink({ item, active, count, collapsed, onNavigate }: { item: NavItem; active: boolean; count: number; collapsed: boolean; onNavigate?: () => void }) {
   const Icon = item.icon
-  const upcoming = Boolean(item.phase)
   const link = (
     <Link
       href={item.href}
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
-      aria-label={collapsed ? item.title : undefined}
-      className={cn(
-        "group relative flex items-center gap-3 rounded-xl py-2.5 text-[15px] transition-colors",
-        collapsed ? "justify-center px-0" : "px-3",
-        "hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
-        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none",
-        upcoming && !active && "text-sidebar-foreground/60",
-        active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-      )}
+      aria-label={collapsed ? `${item.title}${count > 0 ? `, ${count} sin atender` : ""}` : undefined}
+      data-active={active}
+      data-collapsed={collapsed}
+      className="gs-sidebar-nav-item gs-focusable"
     >
-      {active && <span className="absolute top-2 bottom-2 -left-3 w-[3px] rounded-full bg-sidebar-primary" aria-hidden />}
-      <Icon className={cn("size-[18px] shrink-0 opacity-75 transition-opacity group-hover:opacity-100", active && "opacity-100")} />
-      {!collapsed && <span className="flex-1 truncate">{item.title}</span>}
+      <Icon aria-hidden />
+      {!collapsed && <span className="min-w-0 flex-1 truncate">{item.title}</span>}
+      {!collapsed && item.phase && !active && <span className="text-[11px] text-[var(--gs-color-text-disabled)]">Fase {item.phase}</span>}
       {count > 0 &&
         (collapsed ? (
-          <span className="absolute top-1.5 right-2 size-2 rounded-full bg-sidebar-primary" aria-label={`${count} sin atender`} />
+          <span className="gs-sidebar-count-dot" aria-hidden />
         ) : (
-          <span className="min-w-5 rounded-full bg-sidebar-primary px-1.5 py-px text-center text-[11px] font-semibold text-sidebar-primary-foreground tabular-nums" aria-label={`${count} sin atender`}>
+          <span className="gs-sidebar-count" aria-label={`${count} sin atender`}>
             {count}
           </span>
         ))}

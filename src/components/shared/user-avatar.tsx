@@ -30,7 +30,7 @@ interface UserAvatarProps {
 export function UserAvatar({ firstName, lastName = "", size = "md", highlight = false, className }: UserAvatarProps) {
   return (
     <Avatar className={cn(sizes[size], className)}>
-      <AvatarFallback className={cn("font-semibold text-white", textSizes[size], highlight ? "bg-brand" : "bg-[oklch(0.4_0.006_264)]")}>
+      <AvatarFallback className={cn("font-semibold text-white", textSizes[size], highlight ? "bg-brand" : "bg-[var(--gs-color-avatar)]")}>
         {getInitials(firstName, lastName)}
       </AvatarFallback>
     </Avatar>

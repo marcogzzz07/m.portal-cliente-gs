@@ -114,7 +114,7 @@ export function UploadDialog({ open, onOpenChange, doc, onDone }: UploadDialogPr
           </DialogDescription>
         </DialogHeader>
 
-        {doc?.instructions && <p className="rounded-lg bg-muted/70 px-3 py-2 text-sm">{doc.instructions}</p>}
+        {doc?.instructions && <p className="rounded-lg bg-muted px-3 py-2 text-sm">{doc.instructions}</p>}
 
         <div
           onDragOver={(e) => {
@@ -127,10 +127,10 @@ export function UploadDialog({ open, onOpenChange, doc, onDone }: UploadDialogPr
             setDragging(false)
             pick(e.dataTransfer.files[0])
           }}
-          className={cn("flex flex-col items-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors", dragging ? "border-brand bg-brand-soft/40" : "border-border")}
+          className={cn("flex flex-col items-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors", dragging ? "border-brand bg-brand-soft" : "border-border")}
         >
           {file ? (
-            <div className="flex w-full items-center gap-3 rounded-lg bg-muted/60 px-3 py-2 text-left">
+            <div className="flex w-full items-center gap-3 rounded-lg bg-muted px-3 py-2 text-left">
               <Paperclip className="size-4 shrink-0 text-muted-foreground" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium">{file.name}</span>

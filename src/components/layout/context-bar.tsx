@@ -27,12 +27,12 @@ export function ContextBar() {
   }
 
   return (
-    <section aria-label="Contexto" className="mb-5 flex items-center gap-3 rounded-2xl bg-card px-3 py-2 ring-1 ring-foreground/[0.06]">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+    <section aria-label="Contexto" className="mb-4 flex items-center gap-3 rounded-lg border bg-card px-3 py-1.5">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
         {current ? <Building2 className="size-4" /> : <Layers className="size-4" />}
       </span>
       <Select value={state.scope} onValueChange={(v) => choose(v as Scope)} disabled={!canGroup}>
-        <SelectTrigger aria-label="Empresa" className="h-9 min-w-0 border-0 bg-transparent px-1.5 text-[15px] font-medium shadow-none hover:bg-muted/60 data-[size=default]:h-9 sm:w-auto">
+        <SelectTrigger aria-label="Empresa" className="h-8 min-w-0 border-0 bg-transparent px-1.5 text-sm font-semibold shadow-none hover:bg-accent data-[size=default]:h-8 sm:w-auto">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -52,7 +52,7 @@ export function ContextBar() {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <span className="ml-auto hidden truncate pr-2 text-sm text-muted-foreground sm:block">{current ? `${current.legalName} · RFC ${current.rfc}` : `${options.length} razones sociales`}</span>
+      <span className="ml-auto hidden truncate pr-2 text-xs text-muted-foreground tabular-nums sm:block">{current ? `${current.legalName} · RFC ${current.rfc}` : `${options.length} razones sociales`}</span>
     </section>
   )
 }

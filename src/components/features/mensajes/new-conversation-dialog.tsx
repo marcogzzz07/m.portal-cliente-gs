@@ -167,7 +167,7 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: { open:
             <Textarea id="msg" rows={4} value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe tu mensaje…" />
           </div>
 
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-muted/60 px-3 py-2">
+          <div className="flex items-center justify-between gap-3 rounded-lg bg-muted px-3 py-2">
             <span className="text-xs text-muted-foreground">Responsable GS</span>
             <PersonChip id={owner} showTitle />
           </div>

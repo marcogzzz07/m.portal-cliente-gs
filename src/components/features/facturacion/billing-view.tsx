@@ -50,10 +50,10 @@ export function BillingView() {
   const list = view === "por_pagar" ? open : view === "pagadas" ? invoices.filter((i) => invoiceStatus(i) === "paid") : invoices
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader icon={Receipt} title="Facturación y pagos" badge={scopeBadge} description="Tu estado de cuenta con GS: facturas, pagos y aclaraciones. Los saldos los confirma Odoo." />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Saldo pendiente" value={formatCompactCurrency(open.reduce((s, i) => s + balanceOf(i), 0))} icon={Wallet} accent="blue" helper={`${open.length} factura${open.length === 1 ? "" : "s"} por pagar`} />
         <MetricCard label="Vencido" value={formatCompactCurrency(overdue.reduce((s, i) => s + balanceOf(i), 0))} icon={AlarmClock} accent="pink" helper={overdue.length ? overdue.map((i) => i.folio).join(", ") : "Nada vencido"} />
         <MetricCard label="Vence en 7 días" value={formatCompactCurrency(soon.reduce((s, i) => s + balanceOf(i), 0))} icon={Receipt} accent="amber" helper={soon.length ? `${soon.length} factura${soon.length === 1 ? "" : "s"}` : "Sin vencimientos próximos"} />
@@ -77,7 +77,7 @@ export function BillingView() {
         {list.length === 0 ? (
           <EmptyState icon={CheckCheck} title="Estás al corriente" description="No hay facturas por pagar en este contexto." />
         ) : (
-          <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
+          <div className="overflow-hidden rounded-xl bg-card border">
             <Table className="hidden md:table">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">

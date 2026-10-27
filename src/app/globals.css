@@ -1,15 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../styles/gs-tokens.css";
+@import "../styles/gs-theme.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-heading: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
@@ -54,87 +56,58 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Las variables de shadcn apuntan a los tokens del sistema visual GS
+   (src/styles/gs-tokens.css), así botones, menús, ventanas y selectores cambian
+   solos con el tema Claro / Oscuro (data-theme en <html>). */
 :root {
-  /* Identidad Portal GS (González Solís): carbón + rojo GS sobre gris claro.
-     --brand = rojo del logo oficial (#B92D32). El resto es aproximado. */
-  --background: oklch(0.955 0.002 264);
-  --foreground: oklch(0.2 0.005 264);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.005 264);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.005 264);
-  --primary: oklch(0.2 0.005 264);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.955 0.002 264);
-  --secondary-foreground: oklch(0.25 0.005 264);
-  --muted: oklch(0.962 0.002 264);
-  --muted-foreground: oklch(0.52 0.008 264);
-  --accent: oklch(0.95 0.003 264);
-  --accent-foreground: oklch(0.2 0.005 264);
-  --destructive: oklch(0.55 0.21 25);
-  --brand: oklch(0.52 0.176 24);
-  --brand-foreground: oklch(0.99 0 0);
-  --brand-soft: oklch(0.955 0.028 12);
-  --success: oklch(0.58 0.13 160);
-  --warning: oklch(0.72 0.15 65);
-  --info: oklch(0.56 0.13 255);
-  --border: oklch(0.915 0.003 264);
-  --input: oklch(0.9 0.004 264);
-  --ring: oklch(0.6 0.14 24);
-  --chart-1: oklch(0.52 0.176 24);
-  --chart-2: oklch(0.32 0.008 264);
-  --chart-3: oklch(0.58 0.13 160);
-  --chart-4: oklch(0.75 0.14 70);
-  --chart-5: oklch(0.72 0.01 264);
-  --radius: 0.875rem;
-  --sidebar: oklch(0.225 0.004 264);
-  --sidebar-foreground: oklch(0.82 0.004 264);
-  --sidebar-primary: oklch(0.6 0.19 24);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.295 0.005 264);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.31 0.005 264);
-  --sidebar-ring: oklch(0.6 0.19 24);
+  --background: var(--gs-color-canvas);
+  --foreground: var(--gs-color-text-primary);
+  --card: var(--gs-color-surface-base);
+  --card-foreground: var(--gs-color-text-primary);
+  --popover: var(--gs-color-surface-elevated);
+  --popover-foreground: var(--gs-color-text-primary);
+  /* Acción principal en grafito (gris claro en Oscuro), como en el Portal GS. */
+  --primary: var(--gs-color-action-primary);
+  --primary-foreground: var(--gs-color-text-on-primary);
+  --secondary: var(--gs-color-surface-subtle);
+  --secondary-foreground: var(--gs-color-text-primary);
+  --muted: var(--gs-color-surface-subtle);
+  --muted-foreground: var(--gs-color-text-muted);
+  --accent: var(--gs-color-hover);
+  --accent-foreground: var(--gs-color-text-primary);
+  --destructive: var(--gs-color-danger-action);
+  --brand: var(--gs-color-brand);
+  --brand-foreground: #ffffff;
+  --brand-soft: var(--gs-color-brand-subtle);
+  --success: var(--gs-color-success-foreground);
+  --warning: var(--gs-color-warning-foreground);
+  --info: var(--gs-color-info-foreground);
+  --border: var(--gs-color-border-subtle);
+  --input: var(--gs-color-border-subtle);
+  --ring: var(--gs-color-brand);
+  --chart-1: var(--gs-chart-1);
+  --chart-2: var(--gs-chart-2);
+  --chart-3: var(--gs-chart-3);
+  --chart-4: var(--gs-chart-4);
+  --chart-5: var(--gs-chart-5);
+  /* 6px en controles (rounded-lg) y ~8px en tarjetas (rounded-xl). */
+  --radius: 0.375rem;
+  --sidebar: #f7f8fa;
+  --sidebar-foreground: #4b4e55;
+  --sidebar-primary: var(--gs-color-brand);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8eaed;
+  --sidebar-accent-foreground: #151618;
+  --sidebar-border: #dcdee1;
+  --sidebar-ring: var(--gs-color-brand);
 }
 
-.dark {
-  --background: oklch(0.17 0.004 264);
-  --foreground: oklch(0.96 0 0);
-  --card: oklch(0.21 0.004 264);
-  --card-foreground: oklch(0.96 0 0);
-  --popover: oklch(0.21 0.004 264);
-  --popover-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.96 0 0);
-  --primary-foreground: oklch(0.2 0.005 264);
-  --secondary: oklch(0.27 0.005 264);
-  --secondary-foreground: oklch(0.96 0 0);
-  --muted: oklch(0.25 0.005 264);
-  --muted-foreground: oklch(0.72 0.006 264);
-  --accent: oklch(0.27 0.005 264);
-  --accent-foreground: oklch(0.96 0 0);
-  --destructive: oklch(0.7 0.19 22);
-  --brand: oklch(0.65 0.19 20);
-  --brand-foreground: oklch(0.99 0 0);
-  --brand-soft: oklch(0.3 0.06 15);
-  --success: oklch(0.72 0.13 160);
-  --warning: oklch(0.8 0.14 70);
-  --info: oklch(0.72 0.12 255);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.65 0.15 20);
-  --chart-1: oklch(0.65 0.19 20);
-  --chart-2: oklch(0.8 0.005 264);
-  --chart-3: oklch(0.72 0.13 160);
-  --chart-4: oklch(0.8 0.13 70);
-  --chart-5: oklch(0.55 0.01 264);
-  --sidebar: oklch(0.15 0.004 264);
-  --sidebar-foreground: oklch(0.82 0.004 264);
-  --sidebar-primary: oklch(0.65 0.19 20);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.24 0.005 264);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.65 0.19 20);
+:root[data-theme="dark"] {
+  --sidebar: #121315;
+  --sidebar-foreground: #a8abb2;
+  --sidebar-accent: #222428;
+  --sidebar-accent-foreground: #f2f3f5;
+  --sidebar-border: #2a2c31;
 }
 
 @layer base {
@@ -155,14 +128,14 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: var(--sidebar-accent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--gs-color-text-primary) 28%, transparent) transparent;
   }
 }
 
 /* ─── Organigrama (árbol con conectores) ─────────────────────────── */
 @layer components {
   .org-tree {
-    --org-line: oklch(0.8 0.004 264);
+    --org-line: var(--gs-color-border-control);
     --org-gap: 1.25rem;
   }
   .org-tree ul {

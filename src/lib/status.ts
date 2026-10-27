@@ -51,15 +51,20 @@ export const actionKindMeta: Record<ActionKind, { label: string; verb: string }>
   confirmar: { label: "Confirmación", verb: "Confirmar" },
 }
 
-/** Colores por tipo de evento. La leyenda siempre muestra el nombre del tipo. */
+/**
+ * Tipos de evento en neutros (como los tipos de reunión del calendario del
+ * Portal GS): el color queda reservado para estados. El nombre del tipo siempre
+ * se muestra junto al evento y en la leyenda.
+ */
+const neutralEvent = { dot: "bg-muted-foreground", chip: "bg-muted text-foreground" }
 export const eventTypeMeta: Record<EventType, { label: string; dot: string; chip: string }> = {
-  fiscal: { label: "Fiscal", dot: "bg-brand", chip: "bg-brand-soft text-brand" },
-  contable: { label: "Contable", dot: "bg-info", chip: "bg-info/12 text-info" },
-  contractual: { label: "Contractual", dot: "bg-violet-600", chip: "bg-violet-100 text-violet-700" },
-  proyecto: { label: "Proyecto", dot: "bg-amber-500", chip: "bg-amber-100 text-amber-800" },
-  reunion: { label: "Reunión", dot: "bg-success", chip: "bg-success/12 text-success" },
-  pago: { label: "Pago", dot: "bg-[oklch(0.4_0.006_264)]", chip: "bg-muted text-foreground" },
-  renovacion: { label: "Renovación", dot: "bg-orange-500", chip: "bg-orange-100 text-orange-800" },
+  fiscal: { label: "Fiscal", ...neutralEvent },
+  contable: { label: "Contable", ...neutralEvent },
+  contractual: { label: "Contractual", ...neutralEvent },
+  proyecto: { label: "Proyecto", ...neutralEvent },
+  reunion: { label: "Reunión", ...neutralEvent },
+  pago: { label: "Pago", ...neutralEvent },
+  renovacion: { label: "Renovación", ...neutralEvent },
 }
 
 export const contractStatus: Record<ContractStatus, StatusMeta> = {

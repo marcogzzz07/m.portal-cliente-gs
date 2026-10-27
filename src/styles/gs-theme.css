@@ -1,0 +1,558 @@
+/* Tema Claro / Oscuro, barra lateral y kit ejecutivo del portal de clientes.
+   Adaptado del Portal GS interno (portal-gs, rama design/mi-gs-propuesta-1:
+   src/styles/gs-theme.css y las piezas usadas de gs-foundations.css).
+   Diferencia: aquí solo hay Claro y Oscuro (sin Alternativo navy).
+   Ver docs/SISTEMA_DE_DISENO.md. */
+
+/* ── Utilidades base ─────────────────────────────────────────────────────── */
+.gs-focusable:focus-visible {
+  outline: 3px solid var(--gs-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Scrollbar del sistema: delgada, riel transparente y thumb translúcido del
+   color de texto de la superficie (28 %, 42 % al pasar el cursor). */
+.gs-scrollbar {
+  --gs-scrollbar-thumb: color-mix(in srgb, var(--gs-color-text-primary) 28%, transparent);
+  --gs-scrollbar-thumb-hover: color-mix(in srgb, var(--gs-color-text-primary) 42%, transparent);
+  scrollbar-color: var(--gs-scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+.gs-scrollbar-inverse {
+  --gs-scrollbar-thumb: color-mix(in srgb, var(--gs-color-text-inverse) 28%, transparent);
+  --gs-scrollbar-thumb-hover: color-mix(in srgb, var(--gs-color-text-inverse) 42%, transparent);
+}
+
+.gs-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.gs-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gs-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: var(--gs-radius-pill);
+  background: var(--gs-scrollbar-thumb);
+}
+
+.gs-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--gs-scrollbar-thumb-hover);
+}
+
+/* ── Barra lateral ───────────────────────────────────────────────────────────
+   Se pinta con los tokens "inverse" redefinidos solo dentro de .sb-dark:
+   gris muy claro en Claro y grafito en Oscuro. */
+.sb-dark {
+  --gs-color-surface-inverse: #f7f8fa;
+  --gs-color-surface-inverse-hover: #e8eaed;
+  --gs-color-text-inverse: #151618;
+  --gs-color-text-inverse-muted: #4b4e55;
+  --gs-color-text-disabled: #8d9096;
+  --gs-color-border-inverse: #dcdee1;
+  --gs-sidebar-outline: rgba(24, 25, 27, 0.1);
+  --gs-sidebar-active-bg: #b92d32;
+  --gs-sidebar-active-bg-hover: #a8272c;
+  background: var(--gs-color-surface-inverse);
+  color: var(--gs-color-text-inverse);
+}
+
+:root[data-theme="dark"] .sb-dark {
+  --gs-color-surface-inverse: #121315;
+  --gs-color-surface-inverse-hover: #222428;
+  --gs-color-text-inverse: #f2f3f5;
+  --gs-color-text-inverse-muted: #a8abb2;
+  --gs-color-text-disabled: #6c6f76;
+  --gs-color-border-inverse: #2a2c31;
+  --gs-sidebar-outline: #303237;
+  --gs-sidebar-active-bg: #b3363b;
+  --gs-sidebar-active-bg-hover: #c13f44;
+}
+
+/* Claro: barra de vidrio. Detrás (body) hay un degradado muy tenue de marca
+   arriba y navy abajo, que es lo que el vidrio desenfoca; el contenido de la
+   derecha lo tapa con su fondo. En celular la barra abierta sigue sólida. */
+:root[data-theme="light"] body {
+  background:
+    radial-gradient(48rem 36rem at -12% -8%, rgba(185, 45, 50, 0.09), transparent 62%),
+    radial-gradient(44rem 40rem at -10% 108%, rgba(35, 71, 126, 0.11), transparent 62%),
+    var(--gs-color-canvas);
+  background-attachment: fixed;
+}
+
+/* Barra como tarjeta flotante (escritorio): separada de las orillas por el
+   contenedor, con contorno en todo el perímetro, esquinas de 16 px y sombra suave. */
+.gs-sidebar-floating {
+  border: 1px solid var(--gs-sidebar-outline);
+  border-radius: 1rem;
+}
+
+:root[data-theme="light"] .gs-sidebar-floating {
+  background-color: rgba(255, 255, 255, 0.62);
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(24, 25, 27, 0.05),
+    0 12px 32px -16px rgba(24, 25, 27, 0.22);
+}
+
+:root[data-theme="dark"] .gs-sidebar-floating {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 32px -16px rgba(0, 0, 0, 0.6);
+}
+
+/* Etiqueta de grupo ("Administración"): minúsculas normales, 12px medium. */
+.gs-sidebar-section-label {
+  margin: 0 0 var(--gs-space-2);
+  padding-inline: var(--gs-space-3);
+  color: var(--gs-color-text-inverse-muted);
+  font-size: var(--gs-font-size-metadata);
+  font-weight: var(--gs-font-weight-medium);
+  line-height: var(--gs-line-height-copy);
+}
+
+/* Línea fina entre grupos de la barra. */
+.gs-sidebar-divider {
+  height: 1px;
+  margin: var(--gs-space-3) var(--gs-space-2);
+  background: var(--gs-color-border-inverse);
+}
+
+.gs-sidebar-divider + .gs-sidebar-section-label {
+  margin-top: var(--gs-space-2);
+}
+
+.gs-sidebar-nav-item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: var(--gs-control-height);
+  align-items: center;
+  gap: var(--gs-space-3);
+  border-radius: var(--gs-radius-control);
+  padding: var(--gs-space-2) var(--gs-space-3);
+  color: var(--gs-color-text-inverse-muted);
+  font-size: var(--gs-font-size-body);
+  line-height: var(--gs-line-height-copy);
+  transition:
+    background-color var(--gs-duration-productive) var(--gs-ease-productive),
+    color var(--gs-duration-productive) var(--gs-ease-productive);
+}
+
+.gs-sidebar-nav-item:hover {
+  background: var(--gs-color-surface-inverse-hover);
+  color: var(--gs-color-text-inverse);
+}
+
+.gs-sidebar-nav-item[data-collapsed="true"] {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.gs-sidebar-nav-item svg {
+  width: var(--gs-icon-size);
+  height: var(--gs-icon-size);
+  flex: none;
+  stroke-width: 1.8;
+}
+
+/* Página activa: bloque rojo de marca con texto blanco, semibold y una línea
+   blanca a la izquierda (no depende solo del color). */
+.sb-dark .gs-sidebar-nav-item[data-active="true"] {
+  background: var(--gs-sidebar-active-bg);
+  box-shadow: 0 1px 2px rgba(120, 20, 24, 0.25);
+  color: #ffffff;
+  font-weight: var(--gs-font-weight-semibold);
+}
+
+.sb-dark .gs-sidebar-nav-item[data-active="true"]:hover {
+  background: var(--gs-sidebar-active-bg-hover);
+}
+
+.sb-dark .gs-sidebar-nav-item[data-active="true"]::before {
+  position: absolute;
+  top: 50%;
+  left: 0.25rem;
+  width: 3px;
+  height: 1.25rem;
+  border-radius: 0 var(--gs-radius-xs) var(--gs-radius-xs) 0;
+  background: #ffffff;
+  content: "";
+  transform: translateY(-50%);
+}
+
+/* Conteo de pendientes o mensajes junto al módulo: metadata neutral, no pill roja. */
+.gs-sidebar-count {
+  margin-left: auto;
+  min-width: 1.25rem;
+  border-radius: var(--gs-radius-pill);
+  box-shadow: inset 0 0 0 1px var(--gs-color-border-inverse);
+  padding: 0 0.375rem;
+  color: var(--gs-color-text-inverse-muted);
+  font-size: 0.6875rem;
+  font-weight: var(--gs-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.125rem;
+  text-align: center;
+}
+
+.gs-sidebar-nav-item[data-active="true"] .gs-sidebar-count {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+.gs-sidebar-count-dot {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.5rem;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: var(--gs-radius-pill);
+  background: var(--gs-color-text-inverse-muted);
+}
+
+/* ── Selector Claro / Oscuro ─────────────────────────────────────────────── */
+.gs-theme-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  border: var(--gs-border-width) solid var(--gs-color-border-inverse);
+  border-radius: var(--gs-radius-control);
+  background: color-mix(in srgb, var(--gs-color-text-inverse) 3%, transparent);
+  padding: 2px;
+}
+
+.gs-theme-toggle-option,
+.gs-theme-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3125rem;
+  border: 0;
+  border-radius: calc(var(--gs-radius-control) - 2px);
+  background: transparent;
+  color: var(--gs-color-text-inverse-muted);
+  font: inherit;
+  font-size: var(--gs-font-size-metadata);
+  font-weight: var(--gs-font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--gs-duration-productive) var(--gs-ease-productive),
+    color var(--gs-duration-productive) var(--gs-ease-productive);
+}
+
+.gs-theme-toggle-option {
+  height: 1.625rem;
+  padding-inline: 0.25rem;
+  white-space: nowrap;
+}
+
+.gs-theme-toggle-option svg,
+.gs-theme-toggle-icon svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+.gs-theme-toggle-option:hover,
+.gs-theme-toggle-icon:hover {
+  color: var(--gs-color-text-inverse);
+}
+
+.gs-theme-toggle-option[aria-checked="true"] {
+  background: color-mix(in srgb, var(--gs-color-text-inverse) 10%, transparent);
+  color: var(--gs-color-text-inverse);
+  font-weight: var(--gs-font-weight-semibold);
+}
+
+.gs-theme-toggle-icon {
+  width: 100%;
+  height: 2.25rem;
+}
+
+.gs-theme-toggle-icon:hover {
+  background: var(--gs-color-surface-inverse-hover);
+}
+
+/* Pie de la barra: fila de Salir. */
+.gs-sidebar-footer-row {
+  display: flex;
+  width: 100%;
+  min-height: 2rem;
+  align-items: center;
+  gap: var(--gs-space-3);
+  border-radius: var(--gs-radius-control);
+  padding: 0.3125rem var(--gs-space-3);
+  color: var(--gs-color-text-inverse-muted);
+  font-size: var(--gs-font-size-body-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--gs-duration-productive) var(--gs-ease-productive),
+    color var(--gs-duration-productive) var(--gs-ease-productive);
+}
+
+.gs-sidebar-footer-row:hover {
+  background: var(--gs-color-surface-inverse-hover);
+  color: var(--gs-color-text-inverse);
+}
+
+.gs-sidebar-footer-row svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: none;
+}
+
+.gs-sidebar-footer-row[data-collapsed="true"] {
+  justify-content: center;
+  padding: var(--gs-space-2);
+}
+
+.gs-sidebar-footer-row[data-collapsed="true"] svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Tarjeta de perfil al pie: superficie tenue derivada del texto de la barra
+   (sirve en Claro y Oscuro), ícono de persona en cuadro y un indicador de
+   opciones a la derecha. */
+.gs-sidebar-profile-card {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: var(--gs-space-3);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--gs-color-text-inverse) 5%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gs-color-text-inverse) 8%, transparent);
+  padding: 0.4375rem 0.5rem 0.4375rem 0.4375rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--gs-duration-productive) var(--gs-ease-productive),
+    box-shadow var(--gs-duration-productive) var(--gs-ease-productive);
+}
+
+.gs-sidebar-profile-card:hover {
+  background: color-mix(in srgb, var(--gs-color-text-inverse) 8%, transparent);
+}
+
+.gs-sidebar-profile-card[data-state="open"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gs-color-text-inverse) 22%, transparent);
+}
+
+.gs-sidebar-profile-avatar {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--gs-color-text-inverse) 9%, transparent);
+  color: var(--gs-color-text-inverse);
+}
+
+.gs-sidebar-profile-avatar svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 1.75;
+}
+
+.gs-sidebar-profile-chevron {
+  display: flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gs-radius-md);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gs-color-text-inverse) 10%, transparent);
+  color: var(--gs-color-text-inverse-muted);
+}
+
+.gs-sidebar-profile-chevron svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* ── Kit ejecutivo ───────────────────────────────────────────────────────────
+   Piezas que van dentro de las tarjetas (SectionCard): franja de métricas,
+   filas de resumen, callout, rótulo de lista y barra de avance. */
+.gs-exec-stat-strip {
+  display: grid;
+  min-width: 0;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  border-top: var(--gs-border-width) solid var(--gs-color-border-subtle);
+  background: var(--gs-color-surface-subtle);
+}
+
+.gs-exec-stat {
+  min-width: 0;
+  padding: var(--gs-space-2) var(--gs-composition-padding-panel);
+}
+
+.gs-exec-stat + .gs-exec-stat {
+  border-left: var(--gs-border-width) solid var(--gs-color-border-subtle);
+}
+
+.gs-exec-stat-label {
+  color: var(--gs-color-text-muted);
+  font-size: var(--gs-font-size-metadata);
+  font-weight: var(--gs-font-weight-medium);
+}
+
+.gs-exec-stat-value {
+  margin-top: 0.125rem;
+  color: var(--gs-color-text-primary);
+  font-size: var(--gs-font-size-section);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: var(--gs-font-weight-semibold);
+}
+
+.gs-exec-insight-list {
+  container-type: inline-size;
+}
+
+.gs-exec-insight-row {
+  display: grid;
+  min-width: 0;
+  align-items: center;
+  grid-template-columns: minmax(7rem, 0.8fr) minmax(0, 1.6fr) auto;
+  gap: var(--gs-space-3);
+  border-bottom: var(--gs-border-width) solid var(--gs-color-border-subtle);
+  padding: var(--gs-space-2) var(--gs-composition-padding-panel);
+}
+
+.gs-exec-insight-row:last-child {
+  border-bottom: 0;
+}
+
+@container (max-width: 26rem) {
+  .gs-exec-insight-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 0.125rem;
+  }
+
+  .gs-exec-insight-row > :nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .gs-exec-insight-row > :nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .gs-exec-insight-row > :nth-child(3) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+.gs-exec-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gs-space-2);
+  border-radius: var(--gs-radius-control);
+  background: var(--gs-color-surface-subtle);
+  padding: var(--gs-space-2) var(--gs-space-3);
+  color: var(--gs-color-text-secondary);
+  font-size: var(--gs-font-size-body-sm);
+  line-height: var(--gs-line-height-copy);
+}
+
+.gs-exec-callout[data-tone="alert"] {
+  background: var(--gs-color-danger-subtle);
+  color: var(--gs-color-danger-foreground);
+}
+
+.gs-exec-list-heading {
+  border-top: var(--gs-border-width) solid var(--gs-color-border-subtle);
+  border-bottom: var(--gs-border-width) solid var(--gs-color-border-subtle);
+  background: var(--gs-color-surface-subtle);
+  padding: 0.3125rem var(--gs-composition-padding-panel);
+  color: var(--gs-color-text-muted);
+  font-size: var(--gs-font-size-metadata);
+  font-weight: var(--gs-font-weight-medium);
+}
+
+.gs-exec-meter {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: var(--gs-radius-pill);
+  background: var(--gs-color-surface-subtle);
+}
+
+.gs-exec-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+}
+
+@media (max-width: 40rem) {
+  .gs-exec-stat-strip {
+    grid-auto-flow: row;
+  }
+
+  .gs-exec-stat + .gs-exec-stat {
+    border-top: var(--gs-border-width) solid var(--gs-color-border-subtle);
+    border-left: 0;
+  }
+}
+
+/* ── Paneles fuertes invertidos en Oscuro ────────────────────────────────────
+   En Claro los paneles de lectura son grafito con texto blanco; en Oscuro se
+   invierten a gris claro con texto oscuro. */
+.gs-panel-strong {
+  border-radius: var(--gs-radius-lg);
+  background: var(--gs-color-panel-strong);
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .gs-panel-strong,
+:root[data-theme="dark"] .gs-panel-strong .text-white {
+  color: var(--gs-color-text-inverse);
+}
+
+:root[data-theme="dark"] .gs-panel-strong [class*="text-white/"] {
+  color: var(--gs-color-text-inverse-muted);
+}
+
+:root[data-theme="dark"] .gs-panel-strong [class*="ring-white/"] {
+  --tw-ring-color: color-mix(in srgb, var(--gs-color-text-inverse) 16%, transparent);
+}
+
+:root[data-theme="dark"] .gs-panel-strong [class*="border-white/"] {
+  border-color: color-mix(in srgb, var(--gs-color-text-inverse) 22%, transparent);
+}
+
+:root[data-theme="dark"] .gs-panel-strong [class*="bg-white/"] {
+  background-color: color-mix(in srgb, var(--gs-color-text-inverse) 6%, transparent);
+}
+
+/* ── Colores fijos de Tailwind en Oscuro ─────────────────────────────────────
+   `gs-keep-light` excluye lo que debe seguir blanco (hojas de documento). */
+:root[data-theme="dark"] .bg-white:not(.gs-keep-light) {
+  background-color: var(--gs-color-surface-base);
+}
+
+:root[data-theme="dark"] [class*="ring-black/"] {
+  --tw-ring-color: var(--gs-color-border-subtle);
+}
+
+/* Botón blanco principal dentro de un panel fuerte: en Oscuro pasa a oscuro
+   sobre el panel claro. */
+:root[data-theme="dark"] .gs-panel-strong .gs-keep-light {
+  background-color: var(--gs-color-text-inverse);
+  color: var(--gs-color-surface-inverse);
+}
+
+:root[data-theme="dark"] .gs-panel-strong .gs-keep-light:hover {
+  background-color: color-mix(in srgb, var(--gs-color-text-inverse) 88%, transparent);
+}

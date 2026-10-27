@@ -57,14 +57,14 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
     >
       <DialogContent className="flex h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl" showCloseButton={step !== "firmar"}>
         {/* Barra superior del proveedor de firma */}
-        <div className="flex flex-wrap items-center gap-3 border-b bg-[oklch(0.22_0.01_264)] px-5 py-3 pr-12 text-white">
-          <ShieldCheck className="size-4 text-emerald-400" />
+        <div className="gs-panel-strong flex flex-wrap items-center gap-3 rounded-none border-b px-5 py-3 pr-12 text-white">
+          <ShieldCheck className="size-4 text-[var(--gs-color-success-base)]" />
           <DialogTitle className="text-sm font-medium text-white">Firma electrónica segura</DialogTitle>
           <DialogDescription className="text-xs text-white/60">Proveedor: DocuSign (simulado) · Sesión cifrada</DialogDescription>
           <ol className="ml-auto hidden items-center gap-2 text-xs sm:flex">
             {steps.map((s, i) => (
               <li key={s.key} className={cn("flex items-center gap-1.5", i <= idx ? "text-white" : "text-white/40")}>
-                <span className={cn("flex size-5 items-center justify-center rounded-full text-[10px] font-bold", i < idx ? "bg-emerald-500" : i === idx ? "bg-white text-black" : "bg-white/15")}>{i < idx ? "✓" : i + 1}</span>
+                <span className={cn("flex size-5 items-center justify-center rounded-full text-[11px] font-bold", i < idx ? "bg-[var(--gs-color-success-base)]" : i === idx ? "gs-keep-light bg-white text-[#151618]" : "bg-white/15")}>{i < idx ? "✓" : i + 1}</span>
                 {s.label}
               </li>
             ))}
@@ -72,8 +72,8 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
         </div>
 
         {step === "codigo" && (
-          <div className="flex flex-1 items-center justify-center bg-muted/40 p-6">
-            <div className="w-full max-w-sm space-y-5 rounded-2xl bg-card p-7 ring-1 ring-foreground/[0.06]">
+          <div className="flex flex-1 items-center justify-center bg-muted p-6">
+            <div className="w-full max-w-sm space-y-5 rounded-xl bg-card p-5 border">
               <span className="flex size-12 items-center justify-center rounded-full bg-muted">
                 <Lock className="size-5" />
               </span>
@@ -97,8 +97,8 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
 
         {(step === "revisar" || step === "firmar") && (
           <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <div className="min-h-0 overflow-y-auto bg-muted/60 p-4 sm:p-8">
-              <article className="mx-auto max-w-[680px] space-y-5 rounded-lg bg-white px-8 py-9 text-[13px] leading-relaxed text-neutral-800 shadow-sm ring-1 ring-black/5 sm:px-12">
+            <div className="min-h-0 overflow-y-auto bg-muted p-4 sm:p-8">
+              <article className="mx-auto max-w-[680px] space-y-5 gs-keep-light rounded-lg bg-white px-8 py-9 text-[13px] leading-relaxed text-neutral-800 shadow-sm ring-1 ring-black/5 sm:px-12">
                 <header className="flex items-center gap-3 border-b pb-4">
                   <BrandMark />
                   <div>
@@ -180,7 +180,7 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
                     <h3 className="font-semibold">Revisa el documento</h3>
                     <p className="text-sm text-muted-foreground">Lee el contenido completo antes de firmar. Tu firma tendrá el mismo efecto que una firma autógrafa.</p>
                   </div>
-                  <label className="flex items-start gap-2.5 rounded-xl bg-muted/60 p-3 text-sm">
+                  <label className="flex items-start gap-2.5 rounded-xl bg-muted p-3 text-sm">
                     <Checkbox checked={consent} onCheckedChange={(v) => setConsent(Boolean(v))} className="mt-0.5" />
                     Acepto usar registros y firmas electrónicas para este documento.
                   </label>
@@ -220,9 +220,9 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
         )}
 
         {step === "listo" && (
-          <div className="flex flex-1 items-center justify-center overflow-y-auto bg-muted/40 p-6">
-            <div className="w-full max-w-lg space-y-5 rounded-2xl bg-card p-7 text-center ring-1 ring-foreground/[0.06]">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-success/12 text-success">
+          <div className="flex flex-1 items-center justify-center overflow-y-auto bg-muted p-6">
+            <div className="w-full max-w-lg space-y-5 rounded-xl bg-card p-5 text-center border">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[var(--gs-color-success-subtle)] text-success">
                 <CheckCircle2 className="size-7" />
               </span>
               <div className="space-y-1">
@@ -235,7 +235,7 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
                 {live.signers.map((s) => {
                   const p = getPerson(s.personId)
                   return (
-                    <li key={s.personId} className="flex items-center gap-3 rounded-xl bg-muted/60 px-4 py-2.5">
+                    <li key={s.personId} className="flex items-center gap-3 rounded-xl bg-muted px-4 py-2.5">
                       {s.status === "firmado" ? <CheckCircle2 className="size-4 text-success" /> : <Loader2 className="size-4 animate-spin text-muted-foreground" />}
                       <span className="flex-1">
                         {p.firstName} {p.lastName} <span className="text-muted-foreground">· {s.capacity}</span>
@@ -246,7 +246,7 @@ export function SigningCeremony({ contract, open, onOpenChange }: { contract: Co
                 })}
               </ul>
               {live.status === "completed" && (
-                <div className="space-y-2 rounded-xl bg-success/[0.08] p-4 text-left text-sm">
+                <div className="space-y-2 rounded-xl bg-[var(--gs-color-success-subtle)] p-4 text-left text-sm">
                   <p className="font-medium">Lo que sigue</p>
                   <p>• El contrato firmado está en Documentos › Firmados.</p>
                   {live.advance && <p>• Se emitió la factura A-4830 por el anticipo del alta de EcoPack Desarrollos.</p>}

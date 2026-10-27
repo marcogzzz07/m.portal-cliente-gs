@@ -44,18 +44,18 @@ export function TeamView() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader icon={Users} title="Equipo GS" description={`Las personas de González Solís que atienden a ${scopeLabel}, por servicio.`} />
 
-      <section className="flex flex-col gap-5 rounded-2xl bg-sidebar p-5 text-sidebar-foreground sm:flex-row sm:items-center sm:p-6">
-        <UserAvatar firstName={getPerson(primary.personId).firstName} lastName={getPerson(primary.personId).lastName} size="xl" highlight />
+      <section className="gs-panel-strong flex flex-col gap-4 px-5 py-4 text-white sm:flex-row sm:items-center">
+        <UserAvatar firstName={getPerson(primary.personId).firstName} lastName={getPerson(primary.personId).lastName} size="lg" />
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="text-xs font-semibold tracking-wider text-sidebar-primary uppercase">Tu contacto principal</p>
-          <h2 className="text-xl font-bold text-white">
+          <p className="text-xs text-white/60">Tu contacto principal</p>
+          <h2 className="text-[1.375rem] leading-tight font-bold tracking-tight">
             {getPerson(primary.personId).firstName} {getPerson(primary.personId).lastName}
           </h2>
-          <p className="text-sm">{getPerson(primary.personId).title} · {primary.materia}</p>
-          <p className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-xs text-sidebar-foreground/80">
+          <p className="text-sm text-white/70">{getPerson(primary.personId).title} · {primary.materia}</p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-xs text-white/60">
             <span className="inline-flex items-center gap-1.5">
               <Mail className="size-3.5" /> {getPerson(primary.personId).email}
             </span>
@@ -66,32 +66,32 @@ export function TeamView() {
         </div>
         <div className="flex flex-wrap gap-2">
           {can.respond && (
-            <Button onClick={() => talk(primary)} className="bg-white text-foreground hover:bg-white/90">
+            <Button onClick={() => talk(primary)} className="gs-keep-light bg-white text-[#151618] hover:bg-white/90">
               <MessageSquare />
               Escribir
             </Button>
           )}
-          <Button variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={() => setScheduleWith(primary.personId)}>
+          <Button variant="outline" className="border-white/20 bg-white/[0.06] text-white hover:bg-white/10 hover:text-white" onClick={() => setScheduleWith(primary.personId)}>
             <CalendarClock />
             Agendar reunión
           </Button>
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 space-y-4">
           {serviceOrder.map((s) => {
             const members = visible.filter((m) => !m.primary && m.services.includes(s))
             if (members.length === 0) return null
             return (
               <section key={s} className="space-y-2">
-                <h2 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{serviceNames[s]}</h2>
+                <h2 className="text-sm font-medium text-muted-foreground">{serviceNames[s]}</h2>
                 <div className="grid gap-3 md:grid-cols-2">
                   {members.map((m) => {
                     const p = getPerson(m.personId)
                     const sub = m.away ? getPerson(m.away.substituteId) : null
                     return (
-                      <article key={m.personId} className="flex flex-col gap-4 rounded-2xl bg-card ring-1 ring-foreground/[0.06] p-6">
+                      <article key={m.personId} className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-3.5">
                         <div className="flex items-start gap-3">
                           <UserAvatar firstName={p.firstName} lastName={p.lastName} size="lg" />
                           <div className="min-w-0 flex-1">
@@ -106,12 +106,12 @@ export function TeamView() {
                           </div>
                         </div>
                         {m.away && sub && (
-                          <p className="rounded-lg bg-warning/12 px-3 py-2 text-xs">
+                          <p className="rounded-lg bg-[var(--gs-color-warning-subtle)] px-3 py-2 text-xs">
                             <span className="font-semibold">Ausente del {formatDate(m.away.from)} al {formatDate(m.away.to)}.</span> Te atiende {sub.firstName} {sub.lastName}.
                           </p>
                         )}
-                        <div className="mt-auto flex items-center justify-between gap-3 border-t pt-4">
-                          <span className="truncate text-[13px] text-muted-foreground">{p.email}</span>
+                        <div className="mt-auto flex items-center justify-between gap-3 border-t pt-3">
+                          <span className="truncate text-xs text-muted-foreground">{p.email}</span>
                           {can.respond && (
                             <span className="flex shrink-0 gap-1.5">
                               <Button size="sm" variant="ghost" onClick={() => setScheduleWith(m.personId)}>
@@ -134,7 +134,7 @@ export function TeamView() {
           })}
         </div>
 
-        <div className="space-y-6 xl:sticky xl:top-20 xl:self-start">
+        <div className="space-y-4 xl:sticky xl:top-16 xl:self-start">
           <SectionCard title="Ruta de escalamiento" description="Si algo no avanza como esperas" icon={ArrowDown}>
             <ol className="space-y-3">
               {[

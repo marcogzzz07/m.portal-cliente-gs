@@ -3,7 +3,7 @@
 import { TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
-/** Pestañas de página estilo Portal GS: subrayado y texto en rojo al estar activas. */
+/** Pestañas de página estilo Portal GS: subrayado rojo de 2px y texto activo en semibold. */
 export function PageTabsList({ className, ...props }: React.ComponentProps<typeof TabsList>) {
   return (
     <TabsList
@@ -18,8 +18,9 @@ export function PageTabsTrigger({ className, ...props }: React.ComponentProps<ty
   return (
     <TabsTrigger
       className={cn(
-        "flex-none rounded-none px-5 pt-1 pb-3 text-sm font-medium text-muted-foreground",
-        "after:bottom-[-1px]! after:bg-brand data-active:text-brand",
+        "flex-none rounded-none px-4 pt-1 pb-2.5 text-[13px] font-medium text-muted-foreground",
+        // Indicador rojo GS de 2px; el texto activo queda neutral, como las line-tabs del Portal GS.
+        "after:bottom-[-1px]! after:h-0.5! after:bg-brand data-active:font-semibold data-active:text-foreground",
         className
       )}
       {...props}

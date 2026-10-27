@@ -9,7 +9,7 @@ import { NotificationsMenu } from "./notifications-menu"
 
 export function TopNavigation({ onMenuClick }: { onMenuClick: () => void }) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 bg-background/85 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 bg-background px-4 sm:px-6">
       <Button variant="ghost" size="icon-lg" className="shrink-0 lg:hidden" onClick={onMenuClick} aria-label="Abrir menú">
         <Menu className="size-5" />
       </Button>

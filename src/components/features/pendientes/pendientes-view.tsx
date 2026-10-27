@@ -112,7 +112,7 @@ export function PendientesView({ initialId }: { initialId?: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={ListChecks}
         title="Pendientes"
@@ -120,24 +120,26 @@ export function PendientesView({ initialId }: { initialId?: string }) {
         description="Todo lo que tu empresa y GS necesitan hacer, con responsable y fecha. Las acciones se completan aquí mismo."
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Por atender" value={byView.todos.filter((a) => a.status !== "upcoming" && a.status !== "blocked").length} icon={ListChecks} accent="blue" helper="De tu empresa, al 12 oct" />
         <MetricCard label="Vencidos" value={overdue} icon={TriangleAlert} accent="pink" helper={overdue ? "Atiéndelos primero" : "Nada vencido"} />
         <MetricCard label="Esperando a GS" value={byView.gs.length} icon={Hourglass} accent="amber" helper="El siguiente paso es de GS" />
         <MetricCard label="Completados" value={byView.completados.length} icon={CheckCheck} accent="green" helper="Últimos 60 días" />
       </div>
 
-      <Tabs value={view} onValueChange={(v) => setView(v as View)} className="gap-5">
+      <Tabs value={view} onValueChange={(v) => setView(v as View)} className="gap-3">
         <PageTabsList>
           {(["mios", "equipo", "todos", "gs", "completados"] as View[]).map((v) => (
             <PageTabsTrigger key={v} value={v}>
               {viewLabels[v]}
-              <span className="ml-2 text-muted-foreground tabular-nums">{byView[v].length}</span>
+              <span className="ml-1.5 text-xs font-normal text-muted-foreground tabular-nums">{byView[v].length}</span>
             </PageTabsTrigger>
           ))}
         </PageTabsList>
 
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Barra de herramientas integrada a la tabla: comparten una sola frontera. */}
+        <div className="overflow-hidden rounded-xl border bg-card">
+        <div className="flex flex-wrap items-center gap-2 border-b px-4 py-2.5">
           {view !== "completados" && (
             <Segmented
               label="Agrupar por"
@@ -154,7 +156,7 @@ export function PendientesView({ initialId }: { initialId?: string }) {
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
             {scope === "grupo" && (
               <Select value={company} onValueChange={(v) => setCompany(v as CompanyId | "todas")}>
-                <SelectTrigger className="w-48 bg-card data-[size=default]:h-9" aria-label="Empresa">
+                <SelectTrigger className="w-40" aria-label="Empresa">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -170,7 +172,7 @@ export function PendientesView({ initialId }: { initialId?: string }) {
               </Select>
             )}
             <Select value={service} onValueChange={(v) => setService(v as ServiceKey | "todos")}>
-              <SelectTrigger className="w-44 bg-card data-[size=default]:h-9" aria-label="Servicio">
+              <SelectTrigger className="w-40" aria-label="Servicio">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -183,7 +185,7 @@ export function PendientesView({ initialId }: { initialId?: string }) {
               </SelectContent>
             </Select>
             <Select value={kind} onValueChange={(v) => setKind(v as ActionKind | "todos")}>
-              <SelectTrigger className="w-44 bg-card data-[size=default]:h-9" aria-label="Tipo">
+              <SelectTrigger className="w-40" aria-label="Tipo">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -196,7 +198,7 @@ export function PendientesView({ initialId }: { initialId?: string }) {
               </SelectContent>
             </Select>
             <Select value={status} onValueChange={(v) => setStatus(v as ActionStatus | "todos")}>
-              <SelectTrigger className="w-44 bg-card data-[size=default]:h-9" aria-label="Estado">
+              <SelectTrigger className="w-40" aria-label="Estado">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -212,16 +214,17 @@ export function PendientesView({ initialId }: { initialId?: string }) {
         </div>
 
         {list.length === 0 ? (
-          <EmptyState
-            icon={view === "gs" ? Clock : CheckCheck}
-            title={filtersActive ? "Ningún pendiente coincide con los filtros" : view === "mios" ? "No tienes pendientes asignados" : view === "gs" ? "Nada esperando a GS" : "Sin pendientes en esta vista"}
-            description={filtersActive ? "Ajusta los filtros." : `En ${scopeLabel}. Te avisaremos cuando haya algo nuevo.`}
-          />
-        ) : (
-          <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
-            <ActionTable items={list} groups={view === "completados" ? undefined : groups} onOpen={open} />
+          <div className="p-4">
+            <EmptyState
+              icon={view === "gs" ? Clock : CheckCheck}
+              title={filtersActive ? "Ningún pendiente coincide con los filtros" : view === "mios" ? "No tienes pendientes asignados" : view === "gs" ? "Nada esperando a GS" : "Sin pendientes en esta vista"}
+              description={filtersActive ? "Ajusta los filtros." : `En ${scopeLabel}. Te avisaremos cuando haya algo nuevo.`}
+            />
           </div>
+        ) : (
+          <ActionTable items={list} groups={view === "completados" ? undefined : groups} onOpen={open} />
         )}
+        </div>
       </Tabs>
 
       <ActionDetailSheet itemId={selected} onClose={close} />

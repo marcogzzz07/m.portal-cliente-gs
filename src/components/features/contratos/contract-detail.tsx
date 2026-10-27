@@ -65,7 +65,7 @@ export function ContractDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Button variant="ghost" size="sm" asChild className="-ml-2">
         <Link href="/contratos">
           <ArrowLeft />
@@ -82,7 +82,7 @@ export function ContractDetail({ id }: { id: string }) {
               {c.validUntil && openForAction && ` · válida hasta el ${formatDate(c.validUntil, { day: "numeric", month: "long" })} (${daysFromToday(c.validUntil)} días)`}
             </span>
           </div>
-          <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-[28px]">{c.title}</h1>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight">{c.title}</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">{c.summary}</p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
@@ -106,13 +106,13 @@ export function ContractDetail({ id }: { id: string }) {
       </div>
 
       {c.status === "draft" && (
-        <div className="flex items-start gap-3 rounded-2xl bg-muted/70 px-5 py-4 text-sm">
+        <div className="flex items-start gap-3 rounded-xl bg-muted px-5 py-4 text-sm">
           <Lock className="mt-0.5 size-4 shrink-0" />
           <p>Este documento está en preparación. GS espera la validación del notario el 20 de octubre; en cuanto llegue se habilitará la firma de Jorge Salinas.</p>
         </div>
       )}
       {c.status === "changes_requested" && c.changeRequest && (
-        <div className="flex items-start gap-3 rounded-2xl bg-[oklch(0.965_0.03_65)] px-5 py-4 text-sm">
+        <div className="flex items-start gap-3 rounded-xl bg-[var(--gs-color-warning-subtle)] px-5 py-4 text-sm">
           <Clock className="mt-0.5 size-4 shrink-0" />
           <p>
             <span className="font-medium">Cambios solicitados por {getPerson(c.changeRequest.by).firstName}:</span> “{c.changeRequest.text}”. {getPerson(c.ownerId).firstName} enviará una nueva versión.
@@ -120,7 +120,7 @@ export function ContractDetail({ id }: { id: string }) {
         </div>
       )}
       {c.status === "declined" && (
-        <div className="flex items-start gap-3 rounded-2xl bg-destructive/[0.07] px-5 py-4 text-sm">
+        <div className="flex items-start gap-3 rounded-xl bg-[var(--gs-color-danger-subtle)] px-5 py-4 text-sm">
           <X className="mt-0.5 size-4 shrink-0 text-destructive" />
           <p>
             <span className="font-medium">Rechazada.</span> {c.declineReason}
@@ -128,7 +128,7 @@ export function ContractDetail({ id }: { id: string }) {
         </div>
       )}
       {c.status === "completed" && c.documentId && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-success/[0.08] px-5 py-4 text-sm">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-[var(--gs-color-success-subtle)] px-5 py-4 text-sm">
           <CheckCircle2 className="size-4 text-success" />
           <p className="flex-1">Firmado por todos. El documento final y su certificado de firma están guardados.</p>
           <Button size="sm" variant="outline" asChild>
@@ -138,7 +138,7 @@ export function ContractDetail({ id }: { id: string }) {
       )}
 
       {(canApprove || (openForAction && c.status !== "changes_requested" && (can.approve || canSign))) && (
-        <div className="flex flex-col gap-3 rounded-2xl bg-card p-5 ring-1 ring-foreground/[0.06] sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 rounded-xl bg-card p-5 border sm:flex-row sm:items-center">
           <p className="flex-1 text-sm">
             {canSign
               ? "Revisa el alcance y los honorarios. Si estás de acuerdo, firma electrónicamente; si no, solicita un cambio."
@@ -176,8 +176,8 @@ export function ContractDetail({ id }: { id: string }) {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="min-w-0 space-y-4">
           {c.lines && (
             <SectionCard title="Servicios y honorarios" description="Honorarios más IVA" icon={FileText} flush>
               <div className="grid grid-cols-3 gap-4 border-y px-6 py-5">
@@ -254,7 +254,7 @@ export function ContractDetail({ id }: { id: string }) {
                   <ul className="grid gap-2 text-sm sm:grid-cols-2">
                     {c.conditions.map((d) => (
                       <li key={d} className="flex gap-2">
-                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/40" />
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-muted-foreground" />
                         {d}
                       </li>
                     ))}
@@ -265,7 +265,7 @@ export function ContractDetail({ id }: { id: string }) {
           )}
         </div>
 
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-4">
           <SectionCard title="Firmantes" icon={Users}>
             <ul className="space-y-3">
               {c.signers.map((s) => {
@@ -359,7 +359,7 @@ export function ContractDetail({ id }: { id: string }) {
 function CompanyBlock({ company, children }: { company: string; children: React.ReactNode }) {
   return (
     <>
-      <TableRow className="bg-muted/60 hover:bg-muted/60">
+      <TableRow className="bg-muted hover:bg-muted">
         <TableCell colSpan={4} className="py-2.5 text-[13px] font-medium text-muted-foreground">
           {company}
         </TableCell>

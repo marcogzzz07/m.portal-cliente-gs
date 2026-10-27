@@ -1,0 +1,297 @@
+/* Tokens del sistema visual GS, copiados del Portal GS interno
+   (portal-gs, rama design/mi-gs-propuesta-1, src/styles/gs-tokens.css).
+   El portal de clientes solo usa Claro y Oscuro: se omitió el tema Alternativo (navy).
+   Ver docs/SISTEMA_DE_DISENO.md. */
+
+:root {
+  /* Typography */
+  /* Inter, cargada en el layout raíz con next/font (--font-inter). */
+  --gs-font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --gs-font-size-metadata: 0.75rem;
+  --gs-font-size-body-sm: 0.8125rem;
+  --gs-font-size-body: 0.875rem;
+  --gs-font-size-section: 1rem;
+  --gs-font-size-page: 1.75rem;
+  --gs-font-size-kpi: 1.625rem;
+  --gs-line-height-tight: 1.2;
+  --gs-line-height-copy: 1.45;
+  --gs-line-height-relaxed: 1.6;
+  --gs-font-weight-regular: 400;
+  --gs-font-weight-medium: 500;
+  --gs-font-weight-semibold: 600;
+  --gs-font-weight-bold: 700;
+
+  /* Neutral foundation: one token per semantic responsibility. */
+  --gs-color-canvas: #eceef0;
+  --gs-color-surface-base: #ffffff;
+  --gs-color-surface-elevated: #ffffff;
+  --gs-color-surface-subtle: #f2f2f4;
+  --gs-color-hover: #e8e9eb;
+  --gs-color-surface-inverse: #1b1c1e;
+  --gs-color-surface-inverse-hover: #2b2d2f;
+  --gs-color-text-primary: #151618;
+  --gs-color-text-secondary: #404247;
+  --gs-color-text-muted: #5d6066;
+  --gs-color-text-disabled: #909296;
+  --gs-color-text-inverse: var(--gs-color-surface-elevated);
+  /* Texto sobre la acción principal (grafito en claro, gris claro en oscuro). */
+  --gs-color-text-on-primary: #ffffff;
+  --gs-color-text-inverse-muted: #c3c4c7;
+  --gs-color-border-subtle: #dcdee1;
+  --gs-color-border-control: #c9cbcf;
+  --gs-color-border-inverse: #2f3033;
+
+  /* Deprecated compatibility aliases. Use the semantic tokens above. */
+  --gs-color-surface: var(--gs-color-surface-base);
+  --gs-color-surface-raised: var(--gs-color-surface-elevated);
+  --gs-color-surface-hover: var(--gs-color-hover);
+  --gs-color-surface-selected: var(--gs-color-brand-subtle);
+  --gs-color-text: var(--gs-color-text-primary);
+  --gs-color-border: var(--gs-color-border-subtle);
+  --gs-color-border-strong: var(--gs-color-border-control);
+
+  /* GS brand. Accent is restricted to small non-text details. */
+  /* --gs-color-brand: #ba1733; */
+  --gs-color-brand: #b92d32;
+  /* --gs-color-brand-hover: #981329; */
+  --gs-color-brand-hover: #9e2228;
+  --gs-color-brand-active: #861d21;
+  --gs-color-brand-subtle: #ffe9eb;
+  --gs-color-brand-subtle-hover: #ffdee0;
+  --gs-color-brand-border: #eda9aa;
+  --gs-color-brand-disabled: #dc9c9e;
+  /* Acción principal (botones primary): carbón, como el mockup de Mi GS. */
+  --gs-color-action-primary: #151618;
+  --gs-color-action-primary-hover: #2b2d30;
+  --gs-color-action-primary-active: #000000;
+  --gs-color-accent: #db4144;
+  --gs-color-link: #b92d32;
+  /* Cifras negativas en tablas financieras: vino (granate GS), no el rojo de error. */
+  --gs-color-negative: #8b2332;
+
+  /* Semantic status colors: base, accessible text, border, and tint.
+     Info en azul marino y warning en ámbar ocre (propuesta ejecutiva
+     2026-10-24): menos saturados que el azul y amarillo anteriores. */
+  --gs-color-success-base: #06915f;
+  --gs-color-success-foreground: #007047;
+  --gs-color-success-border: #a0debc;
+  --gs-color-success-subtle: #e8fbef;
+  --gs-color-warning-base: #b7791f;
+  --gs-color-warning-foreground: #845510;
+  --gs-color-warning-border: #e6d0a3;
+  --gs-color-warning-subtle: #f8f1e3;
+  --gs-color-danger-base: #d01c29;
+  --gs-color-danger-foreground: #b71824;
+  --gs-color-danger-border: #feb9b8;
+  --gs-color-danger-action: #d01c29;
+  --gs-color-danger-action-hover: #b71824;
+  --gs-color-danger-action-active: #9a1520;
+  --gs-color-danger-subtle: #fff0f1;
+  --gs-color-danger-subtle-active: #ffe4e6;
+  --gs-color-danger-inverse-subtle: #4b2029;
+  --gs-color-info-base: #23477e;
+  --gs-color-info-foreground: #1f3f70;
+  --gs-color-info-border: #bccbe2;
+  --gs-color-info-subtle: #ecf1f8;
+
+  /* Deprecated ambiguous aliases; accessible text is the safe fallback. */
+  --gs-color-success: var(--gs-color-success-foreground);
+  --gs-color-success-text: var(--gs-color-success-foreground);
+  --gs-color-warning: var(--gs-color-warning-foreground);
+  --gs-color-danger: var(--gs-color-danger-foreground);
+  --gs-color-danger-text: var(--gs-color-danger-foreground);
+  --gs-color-danger-hover: var(--gs-color-danger-action-hover);
+  --gs-color-danger-active: var(--gs-color-danger-action-active);
+  --gs-color-info: var(--gs-color-info-foreground);
+
+  /* Control states */
+  --gs-color-control-disabled: #eceef0;
+  --gs-color-control-disabled-border: #dddee1;
+
+  /* Paneles grafito fijos (franja de saludo de Mi GS, avatar, fecha de
+     evento): oscuros en todos los temas, con su propio tono en Alternativo. */
+  --gs-color-panel-strong: #1e1f21;
+  --gs-color-avatar: #4a4c51;
+  --gs-color-date-chip: #2b2c2f;
+
+  /* Data visualization: executive graphite scale, distinct from status colors.
+     1 = serie principal (grafito de los paneles oscuros), 2-3 = comparativas
+     (año anterior, antepasado), 4 = acento de marca para un solo dato. */
+  --gs-chart-1: var(--gs-color-surface-inverse);
+  --gs-chart-2: #8a8e95;
+  --gs-chart-3: #c3c6cb;
+  --gs-chart-4: var(--gs-color-brand);
+  --gs-chart-5: #a1a5ab;
+  --gs-chart-6: #7a7f86;
+  --gs-chart-grid: #e2e3e5;
+
+  /* Spacing: 4px base with 8px structural rhythm. */
+  --gs-space-0: 0;
+  --gs-space-1: 0.25rem;
+  --gs-space-2: 0.5rem;
+  --gs-space-3: 0.75rem;
+  --gs-space-4: 1rem;
+  --gs-space-5: 1.25rem;
+  --gs-space-6: 1.5rem;
+  --gs-space-8: 2rem;
+  --gs-space-10: 2.5rem;
+  --gs-space-12: 3rem;
+  --gs-space-16: 4rem;
+
+  /* Page composition: semantic aliases, not rigid spacing mandates. */
+  --gs-composition-gap-page: var(--gs-space-4);
+  --gs-composition-gap-header-tabs: var(--gs-space-4);
+  --gs-composition-gap-section: var(--gs-space-4);
+  --gs-composition-padding-panel: var(--gs-space-4);
+  --gs-composition-padding-compact: var(--gs-space-3);
+  --gs-composition-rhythm-row: var(--gs-space-2);
+  --gs-composition-space-micro: var(--gs-space-1);
+  --gs-finanzas-comparison-tab-content-gap: var(--gs-space-1);
+
+  /* Tablas en árbol: sangría que agrega cada nivel de profundidad. */
+  --gs-table-tree-indent: var(--gs-space-5);
+
+  /* Shape */
+  --gs-radius-none: 0;
+  --gs-radius-xs: 0.125rem;
+  --gs-radius-sm: 0.25rem;
+  --gs-radius-md: 0.375rem;
+  --gs-radius-lg: 0.5rem;
+  --gs-radius-default: var(--gs-radius-lg);
+  --gs-radius-control: var(--gs-radius-md);
+  --gs-radius-pill: 9999px;
+  --gs-border-width: 1px;
+  --gs-border-width-active: 2px;
+
+  /* Elevation: never use on static content surfaces. */
+  --gs-shadow-overlay: 0 8px 24px rgba(24, 25, 27, 0.12);
+  --gs-shadow-modal: 0 16px 48px rgba(24, 25, 27, 0.18);
+  --gs-shadow-tooltip: 0 4px 12px rgba(24, 25, 27, 0.14);
+
+  /* Focus and selection */
+  --gs-focus-ring: var(--gs-color-brand);
+  --gs-focus-ring-offset: #ffffff;
+  --gs-selection-bg: #ffdee0;
+  --gs-selection-text: #5c1417;
+
+  /* Controls and layout */
+  --gs-control-height-sm: 2rem;
+  --gs-control-height: 2.25rem;
+  --gs-control-height-lg: 2.5rem;
+  --gs-icon-size-sm: 0.875rem;
+  --gs-icon-size: 1rem;
+  --gs-icon-size-lg: 1.25rem;
+  --gs-sidebar-width: 18rem;
+  --gs-sidebar-width-collapsed: 4rem;
+  --gs-page-gutter: clamp(1rem, 2.2vw, 2rem);
+  --gs-content-max: 100rem;
+
+  /* Motion */
+  --gs-duration-fast: 110ms;
+  --gs-duration-productive: 150ms;
+  --gs-duration-moderate: 220ms;
+  --gs-duration-deliberate: 300ms;
+  --gs-duration-border-trace: 480ms;
+  --gs-ease-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --gs-ease-entrance: cubic-bezier(0, 0, 0.38, 0.9);
+  --gs-ease-exit: cubic-bezier(0.2, 0, 1, 0.9);
+  --gs-motion-distance: 0.25rem;
+
+  /* Layering */
+  --gs-z-base: 0;
+  --gs-z-sticky: 20;
+  --gs-z-dropdown: 40;
+  --gs-z-overlay: 60;
+  --gs-z-modal: 80;
+  --gs-z-toast: 100;
+  --gs-z-tooltip: 120;
+}
+
+/* ── Modo oscuro ─────────────────────────────────────────────────────────────
+   Se activa con data-theme="dark" en <html> (src/lib/ui/theme.ts). Base neutra
+   en niveles: canvas < superficie < sutil < elevada, para que página, paneles,
+   controles y flotantes se distingan. "Inverse" se vuelve claro (tooltips,
+   serie principal de gráficas); la barra lateral define su propio grafito. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Fondo y tarjetas un paso arriba de la barra lateral (#121315) para que
+     la barra se separe del contenido. */
+  --gs-color-canvas: #1f2024;
+  --gs-color-surface-base: #27282d;
+  --gs-color-surface-elevated: #303237;
+  --gs-color-surface-subtle: #2c2e33;
+  --gs-color-hover: #35373d;
+  --gs-color-surface-inverse: #e6e7ea;
+  --gs-color-surface-inverse-hover: #d3d5d9;
+  --gs-color-text-primary: #f2f3f5;
+  --gs-color-text-secondary: #c7c9ce;
+  --gs-color-text-muted: #a3a6ad;
+  --gs-color-text-disabled: #6c6f76;
+  --gs-color-text-inverse: #151618;
+  --gs-color-text-inverse-muted: #45484e;
+  --gs-color-text-on-primary: #151618;
+  --gs-color-border-subtle: #3a3c42;
+  --gs-color-border-control: #52555d;
+  --gs-color-border-inverse: #c9cbcf;
+
+  /* Marca: rojo más claro para que el texto y el foco lean sobre oscuro. */
+  --gs-color-brand: #ea6a70;
+  --gs-color-brand-hover: #ec6b70;
+  --gs-color-brand-active: #c9464c;
+  --gs-color-brand-subtle: #3a1b1e;
+  --gs-color-brand-subtle-hover: #482125;
+  --gs-color-brand-border: #6e2d32;
+  --gs-color-brand-disabled: #6a3a3d;
+  --gs-color-action-primary: #eceef1;
+  --gs-color-action-primary-hover: #ffffff;
+  --gs-color-action-primary-active: #d3d5d9;
+  --gs-color-accent: #f0666a;
+  --gs-color-link: #ec6b70;
+  --gs-color-negative: #f0858a;
+
+  --gs-color-success-base: #2fb57f;
+  --gs-color-success-foreground: #56cf9b;
+  --gs-color-success-border: #1f5b44;
+  --gs-color-success-subtle: #11281f;
+  --gs-color-warning-base: #d9a24a;
+  --gs-color-warning-foreground: #e4bb76;
+  --gs-color-warning-border: #5e4520;
+  --gs-color-warning-subtle: #261d10;
+  --gs-color-danger-base: #ef5560;
+  --gs-color-danger-foreground: #ff7b83;
+  --gs-color-danger-border: #6e2d32;
+  --gs-color-danger-action: #d9404b;
+  --gs-color-danger-action-hover: #e5535d;
+  --gs-color-danger-action-active: #b8333d;
+  --gs-color-danger-subtle: #2d1518;
+  --gs-color-danger-subtle-active: #3a1b1e;
+  --gs-color-danger-inverse-subtle: #4b2029;
+  --gs-color-info-base: #6f93cc;
+  --gs-color-info-foreground: #9db7e3;
+  --gs-color-info-border: #2a3e61;
+  --gs-color-info-subtle: #142036;
+
+  --gs-color-control-disabled: #2c2e33;
+  --gs-color-control-disabled-border: #3d3f45;
+
+  /* Paneles fuertes (saludos de Inicio y Mi GS, paneles de Mi GS): en Oscuro
+     se invierten a gris claro con texto oscuro (gs-theme.css, .gs-panel-strong). */
+  --gs-color-panel-strong: #e6e7ea;
+
+  /* Gráficas: la serie principal sigue a "inverse" (gris claro). */
+  --gs-chart-2: #8f939a;
+  --gs-chart-3: #5a5e65;
+  --gs-chart-5: #8a8e95;
+  --gs-chart-6: #a5a9b0;
+  --gs-chart-grid: #383a40;
+
+  --gs-shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --gs-shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.55);
+  --gs-shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --gs-focus-ring-offset: #27282d;
+  --gs-selection-bg: #5a2328;
+  --gs-selection-text: #ffe4e6;
+}
+

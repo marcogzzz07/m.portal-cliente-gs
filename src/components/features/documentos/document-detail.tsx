@@ -60,7 +60,7 @@ export function DocumentDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Button variant="ghost" size="sm" asChild className="-ml-2 sm:hidden">
         <Link href="/documentos">
           <ArrowLeft />
@@ -69,7 +69,7 @@ export function DocumentDetail({ id }: { id: string }) {
       </Button>
 
       {outOfScope && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-card ring-1 ring-foreground/[0.06] px-5 py-4 text-sm">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-card border px-5 py-4 text-sm">
           <Info className="size-4 text-info" />
           <span className="flex-1">Este documento pertenece a {companiesLabel(doc.companies)}, fuera del contexto que estás viendo.</span>
           {doc.companies.length === 1 && (
@@ -89,7 +89,7 @@ export function DocumentDetail({ id }: { id: string }) {
               {doc.id} · {doc.direction === "gs" ? "Entregable de GS" : "Enviado por tu empresa"}
             </span>
           </div>
-          <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-[28px]">{doc.name}</h1>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight">{doc.name}</h1>
           <p className="text-sm text-muted-foreground">
             {doc.period} · {companiesLabel(doc.companies)} · {serviceNames[doc.service]}
           </p>
@@ -112,8 +112,8 @@ export function DocumentDetail({ id }: { id: string }) {
 
       <ReviewCallout docStatus={doc.status} reviewNote={current?.review?.note} requested={!doc.versions.length} instructions={doc.instructions} dueDate={doc.dueDate} reviewer={doc.requestedBy} signed={Boolean(doc.signed)} />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0 space-y-4">
           {current && doc.direction === "gs" && (
             <SectionCard
               title="Vista previa"
@@ -130,7 +130,7 @@ export function DocumentDetail({ id }: { id: string }) {
                 </div>
               }
             >
-              <div className="max-h-[560px] overflow-y-auto rounded-xl bg-muted/60 p-3 sm:p-6">
+              <div className="max-h-[560px] overflow-y-auto rounded-xl bg-muted p-3 sm:p-6">
                 <DocumentPaper doc={doc} />
               </div>
               {doc.signed && (
@@ -145,7 +145,7 @@ export function DocumentDetail({ id }: { id: string }) {
           {current && doc.direction === "cliente" && (
             <SectionCard title="Archivo vigente" description={`Versión ${current.version} · ${current.size}`} icon={Download}>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex h-24 flex-1 items-center justify-center rounded-xl bg-muted/60 text-center text-sm text-muted-foreground">
+                <div className="flex h-24 flex-1 items-center justify-center rounded-xl bg-muted text-center text-sm text-muted-foreground">
                   <span>
                     <span className="block font-medium text-foreground">{current.fileName}</span>
                     Archivo enviado por tu empresa
@@ -169,7 +169,7 @@ export function DocumentDetail({ id }: { id: string }) {
             ) : (
               <ol className="space-y-4">
                 {[...doc.versions].reverse().map((v) => (
-                  <li key={v.version} className={cn("rounded-xl bg-muted/50 p-4", v.version === doc.versions.length && "bg-muted")}>
+                  <li key={v.version} className={cn("rounded-xl bg-muted p-4", v.version === doc.versions.length && "bg-muted")}>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-md bg-foreground px-1.5 py-0.5 text-[11px] font-bold text-background">v{v.version}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium">{v.fileName}</span>
@@ -199,7 +199,7 @@ export function DocumentDetail({ id }: { id: string }) {
           </SectionCard>
 
           {(doc.status === "uploaded" || doc.status === "under_review") && doc.direction === "cliente" && (
-            <div className="space-y-3 rounded-xl border-2 border-dashed border-foreground/15 p-4">
+            <div className="space-y-3 rounded-xl border-2 border-dashed border-[var(--gs-color-border-control)] p-4">
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <FlaskConical className="size-4 text-brand" />
                 Simular la revisión de GS
@@ -246,7 +246,7 @@ export function DocumentDetail({ id }: { id: string }) {
           )}
         </div>
 
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-4">
           <SectionCard title="Datos del documento" icon={Info}>
             <InfoGrid
               columns={1}
@@ -336,11 +336,11 @@ function ReviewCallout({
 }) {
   if (signed) return null
   const who = reviewer ? `${getPerson(reviewer).firstName} ${getPerson(reviewer).lastName}` : "GS"
-  const box = "flex items-start gap-3 rounded-2xl px-5 py-4 text-sm"
+  const box = "flex items-start gap-3 rounded-xl px-4 py-3 text-sm"
   switch (docStatus) {
     case "changes_required":
       return (
-        <div className={cn(box, "bg-destructive/[0.07]")}>
+        <div className={cn(box, "bg-[var(--gs-color-danger-subtle)]")}>
           <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
           <div>
             <p className="font-semibold text-destructive">Requiere corrección</p>
@@ -351,7 +351,7 @@ function ReviewCallout({
       )
     case "requested":
       return (
-        <div className={cn(box, "bg-[oklch(0.965_0.03_65)]")}>
+        <div className={cn(box, "bg-[var(--gs-color-warning-subtle)]")}>
           <FileUp className="mt-0.5 size-4 shrink-0" />
           <div>
             <p className="font-semibold">
@@ -364,7 +364,7 @@ function ReviewCallout({
     case "uploaded":
     case "under_review":
       return (
-        <div className={cn(box, "bg-info/[0.08]")}>
+        <div className={cn(box, "bg-[var(--gs-color-info-subtle)]")}>
           <Clock className="mt-0.5 size-4 shrink-0 text-info" />
           <div>
             <p className="font-semibold">{docStatus === "uploaded" ? "Recibido: pendiente de revisión" : `En revisión por ${who}`}</p>
@@ -374,14 +374,14 @@ function ReviewCallout({
       )
     case "approved":
       return (
-        <div className={cn(box, "bg-success/[0.08]")}>
+        <div className={cn(box, "bg-[var(--gs-color-success-subtle)]")}>
           <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" />
           <p className="font-semibold">Aprobado por GS. No necesitas hacer nada más.</p>
         </div>
       )
     case "expired":
       return (
-        <div className={cn(box, "bg-muted/60")}>
+        <div className={cn(box, "bg-muted")}>
           <Info className="mt-0.5 size-4 shrink-0" />
           <div>
             <p className="font-semibold">Solicitud vencida</p>

@@ -63,7 +63,7 @@ export function DemoPanel() {
 
           <div className="space-y-6 p-4">
             <section className="space-y-2">
-              <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Ver el portal como</h3>
+              <h3 className="text-xs font-medium text-muted-foreground">Ver el portal como</h3>
               <div className="space-y-1.5" role="radiogroup" aria-label="Usuario simulado">
                 {personas.map((p) => {
                   const person = getPerson(p.personId)
@@ -76,8 +76,8 @@ export function DemoPanel() {
                       aria-checked={selected}
                       onClick={() => setPersona(p.personId)}
                       className={cn(
-                        "flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                        selected && "border-brand bg-brand-soft/50"
+                        "flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                        selected && "border-brand bg-brand-soft"
                       )}
                     >
                       <UserAvatar firstName={person.firstName} lastName={person.lastName} size="sm" highlight={selected} />
@@ -98,7 +98,7 @@ export function DemoPanel() {
             <Separator />
 
             <section className="space-y-3">
-              <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Simulaciones</h3>
+              <h3 className="text-xs font-medium text-muted-foreground">Simulaciones</h3>
               <div className="flex items-start justify-between gap-4">
                 <Label htmlFor="auto" className="flex flex-col items-start gap-0.5">
                   <span>Respuestas automáticas de GS</span>
@@ -130,13 +130,13 @@ export function DemoPanel() {
             <Separator />
 
             <section className="space-y-2">
-              <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Recorridos obligatorios (Product Spec §25)</h3>
+              <h3 className="text-xs font-medium text-muted-foreground">Recorridos obligatorios (Product Spec §25)</h3>
               <ol className="space-y-1">
                 {journeys.map((j) => {
                   const ready = Boolean(j.href)
                   const body = (
                     <>
-                      <span className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold", ready ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>
+                      <span className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold", ready ? "bg-[var(--gs-color-success-subtle)] text-success" : "bg-muted text-muted-foreground")}>
                         {ready ? <Check className="size-3" /> : <CircleDashed className="size-3" />}
                       </span>
                       <span className="flex min-w-0 flex-1 flex-col">
@@ -145,7 +145,7 @@ export function DemoPanel() {
                         </span>
                         {j.hint && <span className="text-xs text-muted-foreground">{j.hint}</span>}
                       </span>
-                      <span className={cn("shrink-0 rounded-full px-1.5 py-px text-[10px] font-semibold", ready ? "bg-success/12 text-success" : "border border-dashed text-muted-foreground")}>Fase {j.phase}</span>
+                      <span className={cn("shrink-0 rounded-full px-1.5 py-px text-[11px] font-semibold", ready ? "bg-[var(--gs-color-success-subtle)] text-success" : "border border-dashed text-muted-foreground")}>Fase {j.phase}</span>
                     </>
                   )
                   return (

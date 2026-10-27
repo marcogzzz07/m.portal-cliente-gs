@@ -2,16 +2,16 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, BadgeCheck, Briefcase, CalendarDays, CheckCircle2, FileUp, Home, Lightbulb, ListChecks, MessageSquare, PackageCheck, Rocket, ShieldCheck, TrendingUp, Wallet } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { ArrowRight, BadgeCheck, Briefcase, CalendarDays, CheckCircle2, FileUp, Lightbulb, ListChecks, MessageSquare, PackageCheck, Rocket, ShieldCheck, TrendingUp, Wallet } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { EmptyState } from "@/components/shared/empty-state"
+import { barChartCursor, CHART_MARGIN, ChartDelta, ChartFlyout, chartGridProps, chartXAxisProps, chartYAxisProps, getBarSeriesStyle } from "@/components/charts/chart-standard"
+import { StatStrip } from "@/components/shared/executive"
 import { MetricCard } from "@/components/shared/metric-card"
-import { PageHeader } from "@/components/shared/page-header"
 import { SectionCard } from "@/components/shared/section-card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { activity, insights } from "@/data/activity"
@@ -19,7 +19,7 @@ import { getPerson, metrics, services } from "@/data/organization"
 import { useScopedData } from "@/hooks/use-scoped-data"
 import { DEMO_TODAY, daysFromToday, dueLabel, formatCompactCurrency, formatCurrency, formatDate, formatLongDate, formatPercent } from "@/lib/format"
 import { companiesLabel, companyShort } from "@/lib/labels"
-import { canAccessModule, matchesScope } from "@/lib/permissions"
+import { canAccessModule, matchesScope, roles } from "@/lib/permissions"
 import { eventTypeMeta, healthMeta } from "@/lib/status"
 import type { Activity, ServiceHealth } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -33,7 +33,6 @@ import { InsightCard } from "./insight-card"
 
 const healthRank: ServiceHealth[] = ["atrasado", "requiere_atencion", "en_curso", "al_corriente"]
 const activityLabel: Record<Activity["kind"], string> = { hito: "Hito", entregable: "Entregable", obligacion: "Obligación", revision: "Revisión" }
-const revenueConfig = { ingresos: { label: "Ingresos ene–ago", color: "var(--chart-1)" } } satisfies ChartConfig
 
 function greeting() {
   const h = new Date().getHours()
@@ -111,36 +110,60 @@ export function InicioView() {
   const revenueByCompany = scopeCompanies.map((c) => ({ empresa: companyShort(c), ingresos: metrics[c].revenueYtd }))
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        icon={Home}
-        title={`${greeting()}, ${me.firstName}`}
-        badge={scopeBadge}
-        description={`${formatLongDate(DEMO_TODAY).replace(/^./, (c) => c.toUpperCase())}. ${
-          seesActions ? (attentionAll.length ? `Tienes ${attentionAll.length} ${attentionAll.length === 1 ? "acción" : "acciones"} por atender.` : "No tienes acciones por atender.") : "Tu acceso es de consulta."
-        }`}
-        actions={
-          <>
-            {can.upload && (
-              <Button variant="outline" onClick={() => setUploadOpen(true)}>
-                <FileUp />
-                Enviar documento
-              </Button>
-            )}
-            {can.respond && (
-              <Button asChild>
-                <Link href="/mensajes/nuevo">
-                  <MessageSquare />
-                  Escribir a GS
-                </Link>
-              </Button>
-            )}
-          </>
-        }
-      />
+    <div className="space-y-4">
+      {/* Bienvenida: franja grafito delgada, como "Tu día en GS" del Portal GS. */}
+      <section className="gs-panel-strong px-5 py-3.5 text-white">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="truncate text-xs text-white/60">
+              {formatLongDate(DEMO_TODAY).replace(/^./, (c) => c.toUpperCase())} · {roles[persona.role].label} · {scopeBadge}
+            </p>
+            <h1 className="truncate text-[1.375rem] leading-tight font-bold tracking-tight">
+              {greeting()}, {me.firstName}
+            </h1>
+            <p className="text-sm text-white/70">
+              {seesActions ? (
+                attentionAll.length ? (
+                  <>
+                    Tienes <span className="font-semibold text-white">{attentionAll.length} {attentionAll.length === 1 ? "acción" : "acciones"}</span> por atender
+                    {attention[0] && (
+                      <>
+                        ; la más urgente, <span className="font-semibold text-white">{attention[0].title}</span>, {dueLabel(attention[0].dueDate).toLowerCase()}
+                      </>
+                    )}
+                    .
+                  </>
+                ) : (
+                  "No tienes acciones por atender."
+                )
+              ) : (
+                "Tu acceso es de consulta."
+              )}
+            </p>
+          </div>
+          {(can.upload || can.respond) && (
+            <div className="flex shrink-0 flex-wrap gap-2">
+              {can.upload && (
+                <Button variant="outline" className="border-white/20 bg-white/[0.06] text-white hover:bg-white/10 hover:text-white" onClick={() => setUploadOpen(true)}>
+                  <FileUp />
+                  Enviar documento
+                </Button>
+              )}
+              {can.respond && (
+                <Button asChild className="gs-keep-light bg-white text-[#151618] hover:bg-white/90">
+                  <Link href="/mensajes/nuevo">
+                    <MessageSquare />
+                    Escribir a GS
+                  </Link>
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Panorama */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {seesActions ? (
           <MetricCard
             label="Por atender"
@@ -163,19 +186,19 @@ export function InicioView() {
       </div>
 
       {canAccessModule(persona, "onboarding") && onboardingOpen > 0 && (
-        <Link href="/onboarding" className="flex flex-col gap-3 rounded-2xl bg-card px-5 py-4 ring-1 ring-foreground/[0.06] transition-shadow hover:shadow-md sm:flex-row sm:items-center">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
+        <Link href="/onboarding" className="gs-focusable group flex flex-col gap-3 rounded-[var(--gs-radius-lg)] border bg-card px-4 py-3 transition-colors hover:bg-accent sm:flex-row sm:items-center">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
             <Rocket className="size-4" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block font-medium">Incorporación de EcoPack Desarrollos</span>
-            <span className="block text-[13px] text-muted-foreground">
+            <span className="block text-sm font-semibold">Incorporación de EcoPack Desarrollos</span>
+            <span className="block text-xs text-muted-foreground">
               {10 - onboardingOpen} de 10 pasos completos · siguiente: {admin.state.onboarding.find((s) => s.status !== "completed" && s.status !== "approved" && s.status !== "locked")?.title ?? "esperando a GS"}
             </span>
           </span>
           <Progress value={((10 - onboardingOpen) / 10) * 100} className="h-1.5 sm:w-40" />
           <span className="flex items-center gap-1 text-sm font-medium">
-            Continuar <ArrowRight className="size-4" />
+            Continuar <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </span>
         </Link>
       )}
@@ -197,7 +220,7 @@ export function InicioView() {
           }
         >
           {attention.length === 0 ? (
-            <div className="px-6 pb-6">
+            <div className="px-4 pb-4">
               <EmptyState icon={CheckCircle2} title="Todo al día" description={`No hay acciones pendientes para ti en ${scopeLabel}.`} />
             </div>
           ) : (
@@ -214,34 +237,41 @@ export function InicioView() {
             description={`${scopeLabel}${scope === "grupo" ? " (suma de razones sociales)" : ""} · ene–ago cerrado, septiembre preliminar · ContaLink`}
             icon={TrendingUp}
             className="lg:col-span-2"
+            footer={
+              <StatStrip
+                items={[
+                  { label: "Ingresos ene–ago", value: formatCurrency(revenueYtd, 0) },
+                  {
+                    label: "Septiembre vs. agosto",
+                    value: (
+                      <span className="flex flex-wrap items-center gap-2">
+                        {formatCurrency(revenueSep, 0)}
+                        <ChartDelta delta={revenueSep / revenuePrev - 1} />
+                      </span>
+                    ),
+                  },
+                  { label: "Margen bruto", value: formatPercent(margin, 1) },
+                ]}
+              />
+            }
           >
-            <div className="grid grid-cols-3 gap-4 border-b pb-5">
-              <div>
-                <p className="text-[13px] text-muted-foreground">Ingresos ene–ago</p>
-                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatCompactCurrency(revenueYtd)}</p>
-              </div>
-              <div>
-                <p className="text-[13px] text-muted-foreground">Septiembre</p>
-                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatCompactCurrency(revenueSep)}</p>
-                <p className="text-xs text-success">+{formatPercent(revenueSep / revenuePrev - 1, 1)} vs. agosto</p>
-              </div>
-              <div>
-                <p className="text-[13px] text-muted-foreground">Margen bruto</p>
-                <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums">{formatPercent(margin, 1)}</p>
-              </div>
-            </div>
             {scope === "grupo" ? (
-              <ChartContainer config={revenueConfig} className="mt-4 aspect-auto h-52 w-full">
-                <BarChart data={revenueByCompany} margin={{ left: 0, right: 0, top: 8 }}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="empresa" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={56} tickFormatter={(v) => `$${Math.round(Number(v) / 1_000_000)} M`} />
-                  <ChartTooltip cursor={false} content={<ChartTooltipContent formatter={(v) => formatCurrency(Number(v), 0)} />} />
-                  <Bar dataKey="ingresos" fill="var(--color-ingresos)" radius={[6, 6, 0, 0]} maxBarSize={44} />
-                </BarChart>
-              </ChartContainer>
+              <>
+                <p className="text-xs text-muted-foreground">Ingresos ene–ago por razón social</p>
+                <div className="mt-1 h-52 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={revenueByCompany} margin={CHART_MARGIN}>
+                      <CartesianGrid {...chartGridProps} />
+                      <XAxis dataKey="empresa" {...chartXAxisProps} />
+                      <YAxis {...chartYAxisProps} width={64} tickFormatter={(v) => `$${Math.round(Number(v) / 1_000_000)} M`} />
+                      <Tooltip cursor={barChartCursor} content={<ChartFlyout valueFormatter={(v) => formatCurrency(v, 0)} />} />
+                      <Bar dataKey="ingresos" name="Ingresos ene–ago" {...getBarSeriesStyle("var(--gs-chart-1)")} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </>
             ) : (
-              <p className="mt-4 text-sm text-muted-foreground">El estado de resultados y el balance de esta empresa estarán en Servicios › Contabilidad (Fase 2).</p>
+              <p className="text-sm text-muted-foreground">El estado de resultados y el balance de esta empresa estarán en Servicios › Contabilidad (Fase 2).</p>
             )}
           </SectionCard>
         ) : (
@@ -270,28 +300,25 @@ export function InicioView() {
               const clickable = e.actionItemId && seesActions
               const body = (
                 <>
-                  <span className="w-14 shrink-0 text-[13px] text-muted-foreground tabular-nums">{e.date === DEMO_TODAY ? "Hoy" : formatDate(e.date)}</span>
+                  <span className="w-14 shrink-0 text-xs text-muted-foreground tabular-nums">{e.date === DEMO_TODAY ? "Hoy" : formatDate(e.date)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{e.title}</span>
-                    <span className="block truncate text-[13px] text-muted-foreground">
+                    <span className="block truncate text-xs text-muted-foreground">
                       {companiesLabel(e.companies)}
                       {e.time && ` · ${e.time} h`}
                     </span>
                   </span>
-                  <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted-foreground">
-                    <span className={cn("size-1.5 rounded-full", eventTypeMeta[e.type].dot)} aria-hidden />
-                    {eventTypeMeta[e.type].label}
-                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{eventTypeMeta[e.type].label}</span>
                 </>
               )
               return (
                 <li key={e.id}>
                   {clickable ? (
-                    <button type="button" onClick={() => setSelected(e.actionItemId!)} className="flex w-full items-center gap-4 px-6 py-3.5 text-left text-sm hover:bg-muted/50">
+                    <button type="button" onClick={() => setSelected(e.actionItemId!)} className="flex w-full items-center gap-4 px-4 py-2.5 text-left text-sm transition-colors hover:bg-muted">
                       {body}
                     </button>
                   ) : (
-                    <div className="flex items-center gap-4 px-6 py-3.5 text-sm">{body}</div>
+                    <div className="flex items-center gap-4 px-4 py-2.5 text-sm">{body}</div>
                   )}
                 </li>
               )
@@ -315,24 +342,24 @@ export function InicioView() {
               const by = getPerson(a.byId)
               const body = (
                 <>
-                  <span className="w-14 shrink-0 text-[13px] text-muted-foreground tabular-nums">{formatDate(a.date)}</span>
+                  <span className="w-14 shrink-0 text-xs text-muted-foreground tabular-nums">{formatDate(a.date)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{a.title}</span>
-                    <span className="block truncate text-[13px] text-muted-foreground">
+                    <span className="block truncate text-xs text-muted-foreground">
                       {a.detail} · {by.firstName} {by.lastName}
                     </span>
                   </span>
-                  <span className="shrink-0 text-[13px] text-muted-foreground">{activityLabel[a.kind]}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{activityLabel[a.kind]}</span>
                 </>
               )
               return (
                 <li key={a.id}>
                   {a.href ? (
-                    <Link href={a.href} className="flex items-center gap-4 px-6 py-3.5 text-sm hover:bg-muted/50">
+                    <Link href={a.href} className="flex items-center gap-4 px-4 py-2.5 text-sm transition-colors hover:bg-muted">
                       {body}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-4 px-6 py-3.5 text-sm">{body}</div>
+                    <div className="flex items-center gap-4 px-4 py-2.5 text-sm">{body}</div>
                   )}
                 </li>
               )
@@ -344,13 +371,13 @@ export function InicioView() {
       {/* Qué conviene decidir */}
       {visibleInsights.length > 0 && (
         <section className="space-y-3">
-          <h2 className="flex items-center gap-2.5 text-[17px] font-medium">
+          <h2 className="flex items-center gap-2 text-base font-medium">
             <span className="flex size-7 items-center justify-center rounded-lg bg-muted">
               <Lightbulb className="size-4" />
             </span>
             Análisis de GS
           </h2>
-          <div className={cn("grid gap-4", visibleInsights.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
+          <div className={cn("grid gap-3", visibleInsights.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
             {visibleInsights.map((i) => (
               <InsightCard key={i.id} insight={i} />
             ))}
@@ -369,9 +396,9 @@ function ServicesCard({ services: list, className }: { services: ((typeof servic
     <SectionCard title="Estado de servicios" description="Detalle por servicio en la Fase 2" icon={Briefcase} flush className={className}>
       <ul className="divide-y border-t md:hidden">
         {list.map((s) => (
-          <li key={s.id} className="space-y-1.5 px-5 py-4">
+          <li key={s.id} className="space-y-1.5 px-4 py-3">
             <p className="font-medium leading-snug">{s.name}</p>
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {s.nextMilestone.title} · {formatDate(s.nextMilestone.date)}
             </p>
             <StatusBadge {...healthMeta[s.scopedHealth]} />
@@ -393,7 +420,7 @@ function ServicesCard({ services: list, className }: { services: ((typeof servic
             <TableRow key={s.id}>
               <TableCell className="w-[30%] max-w-0">
                 <p className="truncate font-medium">{s.name}</p>
-                <p className="truncate text-[13px] text-muted-foreground">{s.period}</p>
+                <p className="truncate text-xs text-muted-foreground">{s.period}</p>
               </TableCell>
               <TableCell className="w-[34%] max-w-0 truncate text-muted-foreground">{s.nextMilestone.title}</TableCell>
               <TableCell className="text-muted-foreground tabular-nums">{formatDate(s.nextMilestone.date)}</TableCell>

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 export function DocumentPaper({ doc, className }: { doc: DocumentItem; className?: string }) {
   const c = documentContent(doc)
   return (
-    <article className={cn("relative mx-auto w-full max-w-[720px] overflow-hidden rounded-lg bg-white px-6 py-7 text-[13px] text-neutral-800 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-black/5 sm:px-10 sm:py-9", className)}>
+    <article className={cn("relative mx-auto w-full max-w-[720px] overflow-hidden gs-keep-light rounded-lg bg-white px-6 py-7 text-[13px] text-neutral-800 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-black/5 sm:px-10 sm:py-9", className)}>
       <span className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[24deg] text-[64px] font-black tracking-widest whitespace-nowrap text-neutral-900/[0.035] select-none" aria-hidden>
         FICTICIO
       </span>

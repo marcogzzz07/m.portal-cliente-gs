@@ -45,10 +45,10 @@ export function ContractsView() {
   const nextExpiry = open.filter((c) => c.validUntil).sort((a, b) => a.validUntil!.localeCompare(b.validUntil!))[0]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader icon={FileSignature} title="Propuestas y contratos" badge={scopeBadge} description="Revisa el alcance y los honorarios, pide aclaraciones o cambios y firma electrónicamente sin salir del portal." />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Por atender" value={open.length} icon={FileClock} accent="amber" helper="Propuestas y documentos abiertos" />
         <MetricCard label="Esperan tu firma" value={toSign.length} icon={PenLine} accent="pink" helper={toSign.length ? toSign[0].title : "Nada por firmar"} />
         <MetricCard label="Firmados" value={signed} icon={FileSignature} accent="green" helper="Con certificado de firma" />
@@ -71,7 +71,7 @@ export function ContractsView() {
         {list.length === 0 ? (
           <EmptyState icon={FileSignature} title="Nada por aquí" description="No hay documentos en esta vista." />
         ) : (
-          <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
+          <div className="overflow-hidden rounded-xl bg-card border">
             <Table className="hidden md:table">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">

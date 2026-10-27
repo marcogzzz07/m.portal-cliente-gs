@@ -25,7 +25,7 @@ export function MobileTabBar({ onMore }: { onMore: () => void }) {
   const counts: Record<string, number> = { "/pendientes": pendingCount, "/mensajes": unreadMessages }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden" aria-label="Navegación inferior">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Navegación inferior">
       <ul className="grid grid-cols-5">
         {items.map((item) => {
           const Icon = item.icon
@@ -40,7 +40,7 @@ export function MobileTabBar({ onMore }: { onMore: () => void }) {
                 <span className="relative">
                   <Icon className="size-5" />
                   {counts[item.href] > 0 && (
-                    <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">{counts[item.href]}</span>
+                    <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-semibold text-primary-foreground tabular-nums">{counts[item.href]}</span>
                   )}
                 </span>
                 <span className="truncate">{item.title}</span>

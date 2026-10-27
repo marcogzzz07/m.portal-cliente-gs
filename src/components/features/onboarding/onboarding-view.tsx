@@ -44,7 +44,7 @@ export function OnboardingView() {
   const step = steps.find((s) => s.id === selected)!
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={Rocket}
         title={`Incorporación de ${onboardingCompany.name}`}
@@ -52,7 +52,7 @@ export function OnboardingView() {
         description={`${onboardingCompany.origin}. Completa los pasos para que GS active sus servicios; puedes guardar y continuar después.`}
       />
 
-      <div className="flex flex-col gap-4 rounded-2xl bg-card p-5 ring-1 ring-foreground/[0.06] sm:flex-row sm:items-center sm:p-6">
+      <div className="flex flex-col gap-4 rounded-xl bg-card p-5 border sm:flex-row sm:items-center sm:p-5">
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-baseline justify-between gap-3">
             <p className="font-medium">
@@ -64,15 +64,15 @@ export function OnboardingView() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
-        <ol className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06] lg:self-start">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+        <ol className="overflow-hidden rounded-xl bg-card border lg:self-start">
           {steps.map((s) => (
             <li key={s.id} className="border-b last:border-0">
               <button
                 type="button"
                 onClick={() => setSelected(s.id)}
                 aria-current={s.id === selected ? "step" : undefined}
-                className={cn("flex w-full items-start gap-3 px-5 py-3.5 text-left transition-colors hover:bg-muted/50", s.id === selected && "bg-muted")}
+                className={cn("flex w-full items-start gap-3 px-5 py-3.5 text-left transition-colors hover:bg-muted", s.id === selected && "bg-muted")}
               >
                 <span className="mt-0.5">
                   {done(s) ? (
@@ -98,7 +98,7 @@ export function OnboardingView() {
           ))}
         </ol>
 
-        <section className="min-w-0 space-y-5 rounded-2xl bg-card p-6 ring-1 ring-foreground/[0.06] sm:p-7 lg:sticky lg:top-20 lg:self-start">
+        <section className="min-w-0 space-y-5 rounded-xl bg-card p-4 border sm:p-5 lg:sticky lg:top-20 lg:self-start">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge {...onboardingStatus[step.status]} />
@@ -118,18 +118,18 @@ export function OnboardingView() {
           />
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl bg-muted/60 p-4">
+            <div className="rounded-xl bg-muted p-4">
               <p className="mb-2 text-[13px] text-muted-foreground">Requisitos</p>
               <ul className="space-y-1.5 text-sm">
                 {step.requirements.map((r) => (
                   <li key={r} className="flex gap-2">
-                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/40" />
+                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-muted-foreground" />
                     {r}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl bg-muted/60 p-4">
+            <div className="rounded-xl bg-muted p-4">
               <p className="mb-2 text-[13px] text-muted-foreground">Criterio de validación</p>
               <p className="text-sm">{step.criteria}</p>
             </div>
@@ -204,7 +204,7 @@ function StepAction({ step }: { step: OnboardingStep }) {
             <div className="grid gap-1.5">
               <Label>Régimen fiscal</Label>
               <Select value={fiscal.regimen} onValueChange={(v) => setFiscal({ ...fiscal, regimen: v })}>
-                <SelectTrigger className="w-full data-[size=default]:h-9">
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

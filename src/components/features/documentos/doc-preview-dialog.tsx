@@ -42,7 +42,7 @@ export function DocPreviewDialog({ doc, onClose }: { doc: DocumentItem | null; o
             </DialogDescription>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto bg-muted/60 p-4 sm:p-8">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-muted p-4 sm:p-8">
           <DocumentPaper doc={doc} />
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2 border-t px-5 py-3">

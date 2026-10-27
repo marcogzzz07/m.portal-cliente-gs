@@ -15,7 +15,7 @@ export function Breadcrumb({ current }: { current?: string }) {
   const isDetail = item && pathname !== item.href
 
   return (
-    <nav aria-label="Ruta" className="mb-4 hidden items-center gap-1.5 text-[13px] text-muted-foreground sm:flex">
+    <nav aria-label="Ruta" className="mb-3 hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
       <Link href={site.home} className="hover:text-foreground hover:underline">
         {site.name}
       </Link>

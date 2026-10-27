@@ -17,7 +17,7 @@ import { effectiveStatus, usePortal } from "@/store/portal-store"
 import { UploadDialog } from "../documentos/upload-dialog"
 
 function Notice({ icon: Icon, title, children, tone = "muted" }: { icon: typeof Clock; title: string; children?: React.ReactNode; tone?: "muted" | "success" | "info" }) {
-  const tones = { muted: "bg-muted/70", success: "bg-success/10 text-foreground", info: "bg-info/10" }
+  const tones = { muted: "bg-muted", success: "bg-[var(--gs-color-success-subtle)] text-foreground", info: "bg-[var(--gs-color-info-subtle)]" }
   return (
     <div className={`flex items-start gap-3 rounded-xl px-4 py-3 ${tones[tone]}`}>
       <Icon className="mt-0.5 size-4 shrink-0" />
@@ -103,7 +103,7 @@ export function ActionPanel({ item }: { item: ActionItem }) {
           {item.approvalSummary && (
             <div className="overflow-hidden rounded-xl border">
               <table className="w-full text-sm">
-                <caption className="border-b bg-muted/60 px-3 py-2 text-left text-xs font-semibold text-muted-foreground">ISR + IVA a pagar · septiembre 2026 · preliminar</caption>
+                <caption className="border-b bg-muted px-3 py-2 text-left text-xs font-semibold text-muted-foreground">ISR + IVA a pagar · septiembre 2026 · preliminar</caption>
                 <tbody>
                   {item.approvalSummary.map((r) => (
                     <tr key={r.label} className="border-b last:border-0">
@@ -111,7 +111,7 @@ export function ActionPanel({ item }: { item: ActionItem }) {
                       <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(r.value, 0)}</td>
                     </tr>
                   ))}
-                  <tr className="bg-muted/40 font-semibold">
+                  <tr className="bg-muted font-semibold">
                     <td className="px-3 py-2">Total del grupo</td>
                     <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(item.approvalSummary.reduce((s, r) => s + r.value, 0), 0)}</td>
                   </tr>

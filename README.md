@@ -1,8 +1,9 @@
 # Portal de Clientes GS — prototipo navegable
 
 Mockup de alta fidelidad del Portal de Clientes de González Solís, construido por fases sobre la
-plantilla de diseño **Portal GS** (mismos colores, tipografía Figtree y componentes). Todos los datos
-son ficticios: Grupo EcoPack Norte y sus cinco razones sociales.
+sistema visual del **Portal GS** (mismos tokens, temas Claro y Oscuro, tipografía Inter y kit de
+tarjetas; ver `docs/SISTEMA_DE_DISENO.md`). Todos los datos son ficticios: Grupo EcoPack Norte y sus
+cinco razones sociales.
 
 Referencias de producto en esta carpeta:
 
@@ -19,7 +20,8 @@ npm run dev
 Abre <http://localhost:3003>. El enlace **Controles de la demo** de la franja superior permite cambiar de usuario simulado (siete, incluida Carmen, que activa su invitación), activar respuestas automáticas de GS, simular una caída de ContaLink,
 restablecer los datos y ver los 14 recorridos obligatorios con su fase.
 
-Los cambios que hagas (cargas, aprobaciones, mensajes) se guardan solo en tu navegador.
+Los cambios que hagas (cargas, aprobaciones, mensajes) se guardan solo en tu navegador. El tema
+Claro / Oscuro se cambia desde el pie de la barra lateral.
 
 ## Fases
 
@@ -37,10 +39,12 @@ Las secciones de fases posteriores aparecen en el menú con su etiqueta (F2, F3)
 ```text
 src/
 ├── app/(app)/            # Rutas: inicio, pendientes, calendario, documentos, mensajes, notificaciones, equipo
+├── styles/               # Tokens y tema del sistema visual GS (gs-tokens.css, gs-theme.css)
 ├── components/
+│   ├── charts/           # Estándar de gráficas del Portal GS
 │   ├── features/         # Pantallas por módulo
 │   ├── layout/           # Sidebar, encabezado, selector de contexto, panel de demo, barra móvil
-│   ├── shared/           # Piezas del Portal GS (encabezado, indicadores, estados, alcance de cifras…)
+│   ├── shared/           # Kit del Portal GS (encabezado, tarjetas, indicadores, estados, kit ejecutivo…)
 │   └── ui/               # Componentes base shadcn/ui
 ├── data/                 # Datos ficticios: organización, pendientes, documentos, conversaciones, calendario
 ├── hooks/use-scoped-data.ts  # Datos visibles según rol y contexto activo
@@ -53,5 +57,5 @@ src/
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Lucide · Recharts · Sonner.
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Lucide · Recharts · Sonner · Inter (next/font).
 Sin backend: Supabase y Vercel se incorporarán cuando el producto lo requiera.

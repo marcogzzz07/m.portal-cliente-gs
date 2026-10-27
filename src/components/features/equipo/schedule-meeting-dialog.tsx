@@ -171,7 +171,7 @@ export function ScheduleMeetingDialog({ open, onOpenChange, hostId: initialHost 
         {live ? (
           <div className="space-y-6 p-6 sm:p-8">
             <DialogHeader className="items-center text-center">
-              <span className={cn("flex size-14 items-center justify-center rounded-full", live.status === "confirmada" ? "bg-success/12 text-success" : "bg-muted text-muted-foreground")}>
+              <span className={cn("flex size-14 items-center justify-center rounded-full", live.status === "confirmada" ? "bg-[var(--gs-color-success-subtle)] text-success" : "bg-muted text-muted-foreground")}>
                 {live.status === "confirmada" ? <CalendarCheck className="size-6" /> : <Clock className="size-6" />}
               </span>
               <DialogTitle className="text-xl">{live.status === "confirmada" ? "Reunión confirmada" : "Solicitud enviada"}</DialogTitle>
@@ -179,7 +179,7 @@ export function ScheduleMeetingDialog({ open, onOpenChange, hostId: initialHost 
                 {live.status === "confirmada" ? `${host.firstName} confirmó la reunión. Ya aparece en tu calendario.` : `Esperando la confirmación de ${host.firstName}…`}
               </DialogDescription>
             </DialogHeader>
-            <dl className="mx-auto grid max-w-md gap-3 rounded-2xl bg-muted/60 p-5 text-sm">
+            <dl className="mx-auto grid max-w-md gap-3 rounded-xl bg-muted p-5 text-sm">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Tema</dt>
                 <dd className="text-right font-medium">{live.topic}</dd>
@@ -251,7 +251,7 @@ export function ScheduleMeetingDialog({ open, onOpenChange, hostId: initialHost 
                   {member?.away && <p className="text-xs text-muted-foreground">Ausente del {formatDate(member.away.from)} al {formatDate(member.away.to)}.</p>}
                 </div>
 
-                <div className="rounded-2xl bg-muted/50 p-3">
+                <div className="rounded-xl bg-muted p-3">
                   <div className="mb-2 flex items-center justify-between">
                     <Button variant="ghost" size="icon-sm" disabled={month <= DEMO_TODAY.slice(0, 7)} onClick={() => setMonth(iso(new Date(y, mo - 2, 1)).slice(0, 7))} aria-label="Mes anterior">
                       <ChevronLeft />
@@ -318,7 +318,7 @@ export function ScheduleMeetingDialog({ open, onOpenChange, hostId: initialHost 
                             aria-pressed={time === s}
                             className={cn(
                               "h-10 rounded-xl border text-sm tabular-nums transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-                              time === s ? "border-primary bg-primary font-medium text-primary-foreground" : "bg-card hover:border-foreground/30",
+                              time === s ? "border-primary bg-primary font-medium text-primary-foreground" : "bg-card hover:border-[var(--gs-color-border-control)]",
                               taken && "cursor-default border-dashed text-muted-foreground/50 line-through hover:border-border"
                             )}
                           >
@@ -328,7 +328,7 @@ export function ScheduleMeetingDialog({ open, onOpenChange, hostId: initialHost 
                       })}
                     </div>
                   ) : (
-                    <p className="rounded-xl bg-muted/50 px-4 py-6 text-center text-sm text-muted-foreground">Elige un día en el calendario para ver los horarios de {host.firstName}.</p>
+                    <p className="rounded-xl bg-muted px-4 py-6 text-center text-sm text-muted-foreground">Elige un día en el calendario para ver los horarios de {host.firstName}.</p>
                   )}
                 </div>
 

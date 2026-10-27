@@ -113,7 +113,7 @@ export function DocumentsView() {
   const showAmount = view === "facturas"
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={FolderOpen}
         title="Documentos"
@@ -129,7 +129,7 @@ export function DocumentsView() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Entregables de GS" value={counts.recibidos} icon={PackageCheck} accent="blue" helper="Publicados en 2026" />
         <MetricCard label="Por enviar" value={documents.filter((d) => d.direction === "cliente" && (d.status === "requested" || d.status === "changes_required")).length} icon={FileUp} accent="pink" helper="Solicitados por GS o con corrección" />
         <MetricCard label="En revisión de GS" value={documents.filter((d) => d.direction === "cliente" && (d.status === "uploaded" || d.status === "under_review")).length} icon={Clock} accent="amber" helper="Cargado no significa aprobado" />
@@ -147,14 +147,14 @@ export function DocumentsView() {
             .map((v) => (
               <PageTabsTrigger key={v.key} value={v.key}>
                 {v.label}
-                <span className="ml-2 text-muted-foreground tabular-nums">{counts[v.key]}</span>
+                <span className="ml-1.5 text-xs font-normal text-muted-foreground tabular-nums">{counts[v.key]}</span>
               </PageTabsTrigger>
             ))}
         </PageTabsList>
 
         {repository && (
-          <div className="rounded-2xl bg-card p-4 ring-1 ring-foreground/[0.06] sm:p-5">
-            <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="rounded-xl border bg-card px-4 py-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
               <p className="text-sm font-medium">Periodo · 2026</p>
               <button type="button" onClick={() => setMonth("todos")} className={cn("text-sm text-muted-foreground hover:text-foreground", month === "todos" && "font-medium text-foreground")}>
                 Todo el año
@@ -176,9 +176,9 @@ export function DocumentsView() {
                     }}
                     aria-pressed={active}
                     className={cn(
-                      "flex flex-col items-center gap-0.5 rounded-xl py-2.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-                      active ? "bg-primary text-primary-foreground" : "bg-muted/60 hover:bg-muted",
-                      n === 0 && "cursor-default opacity-40 hover:bg-muted/60"
+                      "flex flex-col items-center gap-0.5 rounded-lg py-1.5 text-[13px] transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                      active ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-accent",
+                      n === 0 && "cursor-default opacity-40 hover:bg-muted"
                     )}
                   >
                     <span className="font-medium">{label}</span>
@@ -190,7 +190,9 @@ export function DocumentsView() {
           </div>
         )}
 
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        {/* Barra de herramientas integrada a la tabla: comparten una sola frontera. */}
+        <div className="overflow-hidden rounded-xl border bg-card">
+        <div className="flex flex-col gap-2 border-b px-4 py-2.5 lg:flex-row lg:items-center">
           {view === "recibidos" && (
             <Segmented
               label="Servicio"
@@ -210,13 +212,13 @@ export function DocumentsView() {
             />
           )}
           <div className="flex flex-1 flex-col gap-2 sm:flex-row lg:justify-end">
-            <div className="relative sm:max-w-sm sm:flex-1">
-              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, folio o archivo…" className="h-9 rounded-xl bg-card pl-9" aria-label="Buscar documentos" />
+            <div className="relative sm:max-w-[28rem] sm:flex-1">
+              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, folio o archivo…" className="h-8 pl-8 text-[13px] md:text-[13px]" aria-label="Buscar documentos" />
             </div>
             {types.length > 1 && (
               <Select value={docType} onValueChange={setDocType}>
-                <SelectTrigger className="w-full rounded-xl bg-card data-[size=default]:h-9 sm:w-60" aria-label="Tipo de documento">
+                <SelectTrigger className="w-full sm:w-48" aria-label="Tipo de documento">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -233,9 +235,11 @@ export function DocumentsView() {
         </div>
 
         {list.length === 0 ? (
-          <EmptyState icon={FolderOpen} title={q ? `Sin resultados para “${query}”` : "Nada por aquí"} description={q ? "Prueba con otro término." : views.find((v) => v.key === view)!.empty} />
+          <div className="p-4">
+            <EmptyState icon={FolderOpen} title={q ? `Sin resultados para “${query}”` : "Nada por aquí"} description={q ? "Prueba con otro término." : views.find((v) => v.key === view)!.empty} />
+          </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
+          <div>
             {/* Escritorio */}
             <Table className="hidden md:table">
               <TableHeader>
@@ -257,7 +261,7 @@ export function DocumentsView() {
                           <Link href={`/documentos/${d.id}`} className="block truncate font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
                             {d.name}
                           </Link>
-                          <span className="block truncate text-[13px] text-muted-foreground">
+                          <span className="block truncate text-xs text-muted-foreground">
                             {d.period} · {d.formats.map((f) => formatMeta[f].label).join(", ")}
                             {d.versions.length > 1 && ` · versión ${d.versions.length}`}
                           </span>
@@ -283,12 +287,12 @@ export function DocumentsView() {
             {/* Móvil */}
             <ul className="divide-y md:hidden">
               {groups.flatMap((g) => [
-                ...(g.key ? [<li key={`h-${g.key}`} className="bg-muted/60 px-5 py-2 text-[13px] font-medium text-muted-foreground">{groupLabel(g.key)}</li>] : []),
+                ...(g.key ? [<li key={`h-${g.key}`} className="bg-muted px-4 py-1.5 text-xs font-semibold text-muted-foreground">{groupLabel(g.key)}</li>] : []),
                 ...g.items.map((d) => (
-                  <li key={d.id} className="flex items-start gap-3 px-5 py-4">
+                  <li key={d.id} className="flex items-start gap-3 px-4 py-3">
                     <Link href={`/documentos/${d.id}`} className="min-w-0 flex-1 space-y-1.5">
                       <span className="block font-medium leading-snug">{d.name}</span>
-                      <span className="block text-[13px] text-muted-foreground">
+                      <span className="block text-xs text-muted-foreground">
                         {companiesLabel(d.companies)} · {showAmount ? formatCurrency(d.amount ?? 0) : d.period}
                       </span>
                       <span className="flex flex-wrap items-center gap-2">
@@ -313,7 +317,7 @@ export function DocumentsView() {
             </ul>
 
             {list.length > limit && (
-              <div className="flex items-center justify-between gap-3 border-t px-6 py-3.5 text-sm">
+              <div className="flex items-center justify-between gap-3 border-t px-4 py-2.5 text-sm">
                 <span className="text-muted-foreground">
                   Mostrando {limit} de {list.length}
                 </span>
@@ -324,6 +328,7 @@ export function DocumentsView() {
             )}
           </div>
         )}
+        </div>
       </Tabs>
 
       <UploadDialog open={uploadFor !== undefined} onOpenChange={(v) => !v && setUploadFor(undefined)} doc={uploadFor ?? undefined} />
@@ -336,8 +341,8 @@ function GroupBlock({ label, count, children }: { label: string; count: number; 
   return (
     <>
       {label && (
-        <TableRow className="bg-muted/60 hover:bg-muted/60">
-          <TableCell colSpan={6} className="py-2.5 text-[13px] font-medium text-muted-foreground">
+        <TableRow className="bg-muted hover:bg-muted">
+          <TableCell colSpan={6} className="py-1.5 text-xs font-semibold text-muted-foreground">
             {label} <span className="ml-1 tabular-nums">· {count}</span>
           </TableCell>
         </TableRow>

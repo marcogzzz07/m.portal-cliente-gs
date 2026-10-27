@@ -69,7 +69,7 @@ export function NewsDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Button variant="ghost" size="sm" asChild className="-ml-2">
         <Link href="/novedades">
           <ArrowLeft />
@@ -77,12 +77,12 @@ export function NewsDetail({ id }: { id: string }) {
         </Link>
       </Button>
 
-      <div className="relative aspect-[21/9] overflow-hidden rounded-2xl bg-muted sm:aspect-[4/1]">
+      <div className="relative aspect-[21/9] overflow-hidden rounded-xl bg-muted sm:aspect-[4/1]">
         <Image src={item.image} alt={item.imageAlt} fill sizes="(min-width: 1400px) 1300px, 100vw" className="object-cover" priority />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <article className="min-w-0 space-y-5 rounded-2xl bg-card p-6 ring-1 ring-foreground/[0.06] sm:p-10">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <article className="min-w-0 space-y-5 rounded-xl bg-card p-4 border sm:p-5">
           <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
             <span>{item.category}</span>
             <span aria-hidden>·</span>
@@ -91,7 +91,7 @@ export function NewsDetail({ id }: { id: string }) {
             <span>{item.readMinutes} min de lectura</span>
             <StatusBadge {...impactMeta[item.impact]} className="ml-1" />
           </div>
-          <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-[32px]">{item.title}</h1>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-[28px]">{item.title}</h1>
           <p className="text-lg leading-relaxed text-muted-foreground">{item.summary}</p>
           <div className="space-y-4 border-t pt-5 text-[15px] leading-7">
             {item.body.map((p) => (
@@ -105,8 +105,8 @@ export function NewsDetail({ id }: { id: string }) {
         </article>
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:self-start">
-          <div className="rounded-2xl bg-brand-soft/70 p-6">
-            <p className="text-[13px] font-medium text-brand">Por qué te importa</p>
+          <div className="rounded-[var(--gs-radius-md)] bg-muted px-4 py-3">
+            <p className="text-xs font-medium text-muted-foreground">Por qué te importa</p>
             <p className="mt-2 text-[15px] leading-relaxed">{item.whyItMatters}</p>
           </div>
 
@@ -132,10 +132,10 @@ export function NewsDetail({ id }: { id: string }) {
 
       {related.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-[17px] font-medium">También te puede interesar</h2>
+          <h2 className="text-base font-medium">También te puede interesar</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {related.map((n) => (
-              <Link key={n.id} href={`/novedades/${n.id}`} className="group flex gap-4 rounded-2xl bg-card p-3 ring-1 ring-foreground/[0.06] transition-shadow hover:shadow-md">
+              <Link key={n.id} href={`/novedades/${n.id}`} className="group flex gap-4 rounded-xl bg-card p-3 border transition-shadow hover:shadow-[0_4px_14px_rgba(24,25,27,0.10)]">
                 <span className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl">
                   <Image src={n.image} alt={n.imageAlt} fill sizes="96px" className="object-cover" />
                 </span>

@@ -29,7 +29,7 @@ export function NotificationsMenu() {
         <Button variant="ghost" size="icon-lg" className="relative rounded-full" aria-label={unread ? `Notificaciones (${unread} sin leer)` : "Notificaciones"}>
           <Bell className="size-[18px]" />
           {unread > 0 && (
-            <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brand text-[10px] font-semibold text-white ring-2 ring-background">{unread}</span>
+            <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground tabular-nums ring-2 ring-background">{unread}</span>
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -48,7 +48,7 @@ export function NotificationsMenu() {
             return (
               <DropdownMenuItem key={n.id} asChild className="items-start gap-3 rounded-lg px-2.5 py-2.5">
                 <Link href={n.href} onClick={() => readNotification(n.id)}>
-                  <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full", n.read ? "bg-muted text-muted-foreground" : "bg-brand-soft text-brand")}>
+                  <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted", n.read ? "text-muted-foreground" : "text-foreground")}>
                     <Icon className="size-3.5" />
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -56,7 +56,7 @@ export function NotificationsMenu() {
                     <span className="text-xs text-muted-foreground">{n.description}</span>
                     <span className="text-[11px] text-muted-foreground/80">{formatRelative(n.at)}</span>
                   </span>
-                  {!n.read && <span className="mt-2 size-2 shrink-0 rounded-full bg-brand" aria-label="Sin leer" />}
+                  {!n.read && <span className="mt-2 size-2 shrink-0 rounded-full bg-[var(--gs-color-info-base)]" aria-label="Sin leer" />}
                 </Link>
               </DropdownMenuItem>
             )

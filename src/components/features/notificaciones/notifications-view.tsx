@@ -36,7 +36,7 @@ export function NotificationsView() {
   const unread = notifications.filter((n) => !n.read).length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={Bell}
         title="Notificaciones"
@@ -49,31 +49,31 @@ export function NotificationsView() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="gap-4">
           <PageTabsList>
             <PageTabsTrigger value="todas">Todas</PageTabsTrigger>
             <PageTabsTrigger value="sin-leer">
               Sin leer
-              {unread > 0 && <span className="ml-1.5 rounded-full bg-brand px-1.5 text-[11px] text-white">{unread}</span>}
+              {unread > 0 && <span className="ml-1.5 text-xs font-normal text-muted-foreground tabular-nums">{unread}</span>}
             </PageTabsTrigger>
           </PageTabsList>
           {list.length === 0 ? (
             <EmptyState icon={CheckCheck} title="Estás al día" description="No tienes notificaciones sin leer." />
           ) : (
-            <ul className="divide-y overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
+            <ul className="divide-y overflow-hidden rounded-xl border bg-card">
               {list.map((n) => {
                 const Icon = notificationIcon[n.kind]
                 return (
                   <li key={n.id}>
-                    <Link href={n.href} onClick={() => readNotification(n.id)} className={cn("flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50", !n.read && "bg-brand-soft/30")}>
-                      <span className={cn("mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full", n.read ? "bg-muted text-muted-foreground" : "bg-brand-soft text-brand")}>
+                    <Link href={n.href} onClick={() => readNotification(n.id)} className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted">
+                      <span className={cn("mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted", n.read ? "text-muted-foreground" : "text-foreground")}>
                         <Icon className="size-4" />
                       </span>
                       <span className="min-w-0 flex-1 space-y-0.5">
                         <span className="flex flex-wrap items-center gap-2">
                           <span className={cn("text-sm", !n.read && "font-semibold")}>{n.title}</span>
-                          <span className="rounded bg-muted px-1.5 py-px text-[10px] font-medium text-muted-foreground">{notificationKindLabel[n.kind]}</span>
+                          <span className="rounded bg-muted px-1.5 py-px text-[11px] font-medium text-muted-foreground">{notificationKindLabel[n.kind]}</span>
                         </span>
                         <span className="block text-sm text-muted-foreground">{n.description}</span>
                         <span className="flex flex-wrap items-center gap-x-3 text-[11px] text-muted-foreground">
@@ -81,7 +81,7 @@ export function NotificationsView() {
                           <CompanyTag companies={n.companies} className="text-[11px]" />
                         </span>
                       </span>
-                      {!n.read && <span className="mt-2 size-2 shrink-0 rounded-full bg-brand" aria-label="Sin leer" />}
+                      {!n.read && <span className="mt-2 size-2 shrink-0 rounded-full bg-[var(--gs-color-info-base)]" aria-label="Sin leer" />}
                     </Link>
                   </li>
                 )

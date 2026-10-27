@@ -128,7 +128,7 @@ export function PayDialog({ invoice, open, onOpenChange }: { invoice: Invoice; o
                       type="button"
                       onClick={() => setMethod(m.v)}
                       aria-pressed={method === m.v}
-                      className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-sm transition-colors ${method === m.v ? "border-primary bg-primary/[0.04] font-medium" : "hover:bg-muted/60"}`}
+                      className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-sm transition-colors ${method === m.v ? "border-brand bg-brand-soft font-medium" : "hover:bg-muted"}`}
                     >
                       <m.icon className="size-4" />
                       {m.label}
@@ -138,7 +138,7 @@ export function PayDialog({ invoice, open, onOpenChange }: { invoice: Invoice; o
               </div>
 
               {method === "tarjeta" && (
-                <div className="grid gap-3 rounded-2xl bg-muted/50 p-4">
+                <div className="grid gap-3 rounded-xl bg-muted p-4">
                   <div className="grid gap-1.5">
                     <Label htmlFor="cc-number">Número de tarjeta</Label>
                     <Input id="cc-number" inputMode="numeric" autoComplete="off" value={card.number} onChange={(e) => setCard({ ...card, number: e.target.value })} placeholder="0000 0000 0000 0000" />
@@ -171,7 +171,7 @@ export function PayDialog({ invoice, open, onOpenChange }: { invoice: Invoice; o
               )}
 
               {method === "liga" && (
-                <div className="space-y-3 rounded-2xl bg-muted/50 p-4 text-sm">
+                <div className="space-y-3 rounded-xl bg-muted p-4 text-sm">
                   <p>Comparte la liga con quien autoriza pagos en tu empresa. Al abrirla podrá pagar con tarjeta o SPEI.</p>
                   <div className="flex gap-2">
                     <Input readOnly value={link} className="font-mono text-xs" aria-label="Liga de pago" />
@@ -190,7 +190,7 @@ export function PayDialog({ invoice, open, onOpenChange }: { invoice: Invoice; o
               )}
 
               {method === "transferencia" && (
-                <div className="space-y-3 rounded-2xl bg-muted/50 p-4 text-sm">
+                <div className="space-y-3 rounded-xl bg-muted p-4 text-sm">
                   <dl className="grid grid-cols-[110px_minmax(0,1fr)] gap-y-1.5">
                     <dt className="text-muted-foreground">Beneficiario</dt>
                     <dd>González Solís (cuenta de ejemplo)</dd>

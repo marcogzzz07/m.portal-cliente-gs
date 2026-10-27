@@ -54,13 +54,13 @@ export function MessagesView({ threadId, compose = false }: { threadId?: string;
 
   return (
     <div>
-      <div className="grid h-[calc(100dvh-9rem)] min-h-[520px] overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06] lg:h-[calc(100dvh-7rem)] xl:grid-cols-[380px_minmax(0,1fr)]">
+      <div className="grid h-[calc(100dvh-9rem)] min-h-[520px] overflow-hidden rounded-xl bg-card border lg:h-[calc(100dvh-7rem)] xl:grid-cols-[380px_minmax(0,1fr)]">
         {/* Bandeja */}
         <aside className={cn("flex min-h-0 flex-col border-r", threadId && "hidden xl:flex")}>
-          <div className="space-y-3 border-b p-5">
+          <div className="space-y-3 border-b p-4">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <h1 className="text-xl font-bold tracking-tight">Mensajes</h1>
+                <h1 className="text-2xl leading-tight font-bold tracking-tight">Mensajes</h1>
                 <p className="text-xs text-muted-foreground">{scopeLabel}</p>
               </div>
               {persona.role !== "consulta" && (
@@ -71,12 +71,12 @@ export function MessagesView({ threadId, compose = false }: { threadId?: string;
               )}
             </div>
             <div className="relative">
-              <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar en conversaciones" className="h-8 pl-8" aria-label="Buscar en conversaciones" />
+              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar en conversaciones" className="h-8 pl-8 text-[13px] md:text-[13px]" aria-label="Buscar en conversaciones" />
             </div>
             <div className="flex gap-2">
               <Select value={status} onValueChange={(v) => setStatus(v as StatusFilter)}>
-                <SelectTrigger size="sm" className="flex-1" aria-label="Estado">
+                <SelectTrigger className="flex-1" aria-label="Estado">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -86,7 +86,7 @@ export function MessagesView({ threadId, compose = false }: { threadId?: string;
                 </SelectContent>
               </Select>
               <Select value={service} onValueChange={(v) => setService(v as ServiceKey | "todos")}>
-                <SelectTrigger size="sm" className="flex-1" aria-label="Servicio">
+                <SelectTrigger className="flex-1" aria-label="Servicio">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,7 +111,7 @@ export function MessagesView({ threadId, compose = false }: { threadId?: string;
         {/* Hilo */}
         <section className={cn("flex min-h-0 min-w-0 flex-col", !threadId && "hidden xl:flex")}>
           {!threadId ? (
-            <div className="flex flex-1 items-center justify-center p-6">
+            <div className="flex flex-1 items-center justify-center p-4">
               <EmptyState icon={MessagesSquare} title="Elige una conversación" description="Cada conversación está ligada a un documento, pendiente, factura, insight o proyecto, y tiene un responsable en GS." className="border-0 bg-transparent" />
             </div>
           ) : !thread ? (
@@ -139,21 +139,21 @@ function ThreadItem({ conv, active }: { conv: Conversation; active: boolean }) {
   const unread = conv.messages.length - conv.readUpTo
   return (
     <li>
-      <Link href={`/mensajes/${conv.id}`} aria-current={active ? "page" : undefined} className={cn("flex gap-3 px-5 py-4 transition-colors hover:bg-muted/50", active && "bg-muted")}>
-        <UserAvatar firstName={getPerson(conv.gsOwnerId).firstName} lastName={getPerson(conv.gsOwnerId).lastName} highlight size="md" />
+      <Link href={`/mensajes/${conv.id}`} aria-current={active ? "page" : undefined} className={cn("flex gap-3 px-4 py-3 transition-colors hover:bg-muted", active && "bg-brand-soft hover:bg-brand-soft")}>
+        <UserAvatar firstName={getPerson(conv.gsOwnerId).firstName} lastName={getPerson(conv.gsOwnerId).lastName} size="md" />
         <span className="min-w-0 flex-1 space-y-1">
           <span className="flex items-baseline gap-2">
             <span className={cn("flex-1 truncate text-sm", unread > 0 ? "font-bold" : "font-medium")}>{conv.subject}</span>
             <span className="shrink-0 text-[11px] text-muted-foreground">{formatRelative(last.at)}</span>
           </span>
-          <span className="block truncate text-[13px] text-muted-foreground">
+          <span className="block truncate text-xs text-muted-foreground">
             {contextMeta[conv.context.type].label} · {conv.context.label}
           </span>
           <span className="flex items-center gap-2">
             <span className={cn("line-clamp-1 flex-1 text-xs", unread > 0 ? "text-foreground" : "text-muted-foreground")}>
               {author.firstName}: {last.text}
             </span>
-            {unread > 0 && <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">{unread}</span>}
+            {unread > 0 && <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-semibold text-primary-foreground tabular-nums" aria-label={`${unread} sin leer`}>{unread}</span>}
             {conv.status === "resuelta" && <CheckCircle2 className="size-3.5 shrink-0 text-success" aria-label="Resuelta" />}
           </span>
         </span>
@@ -186,7 +186,7 @@ function Thread({ conv }: { conv: Conversation }) {
 
   return (
     <>
-      <header className="space-y-2 border-b p-4 sm:px-6 sm:py-5">
+      <header className="space-y-2 border-b px-4 py-3">
         <div className="flex items-start gap-2">
           <Button variant="ghost" size="icon-sm" asChild className="xl:hidden">
             <Link href="/mensajes" aria-label="Volver a la bandeja">
@@ -207,7 +207,7 @@ function Thread({ conv }: { conv: Conversation }) {
               </span>
               <span className="flex -space-x-1.5" aria-label={`${conv.participants.length} participantes`}>
                 {conv.participants.map((p) => (
-                  <UserAvatar key={p} firstName={getPerson(p).firstName} lastName={getPerson(p).lastName} size="sm" highlight={getPerson(p).org === "gs"} className="size-5 text-[8px] ring-2 ring-card" />
+                  <UserAvatar key={p} firstName={getPerson(p).firstName} lastName={getPerson(p).lastName} size="sm" className="size-5 text-[8px] ring-2 ring-card" />
                 ))}
               </span>
             </div>
@@ -229,7 +229,7 @@ function Thread({ conv }: { conv: Conversation }) {
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-muted/30 p-3 sm:p-5" role="log" aria-live="polite">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-muted p-3 sm:p-5" role="log" aria-live="polite">
         {conv.messages.map((m, i) => {
           const author = getPerson(m.authorId)
           const mine = m.authorId === persona.personId
@@ -241,7 +241,7 @@ function Thread({ conv }: { conv: Conversation }) {
                 <p className="mb-3 text-center text-[11px] font-medium text-muted-foreground first-letter:uppercase">{formatDate(day, { weekday: "long", day: "numeric", month: "long" })}</p>
               )}
               <div className={cn("flex items-end gap-2", mine && "flex-row-reverse")}>
-                {!mine && <UserAvatar firstName={author.firstName} lastName={author.lastName} size="sm" highlight={author.org === "gs"} />}
+                {!mine && <UserAvatar firstName={author.firstName} lastName={author.lastName} size="sm" />}
                 <div className={cn("max-w-[85%] space-y-1 sm:max-w-[70%]", mine && "items-end text-right")}>
                   {!mine && (
                     <p className="text-[11px] text-muted-foreground">
@@ -251,17 +251,17 @@ function Thread({ conv }: { conv: Conversation }) {
                       · {author.org === "gs" ? `GS · ${author.title}` : author.title}
                     </p>
                   )}
-                  <div className={cn("rounded-2xl px-3.5 py-2.5 text-left text-sm whitespace-pre-line shadow-xs", mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card")}>
+                  <div className={cn("rounded-xl px-3.5 py-2.5 text-left text-sm whitespace-pre-line", mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card")}>
                     {m.text}
                     {m.attachments?.map((a) => (
-                      <span key={a.name} className={cn("mt-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs", mine ? "bg-white/10" : "bg-muted")}>
+                      <span key={a.name} className={cn("mt-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs", mine ? "bg-[color-mix(in_srgb,currentColor_12%,transparent)]" : "bg-muted")}>
                         <Paperclip className="size-3.5" />
                         <span className="flex-1 truncate">{a.name}</span>
                         <span className="opacity-70">{a.size}</span>
                       </span>
                     ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground">{m.at.split("T")[1]}</p>
+                  <p className="text-[11px] text-muted-foreground">{m.at.split("T")[1]}</p>
                 </div>
               </div>
             </div>
@@ -269,8 +269,8 @@ function Thread({ conv }: { conv: Conversation }) {
         })}
         {typingId && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <UserAvatar firstName={getPerson(typingId).firstName} lastName={getPerson(typingId).lastName} size="sm" highlight />
-            <span className="flex gap-1 rounded-full bg-card px-3 py-2 shadow-xs" aria-label={`${getPerson(typingId).firstName} está escribiendo`}>
+            <UserAvatar firstName={getPerson(typingId).firstName} lastName={getPerson(typingId).lastName} size="sm" />
+            <span className="flex gap-1 rounded-full border bg-card px-3 py-2" aria-label={`${getPerson(typingId).firstName} está escribiendo`}>
               <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
               <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
               <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground" />

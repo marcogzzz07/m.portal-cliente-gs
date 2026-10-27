@@ -7,12 +7,11 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Tabs } from "@/components/ui/tabs"
 import { AccessDenied } from "@/components/shared/access-denied"
 import { CompanyTag } from "@/components/shared/company-tag"
 import { EmptyState } from "@/components/shared/empty-state"
 import { PageHeader } from "@/components/shared/page-header"
-import { PageTabsList, PageTabsTrigger } from "@/components/shared/page-tabs"
+import { Segmented } from "@/components/shared/segmented"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { serviceNames } from "@/data/organization"
 import { useScopedData } from "@/hooks/use-scoped-data"
@@ -105,7 +104,7 @@ export function CalendarView() {
   const agendaDays = [...new Set(agenda.map((e) => (e.date < DEMO_TODAY ? DEMO_TODAY : e.date)))].sort()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={CalendarDays}
         title="Calendario"
@@ -126,7 +125,7 @@ export function CalendarView() {
         }
       />
 
-      <Tabs value={view} onValueChange={(v) => setView(v as View)} className="gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => move(-1)} disabled={view === "agenda"} aria-label="Anterior">
@@ -145,14 +144,20 @@ export function CalendarView() {
             >
               Hoy
             </Button>
-            <h2 className="ml-1 text-lg font-semibold first-letter:uppercase">{label}</h2>
+            <h2 className="ml-1 text-base font-semibold first-letter:uppercase">{label}</h2>
           </div>
-          <PageTabsList className="w-auto border-b-0">
-            <PageTabsTrigger value="mes" className="px-3">Mes</PageTabsTrigger>
-            <PageTabsTrigger value="semana" className="px-3">Semana</PageTabsTrigger>
-            <PageTabsTrigger value="dia" className="px-3">Día</PageTabsTrigger>
-            <PageTabsTrigger value="agenda" className="px-3">Agenda</PageTabsTrigger>
-          </PageTabsList>
+          {/* Vistas pares del mismo calendario: control segmentado, como Semana | Mes en el Portal GS. */}
+          <Segmented
+            label="Vista del calendario"
+            value={view}
+            onChange={setView}
+            options={[
+              { value: "mes", label: "Mes" },
+              { value: "semana", label: "Semana" },
+              { value: "dia", label: "Día" },
+              { value: "agenda", label: "Agenda" },
+            ]}
+          />
         </div>
 
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por tipo">
@@ -165,11 +170,12 @@ export function CalendarView() {
                 aria-pressed={active}
                 onClick={() => toggleType(t)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                  active ? "bg-card" : "bg-transparent text-muted-foreground line-through opacity-60"
+                  // Filtro en píldora (MgPill) de selección múltiple: todos encendidos por defecto,
+                  // así que el activo va con contorno y el apagado se tacha (no depende del color).
+                  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                  active ? "border-[var(--gs-color-border-control)] bg-card text-foreground" : "bg-transparent text-muted-foreground line-through hover:text-foreground"
                 )}
               >
-                <span className={cn("size-2 rounded-full", eventTypeMeta[t].dot)} aria-hidden />
                 {eventTypeMeta[t].label}
               </button>
             )
@@ -178,10 +184,10 @@ export function CalendarView() {
 
         {view === "mes" && (
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
-              <div className="grid grid-cols-7 border-b bg-muted/40">
+            <div className="overflow-hidden rounded-xl bg-card border">
+              <div className="grid grid-cols-7 border-b bg-muted">
                 {weekdays.map((d) => (
-                  <div key={d} className="px-2 py-2 text-center text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                  <div key={d} className="bg-muted px-2 py-1.5 text-center text-xs font-medium text-muted-foreground">
                     {d}
                   </div>
                 ))}
@@ -200,9 +206,9 @@ export function CalendarView() {
                       aria-label={`${formatLongDate(day)}, ${dayEvents.length} eventos`}
                       aria-pressed={isSelected}
                       className={cn(
-                        "flex min-h-14 flex-col items-stretch gap-1 border-r border-b p-1 text-left transition-colors last:border-r-0 hover:bg-muted/50 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:min-h-16 sm:p-1.5 xl:min-h-24 [&:nth-child(7n)]:border-r-0",
-                        !inMonth && "bg-muted/30 text-muted-foreground",
-                        isSelected && "bg-brand-soft/40"
+                        "flex min-h-14 flex-col items-stretch gap-1 border-r border-b p-1 text-left transition-colors last:border-r-0 hover:bg-muted focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:min-h-16 sm:p-1.5 xl:min-h-24 [&:nth-child(7n)]:border-r-0",
+                        !inMonth && "bg-muted text-muted-foreground",
+                        isSelected && "bg-brand-soft"
                       )}
                     >
                       <span className={cn("flex size-6 items-center justify-center self-center rounded-full text-xs font-medium xl:self-start", isToday && "bg-brand font-bold text-white")}>
@@ -235,9 +241,9 @@ export function CalendarView() {
         {view === "semana" && (
           <div className="grid gap-2 md:grid-cols-7">
             {weekDays.map((day) => (
-              <div key={day} className={cn("min-h-44 rounded-2xl bg-card ring-1 ring-foreground/[0.06] p-3", day === DEMO_TODAY && "ring-2 ring-brand")}>
+              <div key={day} className={cn("min-h-44 rounded-xl border bg-card p-3", day === DEMO_TODAY && "border-brand")}>
                 <p className="mb-2 flex items-baseline gap-1.5 px-1">
-                  <span className="text-xs text-muted-foreground uppercase">{formatDate(day, { weekday: "short" })}</span>
+                  <span className="text-xs text-muted-foreground first-letter:uppercase">{formatDate(day, { weekday: "short" })}</span>
                   <span className="text-lg font-bold">{Number(day.slice(8))}</span>
                 </p>
                 <div className="space-y-1.5">
@@ -274,7 +280,7 @@ export function CalendarView() {
               ))}
             </div>
           ))}
-      </Tabs>
+      </div>
 
       <EventDialog
         event={openEvent}
@@ -293,9 +299,9 @@ export function CalendarView() {
 
 function DayPanel({ day, events, next = [], onOpen, large }: { day: string; events: CalendarEvent[]; next?: CalendarEvent[]; onOpen: (e: CalendarEvent) => void; large?: boolean }) {
   return (
-    <div className={cn("space-y-5 rounded-2xl bg-card p-6 ring-1 ring-foreground/[0.06]", large && "max-w-3xl")}>
+    <div className={cn("space-y-3 rounded-xl border bg-card p-4", large && "max-w-3xl")}>
       <div className="space-y-3">
-        <p className="text-[17px] font-medium first-letter:uppercase">{day === DEMO_TODAY ? `Hoy · ${formatDate(day, { weekday: "long", day: "numeric", month: "long" })}` : formatLongDate(day)}</p>
+        <p className="text-base font-medium first-letter:uppercase">{day === DEMO_TODAY ? `Hoy · ${formatDate(day, { weekday: "long", day: "numeric", month: "long" })}` : formatLongDate(day)}</p>
         {events.length === 0 ? (
           <p className="text-sm text-muted-foreground">Sin eventos este día.</p>
         ) : (
@@ -312,7 +318,7 @@ function DayPanel({ day, events, next = [], onOpen, large }: { day: string; even
           <ul className="space-y-1">
             {next.map((e) => (
               <li key={e.id}>
-                <button type="button" onClick={() => onOpen(e)} className="flex w-full items-start gap-3 rounded-lg py-1.5 text-left text-sm hover:bg-muted/50">
+                <button type="button" onClick={() => onOpen(e)} className="flex w-full items-start gap-3 rounded-lg py-1.5 text-left text-sm hover:bg-muted">
                   <span className="w-12 shrink-0 text-muted-foreground tabular-nums">{formatDate(e.date)}</span>
                   <span className="min-w-0 flex-1 truncate">{e.title}</span>
                   <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", eventTypeMeta[e.type].dot)} aria-hidden />
@@ -329,7 +335,7 @@ function DayPanel({ day, events, next = [], onOpen, large }: { day: string; even
 function EventChip({ event, onOpen, detailed }: { event: CalendarEvent; onOpen: (e: CalendarEvent) => void; detailed?: boolean }) {
   const meta = eventTypeMeta[event.type]
   return (
-    <button type="button" onClick={() => onOpen(event)} className="flex w-full items-start gap-2.5 rounded-xl bg-muted/60 px-3 py-2.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+    <button type="button" onClick={() => onOpen(event)} className="flex w-full items-start gap-2.5 rounded-xl bg-muted px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
       <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", meta.dot)} aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block text-sm leading-snug font-medium">{event.title}</span>
@@ -345,7 +351,7 @@ function EventChip({ event, onOpen, detailed }: { event: CalendarEvent; onOpen: 
           {detailed && <CompanyTag companies={event.companies} />}
         </span>
       </span>
-      {event.actionItemId && <span className="shrink-0 rounded-full bg-brand-soft px-1.5 py-px text-[10px] font-semibold text-brand">Acción</span>}
+      {event.actionItemId && <span className="shrink-0 rounded-full bg-brand-soft px-1.5 py-px text-[11px] font-semibold text-brand">Acción</span>}
     </button>
   )
 }

@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next"
-import { Figtree } from "next/font/google"
+import { Inter } from "next/font/google"
 
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { site } from "@/config/site"
+import { THEME_INIT_SCRIPT } from "@/lib/ui/theme"
 import { AdminProvider } from "@/store/admin-store"
 import { PortalProvider } from "@/store/portal-store"
 import "./globals.css"
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+// Tipografía del Portal GS: Inter servida con next/font (sin pedirla a Google
+// en cada visita y sin salto de texto). La expone como --font-inter.
+const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -24,19 +29,26 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f1f2f4",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#eceef0" },
+    { media: "(prefers-color-scheme: dark)", color: "#1f2024" },
+  ],
 }
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-MX" className={`${figtree.variable} h-full antialiased`}>
+    // data-theme lo pone el script antes de pintar; el servidor no lo conoce.
+    <html lang="es-MX" data-theme="light" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-full">
         <PortalProvider>
           <AdminProvider>
             <TooltipProvider>{children}</TooltipProvider>
           </AdminProvider>
         </PortalProvider>
-        <Toaster theme="light" position="top-center" richColors closeButton />
+        <Toaster position="top-center" richColors closeButton />
       </body>
     </html>
   )

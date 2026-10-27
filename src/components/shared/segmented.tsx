@@ -10,10 +10,10 @@ interface SegmentedProps<T extends string> {
   className?: string
 }
 
-/** Selector segmentado (p. ej. "Por mes · Por trimestre"), como en los módulos de Contraloría del Portal GS. */
+/** Selector segmentado (p. ej. "Por mes · Por trimestre"), con el `chartSwitch` del Portal GS. */
 export function Segmented<T extends string>({ value, onChange, options, label, className }: SegmentedProps<T>) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn("inline-flex h-9 items-center gap-0.5 rounded-xl bg-muted p-1", className)}>
+    <div role="radiogroup" aria-label={label} className={cn("inline-flex h-8 items-center gap-0.5 rounded-lg border bg-card p-0.5", className)}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -22,8 +22,9 @@ export function Segmented<T extends string>({ value, onChange, options, label, c
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            "h-7 rounded-lg px-3 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-            value === o.value && "bg-card font-medium text-foreground shadow-xs"
+            "h-full rounded-[calc(var(--gs-radius-md)-2px)] px-2.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            // Activo en grafito con texto inverso (chartSwitch del Portal GS): selección neutral, no de marca.
+            value === o.value && "bg-primary text-primary-foreground hover:text-primary-foreground"
           )}
         >
           {o.label}

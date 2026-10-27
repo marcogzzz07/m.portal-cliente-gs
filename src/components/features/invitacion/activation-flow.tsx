@@ -99,7 +99,7 @@ function Activation() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <div className="bg-[oklch(0.94_0.03_60)] px-4 py-1 text-center text-xs text-[oklch(0.42_0.06_50)]">Datos ficticios · Simulación de activación de cuenta</div>
+      <div className="bg-[var(--gs-color-warning-subtle)] px-4 py-1 text-center text-xs text-[var(--gs-color-warning-foreground)]">Datos ficticios · Simulación de activación de cuenta</div>
       <div className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-6 px-4 py-10">
         <div className="flex items-center gap-3">
           <BrandMark />
@@ -120,7 +120,7 @@ function Activation() {
           </ol>
         )}
 
-        <section className="space-y-6 rounded-2xl bg-card p-6 ring-1 ring-foreground/[0.06] sm:p-8">
+        <section className="space-y-5 rounded-xl border bg-card p-5 sm:p-6">
           {step === "invitacion" && (
             <>
               <div className="space-y-2">
@@ -132,7 +132,7 @@ function Activation() {
                   {inviter.firstName} {inviter.lastName} te invitó al Portal de Clientes de González Solís para el Grupo EcoPack Norte. Aquí verás pendientes, documentos y conversaciones con GS.
                 </p>
               </div>
-              <dl className="grid gap-3 rounded-xl bg-muted/60 p-4 text-sm sm:grid-cols-2">
+              <dl className="grid gap-3 rounded-xl bg-muted p-4 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-muted-foreground">Rol</dt>
                   <dd className="font-medium">{roles[invite.role].label}</dd>
@@ -209,7 +209,7 @@ function Activation() {
                     { v: "sms", label: "Mensaje SMS", sub: "A tu celular", icon: MessageSquareText },
                   ] as const
                 ).map((o) => (
-                  <button key={o.v} type="button" onClick={() => setMfa(o.v)} aria-pressed={mfa === o.v} className={cn("flex items-start gap-3 rounded-xl border p-3 text-left text-sm", mfa === o.v ? "border-primary bg-primary/[0.04]" : "hover:bg-muted/60")}>
+                  <button key={o.v} type="button" onClick={() => setMfa(o.v)} aria-pressed={mfa === o.v} className={cn("flex items-start gap-3 rounded-xl border p-3 text-left text-sm", mfa === o.v ? "border-brand bg-brand-soft" : "hover:bg-muted")}>
                     <o.icon className="mt-0.5 size-4" />
                     <span>
                       <span className="block font-medium">{o.label}</span>
@@ -219,7 +219,7 @@ function Activation() {
                 ))}
               </div>
               {mfa === "app" ? (
-                <div className="flex flex-col items-center gap-4 rounded-xl bg-muted/60 p-5 sm:flex-row sm:items-start">
+                <div className="flex flex-col items-center gap-4 rounded-xl bg-muted p-5 sm:flex-row sm:items-start">
                   <FakeQr />
                   <div className="space-y-2 text-sm">
                     <p>1. Abre Google Authenticator, Microsoft Authenticator o similar.</p>
@@ -248,7 +248,7 @@ function Activation() {
           {step === "respaldo" && (
             <>
               <Header icon={KeyRound} title="Guarda tus códigos de respaldo" text="Si pierdes tu celular, podrás entrar con uno de estos códigos. Cada uno sirve una sola vez." />
-              <ul className="grid grid-cols-2 gap-2 rounded-xl bg-muted/60 p-4 font-mono text-sm">
+              <ul className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-4 font-mono text-sm">
                 {backupCodes.map((c) => (
                   <li key={c} className="rounded-md bg-card px-3 py-1.5 text-center">
                     {c}
@@ -305,7 +305,7 @@ function Activation() {
 
           {step === "listo" && (
             <div className="space-y-5 text-center">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-success/12 text-success">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[var(--gs-color-success-subtle)] text-success">
                 <CheckCircle2 className="size-7" />
               </span>
               <div className="space-y-1">

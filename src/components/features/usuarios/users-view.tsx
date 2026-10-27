@@ -41,7 +41,7 @@ export function UsersView() {
   const withMfa = active.filter((u) => u.mfa !== "pendiente").length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         icon={UserCog}
         title="Usuarios y permisos"
@@ -54,14 +54,14 @@ export function UsersView() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Usuarios activos" value={active.length} icon={Users} accent="blue" helper="Con acceso al portal" />
         <MetricCard label="Invitaciones pendientes" value={users.filter((u) => u.status === "invitado").length} icon={Mail} accent="amber" helper="Vencen a los 7 días" />
         <MetricCard label="Con MFA" value={`${withMfa} de ${active.length}`} icon={ShieldCheck} accent="green" helper="Obligatorio para todos" />
         <MetricCard label="Suspendidos" value={users.filter((u) => u.status === "suspendido").length} icon={Ban} accent="pink" helper="Sin acceso, historial conservado" />
       </div>
 
-      <div className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/[0.06]">
+      <div className="overflow-hidden rounded-xl bg-card border">
         <Table className="hidden md:table">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -310,15 +310,15 @@ function EditSheet({ user, onClose, onSave }: { user: ClientUser; onClose: () =>
         </SheetHeader>
         <div className="space-y-6 p-4">
           <div className="grid grid-cols-3 gap-3 text-sm">
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-xl bg-muted p-3">
               <p className="text-xs text-muted-foreground">Estado</p>
               <p className="font-medium">{userStatus[user.status].label}</p>
             </div>
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-xl bg-muted p-3">
               <p className="text-xs text-muted-foreground">MFA</p>
               <p className="font-medium">{user.mfa === "app" ? "App autenticadora" : user.mfa === "sms" ? "SMS" : "Pendiente"}</p>
             </div>
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-xl bg-muted p-3">
               <p className="text-xs text-muted-foreground">Último acceso</p>
               <p className="font-medium">{user.lastAccess ? formatRelative(user.lastAccess) : "—"}</p>
             </div>
